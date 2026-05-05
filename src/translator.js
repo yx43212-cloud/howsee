@@ -51,27 +51,27 @@ const LIGHTING_DESCRIPTIONS = [
   '晨霧擴散光讓場景像夢境，邊界柔化而迷人'
 ];
 
-const AWE_DESCRIPTIONS = [
-  '帶著神殿般的莊嚴感，人物像被凝視的藝術雕像',
-  '神聖光暈環繞主體，氣氛既敬畏又親密',
-  '姿態如古典油畫中的女神或神祇，視線充滿壓迫美感',
-  '背景尺度宏大，讓人物帶有不可侵犯的存在感',
-  '以低角度仰視構圖呈現權威、優雅與震懾',
-  '布料與光影像祭典儀式般層層展開',
-  '表情冷靜自持，散發讓人屏息的尊貴氣場',
-  '空間留白巨大，凸顯主體的精神重量',
-  '金色粒子漂浮在周圍，像被神話場域包圍',
-  '構圖對稱而莊重，帶有宗教壁畫般的秩序感',
-  '人物眼神直視鏡頭，形成不容逃避的凝視',
-  '冠冕、珠飾或光環元素暗示崇高身份',
-  '長階、帷幕與柱廊襯托出史詩級登場感',
-  '風捲起髮絲與衣料，形成神諭降臨般的瞬間',
-  '冷暖光在人物周圍形成聖像式輪廓',
-  '畫面節奏克制，讓情緒像儀式般緩慢累積',
-  '細節精緻到近乎供奉品，帶有高級收藏感',
-  '主體置於畫面中心，周遭元素像臣服般向內收束',
-  '霧氣與逆光讓角色像從傳說中走出',
-  '華麗卻不混亂，讓慾望被包裝成敬畏與崇拜'
+const CAMERA_ANGLES = [
+  'eye-level shot, natural perspective, balanced portrait framing',
+  'low-angle shot, stronger presence, elongated body lines',
+  'high-angle shot, intimate overview, soft vulnerability',
+  'over-the-shoulder shot, foreground shoulder blur, focused gaze',
+  'close-up shot, face and expression priority, shallow depth of field',
+  'extreme close-up shot, lips, eyes, and fingertips emphasized',
+  'medium shot, upper body gesture and costume details clearly visible',
+  'full-body shot, complete silhouette and pose readable from head to toe',
+  'three-quarter view, face and body turned diagonally for depth',
+  'profile shot, side silhouette and neck line emphasized',
+  'back view with head turned, elegant shoulder and spine line composition',
+  'top-down shot, bed or floor layout visible, graphic composition',
+  'floor-level shot, foreground texture and dramatic perspective',
+  'mirror reflection shot, subject and reflected pose both visible',
+  'doorway framing shot, voyeur-free staged composition through architecture',
+  'wide establishing shot, character integrated with the full scene',
+  'Dutch angle shot, subtle tilt for tension and cinematic unease',
+  'silhouette shot against bright background, readable body outline',
+  'hands-focused insert shot, tactile gesture and fabric detail emphasized',
+  'cinematic two-shot, both adult characters framed clearly with balanced spacing'
 ];
 
 const CUSTOMIZATION_OPTIONS = {
@@ -96,6 +96,18 @@ const CUSTOMIZATION_OPTIONS = {
     '主角坐姿，另一位成人在前景形成景深', '雙人鏡面反射構圖', '單人與巨大陰影對比', '雙人對稱構圖，動作互相呼應', '三人舞台式層次排列',
     '單人近景特寫', '單人全身構圖', '雙人剪影重疊', '兩位成人隔著薄紗互望', '一主二輔的雜誌封面站位',
     '雙人一坐一站的高低差', '三人以沙發為中心形成環形構圖', '單人背影與回眸', '雙人手部細節特寫', '多位成人派對氛圍但主體清楚'
+  ],
+  poses: [
+    '站姿回眸，肩線放鬆，髖部自然轉向鏡頭', '坐在床沿，雙腿交錯，手指整理衣料', '跪坐在柔軟床面，背部挺直，視線看向鏡頭', '側躺支撐上身，腰線與腿部形成流暢曲線', '仰躺伸展，手臂自然上舉，表情放鬆',
+    '俯身靠近鏡頭，髮絲垂落，眼神集中', '倚靠牆面，一膝微彎，身體形成 S 型線條', '坐在椅上反跨椅背，肩頸線條清楚', '雙人面對面站立，額頭相近，手掌輕扶腰側', '雙人坐姿相擁，肢體重疊但輪廓清楚',
+    '雙人一坐一站，形成高低差與視線牽引', '背後擁抱姿勢，雙方明確成年且合意', '膝上依偎姿勢，表情親密，構圖穩定', '沙發斜躺姿勢，手肘支撐，腿部延伸', '浴缸邊緣坐姿，肩線與鎖骨被光線勾勒',
+    '落地窗前站姿，手扶窗框，背光描出輪廓', '鏡前整理服裝姿勢，反射增加畫面層次', '床上盤腿坐姿，身體微微前傾', '跪姿前傾，手掌撐在床面或沙發上', '側坐回頭，裙擺或布料沿腿部垂落',
+    '雙人並肩躺臥，手部互相靠近，視線交會', '雙人剪影貼近，動作含蓄而張力明顯', '舞台中央站姿，雙臂自然展開，衣料被風吹動', '柱廊旁倚靠姿勢，身體與建築線條平行', '長袍滑落肩頭的整理姿勢，保留藝術留白',
+    '坐在地毯上後仰支撐，腿部自然彎曲', '趴臥在枕邊，臉部靠近前景，眼神柔軟', '半跪拾起布料姿勢，手部與布料成為焦點', '雙人指尖相扣，身體距離接近但構圖優雅', '雙人互相整理衣領或肩帶，動作自然可信',
+    '站在門邊回身，手扶門框，視線邀請式但合意', '樓梯坐姿，一腿高一腿低，形成層次', '吧台前側坐，手肘靠桌，肩膀微轉', '浴袍半披站姿，腰帶與布料動態清楚', '床邊低頭微笑，手指撫過髮絲',
+    '雙人額頭相抵，閉眼呼吸同步，情緒親密', '雙人一前一後站位，前景人物回眸', '躺椅上伸展姿勢，身體線條完整可讀', '窗簾後半遮姿勢，透光布料創造層次', '坐姿交疊手臂，表情冷靜自信',
+    '跪坐整理長髮，背部曲線與髮絲成為主視覺', '站姿拉起手套或袖口，動作帶有儀式感', '半身前傾靠在桌邊，肩頸與手部清楚', '雙人背靠背坐姿，視線分別看向兩側', '雙人手臂環抱肩背，重心穩定且自然',
+    '地面側躺構圖，布料鋪展成視覺引導線', '沙發扶手上倚坐，腿部斜向畫面角落', '床幔間探身姿勢，前景薄紗柔化輪廓', '站姿抬手觸碰耳環或髮飾，臉部精緻清楚', '雙人慢舞般貼近，手扶肩背與腰側，姿態優雅'
   ],
   scenes: [
     '高樓落地窗夜景套房', '復古歐式臥室', '極簡白色攝影棚', '霓虹酒吧角落', '雨夜車窗旁',
@@ -144,13 +156,12 @@ function rewritePrompt(input, options = {}) {
 
   const intensity = INTENSITY_WORDS[options.intensity] ? options.intensity : 'medium';
   const lighting = LIGHTING_DESCRIPTIONS.includes(options.lighting) ? options.lighting : LIGHTING_DESCRIPTIONS[0];
-  const awe = AWE_DESCRIPTIONS.includes(options.awe) ? options.awe : AWE_DESCRIPTIONS[0];
-  const customParts = [
-    getOptionValue('faces', options.face),
-    getOptionValue('outfits', options.outfit),
-    getOptionValue('counts', options.count),
-    getOptionValue('scenes', options.scene)
-  ].filter(Boolean);
+  const camera = CAMERA_ANGLES.includes(options.camera) ? options.camera : CAMERA_ANGLES[0];
+  const face = getOptionValue('faces', options.face) || CUSTOMIZATION_OPTIONS.faces[0];
+  const outfit = getOptionValue('outfits', options.outfit) || CUSTOMIZATION_OPTIONS.outfits[0];
+  const count = getOptionValue('counts', options.count) || CUSTOMIZATION_OPTIONS.counts[0];
+  const scene = getOptionValue('scenes', options.scene) || CUSTOMIZATION_OPTIONS.scenes[0];
+  const pose = getOptionValue('poses', options.pose) || CUSTOMIZATION_OPTIONS.poses[0];
 
   let rewritten = validation.prompt;
 
@@ -161,14 +172,18 @@ function rewritePrompt(input, options = {}) {
   return {
     ok: true,
     prompt: [
-      rewritten,
-      ...customParts,
-      lighting,
-      awe,
-      DEFAULT_STYLE.tone,
-      INTENSITY_WORDS[intensity],
-      DEFAULT_STYLE.quality,
-      DEFAULT_STYLE.safety
+      `subject/action: ${rewritten}`,
+      `face: ${face}`,
+      `outfit: ${outfit}`,
+      `character count/composition: ${count}`,
+      `scene: ${scene}`,
+      `lighting: ${lighting}`,
+      `camera angle: ${camera}`,
+      `body pose/posture: ${pose}`,
+      `tone: ${DEFAULT_STYLE.tone}`,
+      `intensity: ${INTENSITY_WORDS[intensity]}`,
+      `quality: ${DEFAULT_STYLE.quality}`,
+      `safety: ${DEFAULT_STYLE.safety}`
     ].join(', '),
     reason: ''
   };
@@ -181,7 +196,7 @@ if (typeof module !== 'undefined') {
     PHRASE_RULES,
     BLOCKED_PATTERNS,
     LIGHTING_DESCRIPTIONS,
-    AWE_DESCRIPTIONS,
+    CAMERA_ANGLES,
     CUSTOMIZATION_OPTIONS
   };
 }

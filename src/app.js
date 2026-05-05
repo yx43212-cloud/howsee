@@ -1,11 +1,12 @@
 const sourcePrompt = document.querySelector('#sourcePrompt');
 const intensity = document.querySelector('#intensity');
 const lighting = document.querySelector('#lighting');
-const awe = document.querySelector('#awe');
+const camera = document.querySelector('#camera');
 const face = document.querySelector('#face');
 const outfit = document.querySelector('#outfit');
 const count = document.querySelector('#count');
 const scene = document.querySelector('#scene');
+const pose = document.querySelector('#pose');
 const rewriteButton = document.querySelector('#rewriteButton');
 const resultPrompt = document.querySelector('#resultPrompt');
 const statusMessage = document.querySelector('#status');
@@ -31,11 +32,12 @@ function populateSelect(select, options) {
 
 function setupCustomizationControls() {
   populateSelect(lighting, LIGHTING_DESCRIPTIONS);
-  populateSelect(awe, AWE_DESCRIPTIONS);
+  populateSelect(camera, CAMERA_ANGLES);
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, CUSTOMIZATION_OPTIONS.outfits);
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
   populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
+  populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
 }
 
 setupCustomizationControls();
@@ -44,11 +46,12 @@ rewriteButton.addEventListener('click', () => {
   const result = rewritePrompt(sourcePrompt.value, {
     intensity: intensity.value,
     lighting: lighting.value,
-    awe: awe.value,
+    camera: camera.value,
     face: face.value,
     outfit: outfit.value,
     count: count.value,
-    scene: scene.value
+    scene: scene.value,
+    pose: pose.value
   });
 
   if (!result.ok) {

@@ -1,14 +1,20 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { rewritePrompt, validatePrompt } = require('../src/translator');
+const {
+  rewritePrompt,
+  validatePrompt,
+  LIGHTING_DESCRIPTIONS,
+  CAMERA_ANGLES,
+  CUSTOMIZATION_OPTIONS
+} = require('../src/translator');
 
 test('rewrites direct adult wording into safer descriptive prompt language', () => {
   const result = rewritePrompt('脫衣服 親吻', { intensity: 'medium' });
 
   assert.equal(result.ok, true);
-  assert.match(result.prompt, /布料滑落/);
+  assert.match(result.prompt, /subject\/action: .*布料滑落/);
   assert.match(result.prompt, /炙熱親吻/);
-  assert.match(result.prompt, /consenting adults/);
+  assert.match(result.prompt, /safety: all characters are clearly 18\+/);
 });
 
 test('keeps semantic intent for solo intimate prompt without using the original keyword', () => {
@@ -16,7 +22,7 @@ test('keeps semantic intent for solo intimate prompt without using the original 
 
   assert.equal(result.ok, true);
   assert.match(result.prompt, /私密獨處/);
-  assert.match(result.prompt, /柔和曖昧/);
+  assert.match(result.prompt, /intensity: 柔和曖昧/);
 });
 
 test('rejects underage content', () => {
@@ -33,41 +39,43 @@ test('rejects non-consensual content', () => {
   assert.match(result.reason, /非合意/);
 });
 
-
-test('provides exactly 20 lighting and 20 awe descriptions', () => {
-  const { LIGHTING_DESCRIPTIONS, AWE_DESCRIPTIONS } = require('../src/translator');
-
+test('provides exactly 20 lighting and 20 camera-angle descriptions', () => {
   assert.equal(LIGHTING_DESCRIPTIONS.length, 20);
-  assert.equal(AWE_DESCRIPTIONS.length, 20);
+  assert.equal(CAMERA_ANGLES.length, 20);
 });
 
-test('provides more than 100 role customization options across required categories', () => {
-  const { CUSTOMIZATION_OPTIONS } = require('../src/translator');
+test('provides exactly 50 usable body pose/posture presets', () => {
+  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 50);
+});
+
+test('provides 160 role customization options across required categories', () => {
   const total = Object.values(CUSTOMIZATION_OPTIONS).reduce((sum, options) => sum + options.length, 0);
 
-  assert.ok(CUSTOMIZATION_OPTIONS.faces.length >= 20);
-  assert.ok(CUSTOMIZATION_OPTIONS.outfits.length >= 20);
-  assert.ok(CUSTOMIZATION_OPTIONS.counts.length >= 20);
-  assert.ok(CUSTOMIZATION_OPTIONS.scenes.length >= 20);
-  assert.ok(total > 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 30);
+  assert.equal(CUSTOMIZATION_OPTIONS.counts.length, 20);
+  assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 30);
+  assert.equal(total, 160);
 });
 
-test('adds selected lighting, awe, and character customization to rewritten prompt', () => {
-  const { LIGHTING_DESCRIPTIONS, AWE_DESCRIPTIONS, CUSTOMIZATION_OPTIONS } = require('../src/translator');
+test('adds selected lighting, camera, pose, and character customization to a usable prompt', () => {
   const result = rewritePrompt('親吻', {
     lighting: LIGHTING_DESCRIPTIONS[3],
-    awe: AWE_DESCRIPTIONS[4],
+    camera: CAMERA_ANGLES[4],
     face: CUSTOMIZATION_OPTIONS.faces[2],
     outfit: CUSTOMIZATION_OPTIONS.outfits[5],
     count: CUSTOMIZATION_OPTIONS.counts[1],
-    scene: CUSTOMIZATION_OPTIONS.scenes[7]
+    scene: CUSTOMIZATION_OPTIONS.scenes[7],
+    pose: CUSTOMIZATION_OPTIONS.poses[10]
   });
 
   assert.equal(result.ok, true);
-  assert.match(result.prompt, /月光穿過百葉窗/);
-  assert.match(result.prompt, /低角度仰視/);
-  assert.match(result.prompt, /成熟鵝蛋臉/);
-  assert.match(result.prompt, /皮革束腰/);
-  assert.match(result.prompt, /雙人合意互動/);
-  assert.match(result.prompt, /海邊玻璃屋/);
+  assert.match(result.prompt, /subject\/action: .*炙熱親吻/);
+  assert.match(result.prompt, /lighting: 月光穿過百葉窗/);
+  assert.match(result.prompt, /camera angle: close-up shot/);
+  assert.match(result.prompt, /face: 成熟鵝蛋臉/);
+  assert.match(result.prompt, /outfit: 皮革束腰/);
+  assert.match(result.prompt, /character count\/composition: 雙人合意互動/);
+  assert.match(result.prompt, /scene: 海邊玻璃屋/);
+  assert.match(result.prompt, /body pose\/posture: 雙人一坐一站/);
 });
