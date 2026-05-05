@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>好想瑟瑟 Prompt Rewriter</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">18+ consensual prompt helper</p>
+        <h1>好想瑟瑟 Prompt Rewriter</h1>
+        <p>
+          將直白成人提示詞轉成較適合影像生成器理解的情慾氛圍描述，同時保留原本語意並加入合意、成年、安全邊界。
+        </p>
+      </section>
+
+      <section class="panel" aria-labelledby="input-title">
+        <h2 id="input-title">輸入提示詞</h2>
+        <label for="sourcePrompt">原始描述</label>
+        <textarea id="sourcePrompt" rows="7" placeholder="例如：脫衣服 親吻"></textarea>
+
+        <label for="intensity">情慾強度</label>
+        <select id="intensity">
+          <option value="soft">柔和</option>
+          <option value="medium" selected>中等</option>
+          <option value="strong">強烈</option>
+        </select>
+
+        <button id="rewriteButton" type="button">轉譯提示詞</button>
+      </section>
+
+      <section class="panel output-panel" aria-live="polite">
+        <h2>轉譯結果</h2>
+        <p id="status" class="status">等待輸入。</p>
+        <textarea id="resultPrompt" rows="9" readonly></textarea>
+        <button id="copyButton" type="button">複製結果</button>
+      </section>
+
+      <section class="guardrails">
+        <h2>安全邊界</h2>
+        <ul>
+          <li>只允許明確成年且合意的角色與情境。</li>
+          <li>拒絕未成年、非合意、偷拍、血腥暴力等內容。</li>
+          <li>輸出以氛圍、構圖、姿態、光影與情緒描述為主。</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="src/translator.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
