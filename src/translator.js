@@ -241,6 +241,7 @@ function rewritePrompt(input, options = {}) {
   const scene = getOptionValue('scenes', options.scene) || CUSTOMIZATION_OPTIONS.scenes[0];
   const pose = getOptionValue('poses', options.pose) || CUSTOMIZATION_OPTIONS.poses[0];
 
+  const intensity = INTENSITY_WORDS[options.intensity] ? options.intensity : 'medium';
   let rewritten = validation.prompt;
 
   for (const { pattern, replacement } of PHRASE_RULES) {
@@ -265,6 +266,12 @@ function rewritePrompt(input, options = {}) {
       `safety: ${DEFAULT_STYLE.safety}`,
       customConditionValidation.conditions ? `custom conditions: ${customConditionValidation.conditions}` : ''
     ].filter(Boolean).join(', '),
+      rewritten,
+      DEFAULT_STYLE.tone,
+      INTENSITY_WORDS[intensity],
+      DEFAULT_STYLE.quality,
+      DEFAULT_STYLE.safety
+    ].join(', '),
     reason: ''
   };
 }
@@ -279,5 +286,6 @@ if (typeof module !== 'undefined') {
     CAMERA_ANGLES,
     ART_STYLES,
     CUSTOMIZATION_OPTIONS
+    BLOCKED_PATTERNS
   };
 }
