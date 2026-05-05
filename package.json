@@ -5,6 +5,8 @@
   "description": "Adult-only prompt rewriting prototype with safety guardrails.",
   "scripts": {
     "test": "node --test",
+    "dev": "node scripts/dev-server.js",
+    "start": "npm run dev",
     "check": "node --check src/translator.js && node --check test/translator.test.js"
   },
   "devDependencies": {},
