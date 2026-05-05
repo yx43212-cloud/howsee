@@ -6,6 +6,9 @@ const {
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
+  RACE_OPTIONS,
+  EXPRESSION_OPTIONS,
+  TIME_POINTS,
   CUSTOMIZATION_OPTIONS
 } = require('../src/translator');
 
@@ -44,6 +47,10 @@ test('provides exactly 20 lighting, 20 camera-angle, and 50 art-style descriptio
   assert.equal(LIGHTING_DESCRIPTIONS.length, 20);
   assert.equal(CAMERA_ANGLES.length, 20);
   assert.equal(ART_STYLES.length, 50);
+  assert.equal(RACE_OPTIONS.length, 50);
+  assert.equal(EXPRESSION_OPTIONS.length, 50);
+  assert.equal(TIME_POINTS.length, 20);
+  assert.ok(LIGHTING_DESCRIPTIONS.every((option) => /左|右|上|下|正面|背後|逆光|主光|補光|柔光|硬光|漫射|環形光|聚光|背景|全局/.test(option.zh)));
 });
 
 test('provides exactly 50 usable body pose/posture presets', () => {
@@ -62,6 +69,12 @@ test('provides 160 role customization options across required categories', () =>
 
 test('adds selected lighting, camera, pose, and character customization to a usable prompt', () => {
   const result = rewritePrompt('親吻', {
+    lighting: LIGHTING_DESCRIPTIONS[3].zh,
+    camera: CAMERA_ANGLES[4].zh,
+    artStyle: ART_STYLES[2].zh,
+    race: RACE_OPTIONS[1].zh,
+    expression: EXPRESSION_OPTIONS[10].zh,
+    timePoint: TIME_POINTS[7].zh,
     lighting: LIGHTING_DESCRIPTIONS[3],
     camera: CAMERA_ANGLES[4],
     artStyle: ART_STYLES[2],
@@ -73,6 +86,21 @@ test('adds selected lighting, camera, pose, and character customization to a usa
   });
 
   assert.equal(result.ok, true);
+  assert.match(result.prompt, /【中文確認提示詞】/);
+  assert.match(result.prompt, /【English generation prompt】/);
+  assert.match(result.prompt, /主題／動作：.*炙熱親吻/);
+  assert.match(result.prompt, /光感：正面柔光/);
+  assert.match(result.prompt, /鏡位：近景特寫/);
+  assert.match(result.prompt, /畫風：精品時尚封面風/);
+  assert.match(result.prompt, /種族：精靈族/);
+  assert.match(result.prompt, /表情：咬唇表情/);
+  assert.match(result.prompt, /時間點：傍晚 5 點/);
+  assert.match(result.prompt, /lighting: front soft light/);
+  assert.match(result.prompt, /camera angle: close-up shot/);
+  assert.match(result.prompt, /art style: luxury fashion magazine cover/);
+  assert.match(result.prompt, /race: elf/);
+  assert.match(result.prompt, /facial expression: soft lip-biting expression/);
+  assert.match(result.prompt, /time point: 5 PM golden-hour soft light/);
   assert.match(result.prompt, /subject\/action: .*炙熱親吻/);
   assert.match(result.prompt, /lighting: 月光穿過百葉窗/);
   assert.match(result.prompt, /camera angle: close-up shot/);
@@ -91,6 +119,7 @@ test('appends safe free-form custom conditions to the usable prompt', () => {
   });
 
   assert.equal(result.ok, true);
+  assert.match(result.prompt, /客製化條件：85mm lens, pearl accessories, no watermark, clean background/);
   assert.match(result.prompt, /custom conditions: 85mm lens, pearl accessories, no watermark, clean background/);
 });
 

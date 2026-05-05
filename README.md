@@ -8,6 +8,9 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 - Intensity selector with soft, medium, and strong output styles.
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues.
 - Browser-only implementation with no backend or data collection.
+- 20 Chinese lighting-direction presets, 20 Chinese camera-angle presets, and 50 Chinese art-style presets for richer visual direction.
+- 50 race presets, 50 expression presets, 20 time-point presets, plus 160 role customization options across face, outfit, character count, scene, and pose categories, including 50 usable body pose/posture presets.
+- Output includes a Chinese confirmation prompt first, then an English generation prompt for final copy/paste use.
 - 20 lighting presets, 20 camera-angle presets, and 50 art-style presets for richer visual direction.
 - 160 role customization options across face, outfit, character count, scene, and pose categories, including 50 usable body pose/posture presets.
 - Free-form custom conditions field that can be appended to the final prompt after the same safety validation.

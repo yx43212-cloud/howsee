@@ -3,6 +3,9 @@ const intensity = document.querySelector('#intensity');
 const lighting = document.querySelector('#lighting');
 const camera = document.querySelector('#camera');
 const artStyle = document.querySelector('#artStyle');
+const race = document.querySelector('#race');
+const expression = document.querySelector('#expression');
+const timePoint = document.querySelector('#timePoint');
 const face = document.querySelector('#face');
 const outfit = document.querySelector('#outfit');
 const count = document.querySelector('#count');
@@ -24,6 +27,9 @@ function populateSelect(select, options) {
 
   for (const optionText of options) {
     const option = document.createElement('option');
+    const label = typeof optionText === 'string' ? optionText : optionText.zh;
+    option.value = label;
+    option.textContent = label;
     option.value = optionText;
     option.textContent = optionText;
     fragment.append(option);
@@ -36,6 +42,9 @@ function setupCustomizationControls() {
   populateSelect(lighting, LIGHTING_DESCRIPTIONS);
   populateSelect(camera, CAMERA_ANGLES);
   populateSelect(artStyle, ART_STYLES);
+  populateSelect(race, RACE_OPTIONS);
+  populateSelect(expression, EXPRESSION_OPTIONS);
+  populateSelect(timePoint, TIME_POINTS);
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, CUSTOMIZATION_OPTIONS.outfits);
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
@@ -51,6 +60,9 @@ rewriteButton.addEventListener('click', () => {
     lighting: lighting.value,
     camera: camera.value,
     artStyle: artStyle.value,
+    race: race.value,
+    expression: expression.value,
+    timePoint: timePoint.value,
     face: face.value,
     outfit: outfit.value,
     count: count.value,

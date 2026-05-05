@@ -29,6 +29,232 @@ const INTENSITY_WORDS = {
 };
 
 const LIGHTING_DESCRIPTIONS = [
+  { zh: '左側主光，柔和斜射，右側保留淡陰影', en: 'soft key light from the left side, gentle diagonal illumination, subtle shadow on the right side' },
+  { zh: '右側主光，柔和斜射，左側保留淡陰影', en: 'soft key light from the right side, gentle diagonal illumination, subtle shadow on the left side' },
+  { zh: '正上方頂光，突出肩頸與頭髮輪廓', en: 'top light from directly above, emphasizing shoulders, neck, and hair outline' },
+  { zh: '正面柔光，臉部均勻明亮，陰影很淡', en: 'front soft light, evenly bright face, very soft shadows' },
+  { zh: '背後逆光，形成清楚邊緣光與剪影感', en: 'back light from behind, clear rim light and silhouette effect' },
+  { zh: '左後方逆光，髮絲與肩線有亮邊', en: 'back-left rim light, bright edge on hair and shoulder line' },
+  { zh: '右後方逆光，髮絲與側臉有亮邊', en: 'back-right rim light, bright edge on hair and side profile' },
+  { zh: '左上 45 度主光，立體陰影自然', en: 'key light from upper-left 45 degrees, natural three-dimensional shadows' },
+  { zh: '右上 45 度主光，立體陰影自然', en: 'key light from upper-right 45 degrees, natural three-dimensional shadows' },
+  { zh: '低角度下方補光，臉部陰影被輕微托亮', en: 'low fill light from below, gently lifting facial shadows' },
+  { zh: '左右雙側夾光，身體兩側都有細亮邊', en: 'dual side rim lights from left and right, thin highlights on both body edges' },
+  { zh: '正面大面積柔光，皮膚質感乾淨柔順', en: 'large front softbox light, clean and smooth skin texture' },
+  { zh: '窄束聚光，只集中照亮臉部與手部', en: 'narrow spotlight focused only on face and hands' },
+  { zh: '柔和環形光，眼神有圓形高光', en: 'soft ring light, circular catchlights in the eyes' },
+  { zh: '高反差硬光，陰影邊界銳利', en: 'high-contrast hard light with sharp shadow edges' },
+  { zh: '低反差柔光，整體陰影過渡平滑', en: 'low-contrast soft light with smooth shadow transitions' },
+  { zh: '左側冷光、右側暖光，形成雙色對比', en: 'cool light from the left and warm light from the right, two-tone contrast' },
+  { zh: '右側冷光、左側暖光，形成雙色對比', en: 'cool light from the right and warm light from the left, two-tone contrast' },
+  { zh: '背景微弱輪廓光，主體前方保持柔亮', en: 'subtle background rim light while the subject remains softly lit from the front' },
+  { zh: '全局漫射光，沒有明顯硬陰影', en: 'global diffused light with no obvious hard shadows' }
+];
+
+const CAMERA_ANGLES = [
+  { zh: '平視鏡位，自然人像構圖', en: 'eye-level shot, natural perspective, balanced portrait framing' },
+  { zh: '低角度鏡位，人物存在感更強', en: 'low-angle shot, stronger presence, elongated body lines' },
+  { zh: '高角度鏡位，親密俯視感', en: 'high-angle shot, intimate overview, soft vulnerability' },
+  { zh: '過肩鏡位，前景肩線微模糊', en: 'over-the-shoulder shot, foreground shoulder blur, focused gaze' },
+  { zh: '近景特寫，強調臉部表情', en: 'close-up shot, face and expression priority, shallow depth of field' },
+  { zh: '極近特寫，強調眼神、嘴唇與指尖', en: 'extreme close-up shot, lips, eyes, and fingertips emphasized' },
+  { zh: '中景鏡位，清楚呈現上半身動作', en: 'medium shot, upper body gesture and costume details clearly visible' },
+  { zh: '全身鏡位，完整呈現身形與姿勢', en: 'full-body shot, complete silhouette and pose readable from head to toe' },
+  { zh: '四分之三側身鏡位，增加立體感', en: 'three-quarter view, face and body turned diagonally for depth' },
+  { zh: '側面輪廓鏡位，強調頸線與剪影', en: 'profile shot, side silhouette and neck line emphasized' },
+  { zh: '背面回眸鏡位，呈現肩背線條', en: 'back view with head turned, elegant shoulder and spine line composition' },
+  { zh: '正上方俯拍，構圖更圖像化', en: 'top-down shot, bed or floor layout visible, graphic composition' },
+  { zh: '貼地低機位，前景更有張力', en: 'floor-level shot, foreground texture and dramatic perspective' },
+  { zh: '鏡面反射鏡位，同時呈現本體與倒影', en: 'mirror reflection shot, subject and reflected pose both visible' },
+  { zh: '門框構圖鏡位，以建築框線聚焦主體', en: 'doorway framing shot, voyeur-free staged composition through architecture' },
+  { zh: '遠景定場鏡位，人物與空間一起呈現', en: 'wide establishing shot, character integrated with the full scene' },
+  { zh: '傾斜鏡位，增加電影張力', en: 'Dutch angle shot, subtle tilt for tension and cinematic unease' },
+  { zh: '逆光剪影鏡位，身體輪廓清楚', en: 'silhouette shot against bright background, readable body outline' },
+  { zh: '手部特寫鏡位，強調觸感與布料細節', en: 'hands-focused insert shot, tactile gesture and fabric detail emphasized' },
+  { zh: '雙人電影鏡位，兩位成年角色清楚入鏡', en: 'cinematic two-shot, both adult characters framed clearly with balanced spacing' }
+];
+
+const ART_STYLES = [
+  { zh: '寫實雜誌攝影風', en: 'photorealistic editorial photography, natural skin texture, high-end retouching' },
+  { zh: '電影劇照風', en: 'cinematic film still, 35mm lens feel, dramatic color grading' },
+  { zh: '精品時尚封面風', en: 'luxury fashion magazine cover, polished styling, premium composition' },
+  { zh: '高級閨房寫真風', en: 'fine-art boudoir photography, elegant shadows, restrained sensuality' },
+  { zh: '古典油畫寫實風', en: 'classic oil painting realism, soft brush texture, museum portrait lighting' },
+  { zh: '巴洛克肖像風', en: 'baroque-inspired portrait, rich contrast, ornate visual atmosphere' },
+  { zh: '新黑色電影風', en: 'neo-noir photography, deep shadows, neon rim light, moody tension' },
+  { zh: '柔和粉彩插畫風', en: 'soft pastel illustration, dreamy colors, delicate linework' },
+  { zh: '日系動畫主視覺風', en: 'anime key visual style, clean rendering, expressive eyes, cinematic background' },
+  { zh: '漫畫封面風', en: 'manga cover illustration, sharp line art, dramatic screentone depth' },
+  { zh: '半寫實數位繪畫風', en: 'semi-realistic digital painting, painterly edges, detailed anatomy' },
+  { zh: '高級伸展台時尚風', en: 'high-fashion runway editorial, bold silhouette, glossy styling' },
+  { zh: '復古底片攝影風', en: 'vintage film photography, subtle grain, warm faded tones' },
+  { zh: '拍立得親密快照風', en: 'polaroid-inspired intimate snapshot, soft flash, nostalgic mood' },
+  { zh: '超現實夢境藝術風', en: 'surreal dreamscape art, symbolic props, floating atmosphere' },
+  { zh: '賽博龐克霓虹風', en: 'cyberpunk neon illustration, reflective surfaces, futuristic palette' },
+  { zh: '黑暗哥德浪漫風', en: 'dark gothic romance, velvet shadows, silver highlights, dramatic styling' },
+  { zh: '極簡棚拍肖像風', en: 'minimalist studio portrait, clean backdrop, precise body lines' },
+  { zh: '浪漫水彩風', en: 'romantic watercolor wash, translucent layers, gentle color bleeding' },
+  { zh: '新藝術海報風', en: 'Art Nouveau poster style, flowing ornamental lines, elegant framing' },
+  { zh: '裝飾藝術奢華風', en: 'Art Deco glamour, geometric framing, gold accents, sleek luxury' },
+  { zh: '文藝復興肖像氛圍', en: 'Renaissance portrait mood, balanced composition, soft sfumato lighting' },
+  { zh: '印象派光影研究風', en: 'impressionist light study, visible strokes, luminous color vibration' },
+  { zh: '高細節 3D 渲染風', en: 'hyper-detailed 3D render, cinematic materials, realistic fabric simulation' },
+  { zh: '柔焦美妝廣告風', en: 'soft glam beauty campaign, luminous makeup, creamy highlights' },
+  { zh: '黑白時尚攝影風', en: 'editorial black-and-white photography, sculptural contrast, timeless mood' },
+  { zh: '高亮柔白棚拍風', en: 'high-key angelic studio style, bright airy tones, soft exposure' },
+  { zh: '低調暗背景戲劇肖像風', en: 'low-key dramatic portrait, black background, focused rim lighting' },
+  { zh: '韓系 Webtoon 插畫風', en: 'Korean webtoon illustration, smooth shading, stylish character design' },
+  { zh: '日系視覺小說 CG 風', en: 'Japanese visual novel CG style, polished lighting, emotional framing' },
+  { zh: '奇幻角色設計風', en: 'fantasy character art, ornate costume details, magical ambience' },
+  { zh: '神話女神插畫風', en: 'mythic goddess illustration, radiant aura, heroic scale' },
+  { zh: '精品香水廣告風', en: 'luxury perfume advertisement, sensual elegance, glossy product-like finish' },
+  { zh: '音樂錄影帶畫面風', en: 'music video frame, dynamic colored lights, performance energy' },
+  { zh: '時裝型錄攝影風', en: 'fashion lookbook photography, clean poses, precise garment detail' },
+  { zh: '建築室內雜誌風', en: 'architectural interior editorial, strong lines, refined spatial composition' },
+  { zh: '浪漫燭光寫實風', en: 'romantic candlelit realism, warm glow, textured shadows' },
+  { zh: '雨夜電影攝影風', en: 'rainy-night cinematic photography, reflections, blue-orange contrast' },
+  { zh: '柔焦魅力攝影風', en: 'soft-focus glamour photography, gentle bloom, polished skin highlights' },
+  { zh: '紀實親密肖像風', en: 'documentary-style intimate portrait, natural framing, believable emotion' },
+  { zh: '空靈奇幻寫實風', en: 'ethereal fantasy realism, mist, glow particles, delicate atmosphere' },
+  { zh: '復古 80 年代霓虹海報風', en: 'retro 1980s neon poster, saturated colors, graphic lighting' },
+  { zh: 'Y2K 亮面數位藝術風', en: 'Y2K glossy digital art, chrome accents, playful luxury' },
+  { zh: '高細節概念美術風', en: 'high-detail concept art, cinematic composition, clear focal hierarchy' },
+  { zh: '高級 AI 肖像風', en: 'premium AI portrait style, crisp details, balanced realism and fantasy' },
+  { zh: '浪漫故事書插畫風', en: 'storybook romantic illustration, warm palette, graceful shapes' },
+  { zh: '單色水墨風', en: 'monochrome ink wash, expressive brushwork, elegant negative space' },
+  { zh: '大理石雕像美學風', en: 'sculptural marble statue aesthetic, smooth forms, gallery lighting' },
+  { zh: '紅毯明星雜誌風', en: 'red-carpet celebrity editorial, confident pose, flash-lit glamour' },
+  { zh: '超乾淨商業渲染風', en: 'ultra-clean commercial render, sharp focus, production-ready prompt style' }
+];
+
+
+const RACE_OPTIONS = [
+  { zh: '人類', en: 'human' },
+  { zh: '精靈族', en: 'elf' },
+  { zh: '暗精靈族', en: 'dark elf' },
+  { zh: '半精靈族', en: 'half-elf' },
+  { zh: '天使族', en: 'angelic race' },
+  { zh: '墮天使族', en: 'fallen angel race' },
+  { zh: '惡魔族', en: 'demon race' },
+  { zh: '魅魔族', en: 'succubus-inspired fantasy race' },
+  { zh: '吸血族', en: 'vampire race' },
+  { zh: '狼人族', en: 'werewolf race' },
+  { zh: '狐族', en: 'fox race' },
+  { zh: '貓族', en: 'cat race' },
+  { zh: '兔族', en: 'rabbit race' },
+  { zh: '龍族', en: 'dragon race' },
+  { zh: '半龍族', en: 'half-dragon race' },
+  { zh: '蛇族', en: 'serpent race' },
+  { zh: '海妖族', en: 'siren race' },
+  { zh: '人魚族', en: 'mermaid race' },
+  { zh: '妖精族', en: 'fairy race' },
+  { zh: '花妖族', en: 'flower spirit race' },
+  { zh: '樹靈族', en: 'tree spirit race' },
+  { zh: '雪女族', en: 'snow spirit race' },
+  { zh: '鬼族', en: 'oni race' },
+  { zh: '靈體族', en: 'spirit race' },
+  { zh: '女神族', en: 'goddess race' },
+  { zh: '半神族', en: 'demigod race' },
+  { zh: '機械人族', en: 'android race' },
+  { zh: '仿生人族', en: 'bionic human race' },
+  { zh: '賽博改造人', en: 'cybernetic enhanced human' },
+  { zh: '外星族', en: 'alien race' },
+  { zh: '星靈族', en: 'astral spirit race' },
+  { zh: '月影族', en: 'moon shadow race' },
+  { zh: '太陽族', en: 'sun-born race' },
+  { zh: '水晶族', en: 'crystal race' },
+  { zh: '火焰族', en: 'fire elemental race' },
+  { zh: '冰霜族', en: 'frost elemental race' },
+  { zh: '雷電族', en: 'thunder elemental race' },
+  { zh: '風行族', en: 'wind runner race' },
+  { zh: '沙漠族', en: 'desert tribe fantasy race' },
+  { zh: '森林族', en: 'forest tribe fantasy race' },
+  { zh: '深海族', en: 'deep sea race' },
+  { zh: '翼人族', en: 'winged humanoid race' },
+  { zh: '獸人族', en: 'orc fantasy race' },
+  { zh: '豹族', en: 'leopard race' },
+  { zh: '鹿角族', en: 'antlered fantasy race' },
+  { zh: '鳥羽族', en: 'feathered bird race' },
+  { zh: '幽影族', en: 'shadow race' },
+  { zh: '幻術族', en: 'illusionist race' },
+  { zh: '魔法師族', en: 'mage race' },
+  { zh: '皇家貴族', en: 'royal noble race' }
+];
+
+const EXPRESSION_OPTIONS = [
+  { zh: '溫柔微笑', en: 'gentle smile' },
+  { zh: '自信淺笑', en: 'confident slight smile' },
+  { zh: '害羞低頭', en: 'shy downward gaze' },
+  { zh: '迷離眼神', en: 'dreamy unfocused gaze' },
+  { zh: '冷豔凝視', en: 'cool elegant stare' },
+  { zh: '挑逗眨眼', en: 'playful wink' },
+  { zh: '慵懶半睜眼', en: 'lazy half-lidded eyes' },
+  { zh: '微醺紅暈', en: 'slightly tipsy blush' },
+  { zh: '驚喜睜眼', en: 'surprised wide eyes' },
+  { zh: '專注凝望', en: 'focused gaze' },
+  { zh: '咬唇表情', en: 'soft lip-biting expression' },
+  { zh: '輕吐氣表情', en: 'soft exhale expression' },
+  { zh: '甜美笑容', en: 'sweet smile' },
+  { zh: '壓抑笑意', en: 'suppressed smile' },
+  { zh: '高傲抬眼', en: 'proud upward gaze' },
+  { zh: '無辜眼神', en: 'innocent gaze' },
+  { zh: '狡黠眼神', en: 'mischievous gaze' },
+  { zh: '深情注視', en: 'affectionate stare' },
+  { zh: '放鬆閉眼', en: 'relaxed closed eyes' },
+  { zh: '側臉回眸', en: 'side glance over shoulder' },
+  { zh: '微張唇表情', en: 'slightly parted lips' },
+  { zh: '安靜沉思', en: 'quiet contemplative expression' },
+  { zh: '誘惑微笑', en: 'seductive smile' },
+  { zh: '柔軟撒嬌', en: 'soft affectionate expression' },
+  { zh: '堅定直視', en: 'steady direct gaze' },
+  { zh: '輕皺眉', en: 'subtle furrowed brows' },
+  { zh: '臉頰泛紅', en: 'flushed cheeks' },
+  { zh: '呼吸急促感', en: 'breathless expression' },
+  { zh: '愉悅放鬆', en: 'pleased relaxed expression' },
+  { zh: '期待眼神', en: 'expectant eyes' },
+  { zh: '俏皮吐舌', en: 'playful tongue-out expression' },
+  { zh: '女王般冷笑', en: 'queenly smirk' },
+  { zh: '柔和憐愛', en: 'tender caring expression' },
+  { zh: '沉醉表情', en: 'entranced expression' },
+  { zh: '克制忍耐', en: 'restrained patient expression' },
+  { zh: '眼角帶笑', en: 'smiling eyes' },
+  { zh: '楚楚可憐', en: 'delicate vulnerable gaze' },
+  { zh: '壞笑表情', en: 'naughty grin' },
+  { zh: '平靜凝視', en: 'calm gaze' },
+  { zh: '驕傲微笑', en: 'proud smile' },
+  { zh: '低聲呢喃感', en: 'whispering expression' },
+  { zh: '感動濕潤眼眶', en: 'moved watery eyes' },
+  { zh: '神秘微笑', en: 'mysterious smile' },
+  { zh: '放空眼神', en: 'distant blank gaze' },
+  { zh: '親密依戀', en: 'intimate attached expression' },
+  { zh: '戲劇化凝視', en: 'dramatic stare' },
+  { zh: '柔弱喘息感', en: 'soft breathy expression' },
+  { zh: '成熟從容', en: 'mature composed expression' },
+  { zh: '羞澀偷看', en: 'shy stolen glance' },
+  { zh: '勝利般微笑', en: 'victorious smile' }
+];
+
+const TIME_POINTS = [
+  { zh: '清晨 5 點，微亮冷色調', en: '5 AM early dawn, faint cool light' },
+  { zh: '早晨 7 點，清新自然光', en: '7 AM morning, fresh natural light' },
+  { zh: '上午 9 點，明亮乾淨光線', en: '9 AM bright clean daylight' },
+  { zh: '上午 11 點，接近正午的高亮感', en: '11 AM near-noon bright light' },
+  { zh: '正午 12 點，強烈白日光', en: '12 PM noon, strong daylight' },
+  { zh: '下午 2 點，穩定日光', en: '2 PM stable afternoon daylight' },
+  { zh: '下午 4 點，光線開始變暖', en: '4 PM late afternoon, warming light' },
+  { zh: '傍晚 5 點，柔和金色光', en: '5 PM golden-hour soft light' },
+  { zh: '黃昏 6 點，橘金色調', en: '6 PM dusk, orange-gold tones' },
+  { zh: '日落後 7 點，藍紫暮色', en: '7 PM after sunset, blue-purple twilight' },
+  { zh: '晚上 8 點，室內暖光為主', en: '8 PM evening, warm indoor light' },
+  { zh: '晚上 9 點，夜色與柔光混合', en: '9 PM night mood with soft light' },
+  { zh: '晚上 10 點，低照度夜間氛圍', en: '10 PM low-light night atmosphere' },
+  { zh: '深夜 11 點，安靜暗色調', en: '11 PM quiet dark tones' },
+  { zh: '午夜 12 點，高反差夜景感', en: '12 AM midnight, high-contrast night mood' },
+  { zh: '凌晨 1 點，私密低光環境', en: '1 AM intimate low-light setting' },
+  { zh: '凌晨 2 點，深夜冷色調', en: '2 AM deep-night cool tones' },
+  { zh: '凌晨 3 點，極低光與陰影', en: '3 AM very low light and shadows' },
+  { zh: '凌晨 4 點，黎明前暗藍色', en: '4 AM pre-dawn dark blue tone' },
+  { zh: '無指定時間，讓畫面依整體風格決定', en: 'unspecified time, let the overall style define the timing' }
   '薄紗晨光從窗邊斜切進來，勾勒柔亮肌膚邊緣',
   '低色溫燭光在陰影中跳動，形成親密的金色輪廓',
   '霓虹粉紫反射在皮膚與布料上，帶有夜城迷幻感',
@@ -206,6 +432,19 @@ function validateOptionalConditions(input) {
   return { ok: true, conditions };
 }
 
+function getPresetOption(list, value) {
+  const normalized = normalizeInput(value);
+  return list.find((option) => option.zh === normalized || option.en === normalized) || list[0];
+}
+
+function getPresetZh(list, value) {
+  return getPresetOption(list, value).zh;
+}
+
+function getPresetEn(list, value) {
+  return getPresetOption(list, value).en;
+}
+
 function getOptionValue(groupName, value) {
   const group = CUSTOMIZATION_OPTIONS[groupName] || [];
   const normalized = normalizeInput(value);
@@ -232,6 +471,18 @@ function rewritePrompt(input, options = {}) {
   }
 
   const intensity = INTENSITY_WORDS[options.intensity] ? options.intensity : 'medium';
+  const lightingZh = getPresetZh(LIGHTING_DESCRIPTIONS, options.lighting);
+  const lightingEn = getPresetEn(LIGHTING_DESCRIPTIONS, options.lighting);
+  const cameraZh = getPresetZh(CAMERA_ANGLES, options.camera);
+  const cameraEn = getPresetEn(CAMERA_ANGLES, options.camera);
+  const artStyleZh = getPresetZh(ART_STYLES, options.artStyle);
+  const artStyleEn = getPresetEn(ART_STYLES, options.artStyle);
+  const raceZh = getPresetZh(RACE_OPTIONS, options.race);
+  const raceEn = getPresetEn(RACE_OPTIONS, options.race);
+  const expressionZh = getPresetZh(EXPRESSION_OPTIONS, options.expression);
+  const expressionEn = getPresetEn(EXPRESSION_OPTIONS, options.expression);
+  const timePointZh = getPresetZh(TIME_POINTS, options.timePoint);
+  const timePointEn = getPresetEn(TIME_POINTS, options.timePoint);
   const lighting = LIGHTING_DESCRIPTIONS.includes(options.lighting) ? options.lighting : LIGHTING_DESCRIPTIONS[0];
   const camera = CAMERA_ANGLES.includes(options.camera) ? options.camera : CAMERA_ANGLES[0];
   const artStyle = ART_STYLES.includes(options.artStyle) ? options.artStyle : ART_STYLES[0];
@@ -247,6 +498,59 @@ function rewritePrompt(input, options = {}) {
     rewritten = rewritten.replace(pattern, replacement);
   }
 
+  const chinesePrompt = [
+    `主題／動作：${rewritten}`,
+    `種族：${raceZh}`,
+    `表情：${expressionZh}`,
+    `時間點：${timePointZh}`,
+    `臉蛋：${face}`,
+    `服裝：${outfit}`,
+    `人數／構圖：${count}`,
+    `場景：${scene}`,
+    `光感：${lightingZh}`,
+    `鏡位：${cameraZh}`,
+    `畫風：${artStyleZh}`,
+    `體位／姿勢：${pose}`,
+    `氛圍：${INTENSITY_WORDS[intensity]}`,
+    '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
+  ];
+
+  if (customConditionValidation.conditions) {
+    chinesePrompt.push(`客製化條件：${customConditionValidation.conditions}`);
+  }
+
+  const englishPrompt = [
+    `subject/action: ${rewritten}`,
+    `race: ${raceEn}`,
+    `facial expression: ${expressionEn}`,
+    `time point: ${timePointEn}`,
+    `face: ${face}`,
+    `outfit: ${outfit}`,
+    `character count/composition: ${count}`,
+    `scene: ${scene}`,
+    `lighting: ${lightingEn}`,
+    `camera angle: ${cameraEn}`,
+    `art style: ${artStyleEn}`,
+    `body pose/posture: ${pose}`,
+    `tone: ${DEFAULT_STYLE.tone}`,
+    `intensity: ${INTENSITY_WORDS[intensity]}`,
+    `quality: ${DEFAULT_STYLE.quality}`,
+    `safety: ${DEFAULT_STYLE.safety}`
+  ];
+
+  if (customConditionValidation.conditions) {
+    englishPrompt.push(`custom conditions: ${customConditionValidation.conditions}`);
+  }
+
+  return {
+    ok: true,
+    prompt: [
+      '【中文確認提示詞】',
+      chinesePrompt.join('，'),
+      '',
+      '【English generation prompt】',
+      englishPrompt.join(', ')
+    ].join('\n'),
   return {
     ok: true,
     prompt: [
@@ -278,6 +582,9 @@ if (typeof module !== 'undefined') {
     LIGHTING_DESCRIPTIONS,
     CAMERA_ANGLES,
     ART_STYLES,
+    RACE_OPTIONS,
+    EXPRESSION_OPTIONS,
+    TIME_POINTS,
     CUSTOMIZATION_OPTIONS
   };
 }
