@@ -11,13 +11,7 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 
 ## Run locally
 
-Open `index.html` in a browser, or run the included static server:
-
-```bash
-npm run dev
-```
-
-By default the app listens on `0.0.0.0:3000`. In a local terminal, open `http://localhost:3000/`. To choose another port, run `PORT=8080 npm run dev` or `npm run dev -- --port 8080`.
+Open `index.html` in a browser, or serve the directory with any static file server.
 
 ## Test
 
