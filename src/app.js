@@ -30,6 +30,8 @@ function populateSelect(select, options) {
     const label = typeof optionText === 'string' ? optionText : optionText.zh;
     option.value = label;
     option.textContent = label;
+    option.value = optionText;
+    option.textContent = optionText;
     fragment.append(option);
   }
 

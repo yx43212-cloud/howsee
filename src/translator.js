@@ -255,6 +255,102 @@ const TIME_POINTS = [
   { zh: '凌晨 3 點，極低光與陰影', en: '3 AM very low light and shadows' },
   { zh: '凌晨 4 點，黎明前暗藍色', en: '4 AM pre-dawn dark blue tone' },
   { zh: '無指定時間，讓畫面依整體風格決定', en: 'unspecified time, let the overall style define the timing' }
+  '薄紗晨光從窗邊斜切進來，勾勒柔亮肌膚邊緣',
+  '低色溫燭光在陰影中跳動，形成親密的金色輪廓',
+  '霓虹粉紫反射在皮膚與布料上，帶有夜城迷幻感',
+  '月光穿過百葉窗形成細長光帶，營造禁忌般的靜謐',
+  '逆光剪影讓身體曲線變成精準的黑金輪廓',
+  '柔焦棚燈包覆人物，呈現高級雜誌封面質感',
+  '濕潤反光地面折射光源，讓畫面更有張力',
+  '暖白床頭燈集中在臉部與肩線，背景自然暗下',
+  '藍色冷光與琥珀暖光交錯，形成電影感雙色對比',
+  '日落橘光灑在窗簾與肌膚上，氣氛慵懶而濃烈',
+  '高反差聚光燈只照亮表情與手部動作',
+  '柔和漫射光消除硬陰影，讓畫面乾淨細膩',
+  '水面反射的波紋光投在牆面，帶出流動的曖昧感',
+  '暗房紅光包住人物輪廓，呈現復古攝影氛圍',
+  '銀白邊緣光切出髮絲與肩頸線條',
+  '窗外城市燈火散成散景，前景人物保持細緻清晰',
+  '柔粉色補光讓臉蛋更甜美，陰影保持輕薄',
+  '舞台煙霧中穿透的光束，製造神秘而隆重的空間感',
+  '黑背景中的單點頂光，強調雕塑般身形與姿態',
+  '晨霧擴散光讓場景像夢境，邊界柔化而迷人'
+];
+
+const CAMERA_ANGLES = [
+  'eye-level shot, natural perspective, balanced portrait framing',
+  'low-angle shot, stronger presence, elongated body lines',
+  'high-angle shot, intimate overview, soft vulnerability',
+  'over-the-shoulder shot, foreground shoulder blur, focused gaze',
+  'close-up shot, face and expression priority, shallow depth of field',
+  'extreme close-up shot, lips, eyes, and fingertips emphasized',
+  'medium shot, upper body gesture and costume details clearly visible',
+  'full-body shot, complete silhouette and pose readable from head to toe',
+  'three-quarter view, face and body turned diagonally for depth',
+  'profile shot, side silhouette and neck line emphasized',
+  'back view with head turned, elegant shoulder and spine line composition',
+  'top-down shot, bed or floor layout visible, graphic composition',
+  'floor-level shot, foreground texture and dramatic perspective',
+  'mirror reflection shot, subject and reflected pose both visible',
+  'doorway framing shot, voyeur-free staged composition through architecture',
+  'wide establishing shot, character integrated with the full scene',
+  'Dutch angle shot, subtle tilt for tension and cinematic unease',
+  'silhouette shot against bright background, readable body outline',
+  'hands-focused insert shot, tactile gesture and fabric detail emphasized',
+  'cinematic two-shot, both adult characters framed clearly with balanced spacing'
+];
+
+const ART_STYLES = [
+  'photorealistic editorial photography, natural skin texture, high-end retouching',
+  'cinematic film still, 35mm lens feel, dramatic color grading',
+  'luxury fashion magazine cover, polished styling, premium composition',
+  'fine-art boudoir photography, elegant shadows, restrained sensuality',
+  'classic oil painting realism, soft brush texture, museum portrait lighting',
+  'baroque-inspired portrait, rich contrast, ornate visual atmosphere',
+  'neo-noir photography, deep shadows, neon rim light, moody tension',
+  'soft pastel illustration, dreamy colors, delicate linework',
+  'anime key visual style, clean rendering, expressive eyes, cinematic background',
+  'manga cover illustration, sharp line art, dramatic screentone depth',
+  'semi-realistic digital painting, painterly edges, detailed anatomy',
+  'high-fashion runway editorial, bold silhouette, glossy styling',
+  'vintage film photography, subtle grain, warm faded tones',
+  'polaroid-inspired intimate snapshot, soft flash, nostalgic mood',
+  'surreal dreamscape art, symbolic props, floating atmosphere',
+  'cyberpunk neon illustration, reflective surfaces, futuristic palette',
+  'dark gothic romance, velvet shadows, silver highlights, dramatic styling',
+  'minimalist studio portrait, clean backdrop, precise body lines',
+  'romantic watercolor wash, translucent layers, gentle color bleeding',
+  'Art Nouveau poster style, flowing ornamental lines, elegant framing',
+  'Art Deco glamour, geometric framing, gold accents, sleek luxury',
+  'Renaissance portrait mood, balanced composition, soft sfumato lighting',
+  'impressionist light study, visible strokes, luminous color vibration',
+  'hyper-detailed 3D render, cinematic materials, realistic fabric simulation',
+  'soft glam beauty campaign, luminous makeup, creamy highlights',
+  'editorial black-and-white photography, sculptural contrast, timeless mood',
+  'high-key angelic studio style, bright airy tones, soft exposure',
+  'low-key dramatic portrait, black background, focused rim lighting',
+  'Korean webtoon illustration, smooth shading, stylish character design',
+  'Japanese visual novel CG style, polished lighting, emotional framing',
+  'fantasy character art, ornate costume details, magical ambience',
+  'mythic goddess illustration, radiant aura, heroic scale',
+  'luxury perfume advertisement, sensual elegance, glossy product-like finish',
+  'music video frame, dynamic colored lights, performance energy',
+  'fashion lookbook photography, clean poses, precise garment detail',
+  'architectural interior editorial, strong lines, refined spatial composition',
+  'romantic candlelit realism, warm glow, textured shadows',
+  'rainy-night cinematic photography, reflections, blue-orange contrast',
+  'soft-focus glamour photography, gentle bloom, polished skin highlights',
+  'documentary-style intimate portrait, natural framing, believable emotion',
+  'ethereal fantasy realism, mist, glow particles, delicate atmosphere',
+  'retro 1980s neon poster, saturated colors, graphic lighting',
+  'Y2K glossy digital art, chrome accents, playful luxury',
+  'high-detail concept art, cinematic composition, clear focal hierarchy',
+  'premium AI portrait style, crisp details, balanced realism and fantasy',
+  'storybook romantic illustration, warm palette, graceful shapes',
+  'monochrome ink wash, expressive brushwork, elegant negative space',
+  'sculptural marble statue aesthetic, smooth forms, gallery lighting',
+  'red-carpet celebrity editorial, confident pose, flash-lit glamour',
+  'ultra-clean commercial render, sharp focus, production-ready prompt style'
 ];
 
 const CUSTOMIZATION_OPTIONS = {
@@ -387,6 +483,9 @@ function rewritePrompt(input, options = {}) {
   const expressionEn = getPresetEn(EXPRESSION_OPTIONS, options.expression);
   const timePointZh = getPresetZh(TIME_POINTS, options.timePoint);
   const timePointEn = getPresetEn(TIME_POINTS, options.timePoint);
+  const lighting = LIGHTING_DESCRIPTIONS.includes(options.lighting) ? options.lighting : LIGHTING_DESCRIPTIONS[0];
+  const camera = CAMERA_ANGLES.includes(options.camera) ? options.camera : CAMERA_ANGLES[0];
+  const artStyle = ART_STYLES.includes(options.artStyle) ? options.artStyle : ART_STYLES[0];
   const face = getOptionValue('faces', options.face) || CUSTOMIZATION_OPTIONS.faces[0];
   const outfit = getOptionValue('outfits', options.outfit) || CUSTOMIZATION_OPTIONS.outfits[0];
   const count = getOptionValue('counts', options.count) || CUSTOMIZATION_OPTIONS.counts[0];
@@ -452,6 +551,24 @@ function rewritePrompt(input, options = {}) {
       '【English generation prompt】',
       englishPrompt.join(', ')
     ].join('\n'),
+  return {
+    ok: true,
+    prompt: [
+      `subject/action: ${rewritten}`,
+      `face: ${face}`,
+      `outfit: ${outfit}`,
+      `character count/composition: ${count}`,
+      `scene: ${scene}`,
+      `lighting: ${lighting}`,
+      `camera angle: ${camera}`,
+      `art style: ${artStyle}`,
+      `body pose/posture: ${pose}`,
+      `tone: ${DEFAULT_STYLE.tone}`,
+      `intensity: ${INTENSITY_WORDS[intensity]}`,
+      `quality: ${DEFAULT_STYLE.quality}`,
+      `safety: ${DEFAULT_STYLE.safety}`,
+      customConditionValidation.conditions ? `custom conditions: ${customConditionValidation.conditions}` : ''
+    ].filter(Boolean).join(', '),
     reason: ''
   };
 }
