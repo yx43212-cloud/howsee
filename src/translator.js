@@ -255,102 +255,6 @@ const TIME_POINTS = [
   { zh: '凌晨 3 點，極低光與陰影', en: '3 AM very low light and shadows' },
   { zh: '凌晨 4 點，黎明前暗藍色', en: '4 AM pre-dawn dark blue tone' },
   { zh: '無指定時間，讓畫面依整體風格決定', en: 'unspecified time, let the overall style define the timing' }
-  '薄紗晨光從窗邊斜切進來，勾勒柔亮肌膚邊緣',
-  '低色溫燭光在陰影中跳動，形成親密的金色輪廓',
-  '霓虹粉紫反射在皮膚與布料上，帶有夜城迷幻感',
-  '月光穿過百葉窗形成細長光帶，營造禁忌般的靜謐',
-  '逆光剪影讓身體曲線變成精準的黑金輪廓',
-  '柔焦棚燈包覆人物，呈現高級雜誌封面質感',
-  '濕潤反光地面折射光源，讓畫面更有張力',
-  '暖白床頭燈集中在臉部與肩線，背景自然暗下',
-  '藍色冷光與琥珀暖光交錯，形成電影感雙色對比',
-  '日落橘光灑在窗簾與肌膚上，氣氛慵懶而濃烈',
-  '高反差聚光燈只照亮表情與手部動作',
-  '柔和漫射光消除硬陰影，讓畫面乾淨細膩',
-  '水面反射的波紋光投在牆面，帶出流動的曖昧感',
-  '暗房紅光包住人物輪廓，呈現復古攝影氛圍',
-  '銀白邊緣光切出髮絲與肩頸線條',
-  '窗外城市燈火散成散景，前景人物保持細緻清晰',
-  '柔粉色補光讓臉蛋更甜美，陰影保持輕薄',
-  '舞台煙霧中穿透的光束，製造神秘而隆重的空間感',
-  '黑背景中的單點頂光，強調雕塑般身形與姿態',
-  '晨霧擴散光讓場景像夢境，邊界柔化而迷人'
-];
-
-const CAMERA_ANGLES = [
-  'eye-level shot, natural perspective, balanced portrait framing',
-  'low-angle shot, stronger presence, elongated body lines',
-  'high-angle shot, intimate overview, soft vulnerability',
-  'over-the-shoulder shot, foreground shoulder blur, focused gaze',
-  'close-up shot, face and expression priority, shallow depth of field',
-  'extreme close-up shot, lips, eyes, and fingertips emphasized',
-  'medium shot, upper body gesture and costume details clearly visible',
-  'full-body shot, complete silhouette and pose readable from head to toe',
-  'three-quarter view, face and body turned diagonally for depth',
-  'profile shot, side silhouette and neck line emphasized',
-  'back view with head turned, elegant shoulder and spine line composition',
-  'top-down shot, bed or floor layout visible, graphic composition',
-  'floor-level shot, foreground texture and dramatic perspective',
-  'mirror reflection shot, subject and reflected pose both visible',
-  'doorway framing shot, voyeur-free staged composition through architecture',
-  'wide establishing shot, character integrated with the full scene',
-  'Dutch angle shot, subtle tilt for tension and cinematic unease',
-  'silhouette shot against bright background, readable body outline',
-  'hands-focused insert shot, tactile gesture and fabric detail emphasized',
-  'cinematic two-shot, both adult characters framed clearly with balanced spacing'
-];
-
-const ART_STYLES = [
-  'photorealistic editorial photography, natural skin texture, high-end retouching',
-  'cinematic film still, 35mm lens feel, dramatic color grading',
-  'luxury fashion magazine cover, polished styling, premium composition',
-  'fine-art boudoir photography, elegant shadows, restrained sensuality',
-  'classic oil painting realism, soft brush texture, museum portrait lighting',
-  'baroque-inspired portrait, rich contrast, ornate visual atmosphere',
-  'neo-noir photography, deep shadows, neon rim light, moody tension',
-  'soft pastel illustration, dreamy colors, delicate linework',
-  'anime key visual style, clean rendering, expressive eyes, cinematic background',
-  'manga cover illustration, sharp line art, dramatic screentone depth',
-  'semi-realistic digital painting, painterly edges, detailed anatomy',
-  'high-fashion runway editorial, bold silhouette, glossy styling',
-  'vintage film photography, subtle grain, warm faded tones',
-  'polaroid-inspired intimate snapshot, soft flash, nostalgic mood',
-  'surreal dreamscape art, symbolic props, floating atmosphere',
-  'cyberpunk neon illustration, reflective surfaces, futuristic palette',
-  'dark gothic romance, velvet shadows, silver highlights, dramatic styling',
-  'minimalist studio portrait, clean backdrop, precise body lines',
-  'romantic watercolor wash, translucent layers, gentle color bleeding',
-  'Art Nouveau poster style, flowing ornamental lines, elegant framing',
-  'Art Deco glamour, geometric framing, gold accents, sleek luxury',
-  'Renaissance portrait mood, balanced composition, soft sfumato lighting',
-  'impressionist light study, visible strokes, luminous color vibration',
-  'hyper-detailed 3D render, cinematic materials, realistic fabric simulation',
-  'soft glam beauty campaign, luminous makeup, creamy highlights',
-  'editorial black-and-white photography, sculptural contrast, timeless mood',
-  'high-key angelic studio style, bright airy tones, soft exposure',
-  'low-key dramatic portrait, black background, focused rim lighting',
-  'Korean webtoon illustration, smooth shading, stylish character design',
-  'Japanese visual novel CG style, polished lighting, emotional framing',
-  'fantasy character art, ornate costume details, magical ambience',
-  'mythic goddess illustration, radiant aura, heroic scale',
-  'luxury perfume advertisement, sensual elegance, glossy product-like finish',
-  'music video frame, dynamic colored lights, performance energy',
-  'fashion lookbook photography, clean poses, precise garment detail',
-  'architectural interior editorial, strong lines, refined spatial composition',
-  'romantic candlelit realism, warm glow, textured shadows',
-  'rainy-night cinematic photography, reflections, blue-orange contrast',
-  'soft-focus glamour photography, gentle bloom, polished skin highlights',
-  'documentary-style intimate portrait, natural framing, believable emotion',
-  'ethereal fantasy realism, mist, glow particles, delicate atmosphere',
-  'retro 1980s neon poster, saturated colors, graphic lighting',
-  'Y2K glossy digital art, chrome accents, playful luxury',
-  'high-detail concept art, cinematic composition, clear focal hierarchy',
-  'premium AI portrait style, crisp details, balanced realism and fantasy',
-  'storybook romantic illustration, warm palette, graceful shapes',
-  'monochrome ink wash, expressive brushwork, elegant negative space',
-  'sculptural marble statue aesthetic, smooth forms, gallery lighting',
-  'red-carpet celebrity editorial, confident pose, flash-lit glamour',
-  'ultra-clean commercial render, sharp focus, production-ready prompt style'
 ];
 
 const CUSTOMIZATION_OPTIONS = {
@@ -363,12 +267,31 @@ const CUSTOMIZATION_OPTIONS = {
     '女王感上挑眼線', '藝術模特般骨相清晰', '微醺紅暈與迷離眼神', '乾淨裸妝與高級膚質', '電影特寫級細膩表情'
   ],
   outfits: [
-    '絲質吊帶睡裙', '高級訂製黑色禮服', '半透明薄紗外罩', '白襯衫與鬆開的領口', '緞面長袍與腰帶',
-    '皮革束腰與長手套', '蕾絲內搭與西裝外套', '復古旗袍剪裁', '舞台感亮片連身裝', '極簡針織貼身洋裝',
-    '浴袍與濕髮造型', '絲巾與珠寶點綴', '哥德黑紗與銀飾', '未來感金屬光澤服裝', '希臘女神風垂墜布料',
-    '高腰長裙與開衩設計', '絲絨披肩與裸肩輪廓', '優雅套裝搭配高跟鞋', '輕盈薄紗裙擺', '暗紅緞面禮服',
-    '珍珠肩帶與細緻刺繡', '透明雨衣疊穿造型', '海邊度假罩衫', '黑白撞色時裝', '寬鬆男友襯衫',
-    '芭蕾緞帶與柔軟針織', '金色鏈飾與簡潔布料', '復古睡袍與羽毛拖鞋', '深色制服感套裝但非校園', '藝術攝影用身體布幔'
+    '絲質吊帶睡裙', '高級訂製黑色禮服', '半透明薄紗外罩', '白襯衫與鬆開的領口',
+    '緞面長袍與腰帶', '皮革束腰與長手套', '蕾絲內搭與西裝外套', '復古旗袍剪裁',
+    '舞台感亮片連身裝', '極簡針織貼身洋裝', '浴袍與濕髮造型', '絲巾與珠寶點綴',
+    '哥德黑紗與銀飾', '未來感金屬光澤服裝', '希臘女神風垂墜布料', '高腰長裙與開衩設計',
+    '絲絨披肩與裸肩輪廓', '優雅套裝搭配高跟鞋', '輕盈薄紗裙擺', '暗紅緞面禮服',
+    '珍珠肩帶與細緻刺繡', '透明雨衣疊穿造型', '海邊度假罩衫', '黑白撞色時裝',
+    '寬鬆男友襯衫', '芭蕾緞帶與柔軟針織', '金色鏈飾與簡潔布料', '復古睡袍與羽毛拖鞋',
+    '深色制服感套裝但非校園', '藝術攝影用身體布幔', '霧面黑色連身裙', '銀色緞面短外套',
+    '珍珠白蕾絲長袍', '酒紅色天鵝絨長裙', '裸色薄紗層次洋裝', '墨綠色絲質襯衫裙',
+    '深藍色開襟針織外套', '香檳金細肩帶禮服', '黑色寬版腰封搭配長裙', '象牙白披肩與貼身洋裝',
+    '金屬扣環皮革短上衣', '玫瑰刺繡薄紗罩衫', '復古宮廷感束身上衣', '高領無袖貼身裙',
+    '單肩垂墜長禮服', '緞帶綁結胸前造型', '大露背緞面禮服', '透明網紗長袖上衣',
+    '短版西裝外套與窄裙', '絲質睡袍搭配珠寶腰鏈', '黑色長版風衣半披造型', '白色長版襯衫與腰封',
+    '孔雀藍亮面連身裙', '淡粉色羽毛披肩', '金色薄紗披掛造型', '銀灰色西裝背心套裝',
+    '黑色蕾絲手套與晚禮服', '復古法式馬甲洋裝', '奶茶色針織連身裙', '琥珀色緞面睡裙',
+    '暗紫色薄紗長裙', '深紅色皮革短外套', '白色絲質吊帶與長褲', '黑色透膚高領罩衫',
+    '珍珠鏈肩飾造型', '水藍色透明披紗', '午夜藍亮片長裙', '奶油白毛絨披肩',
+    '金屬銀未來感連體衣', '古典羅馬式布幔長裙', '黑色開衩長褲套裝', '淡紫色絲絨短袍',
+    '紅色緞帶綁帶上衣', '大地色麂皮披肩', '霧粉色薄紗芭蕾裙', '黑金刺繡晚宴禮服',
+    '亮白緞面套裝', '深灰色皮革裙裝', '金色蛇紋腰帶造型', '孔雀綠長版罩衫',
+    '霧黑緊身高領長裙', '水晶流蘇肩飾', '透明歐根紗外套', '暗紅色絲絨睡袍',
+    '象牙白蕾絲披肩', '金屬紫亮面短裙套裝', '柔粉色緞面浴袍', '黑色緞面手套與高衩裙',
+    '香檳色亮片披肩', '月白色垂墜長袍', '酒紅色蕾絲胸衣外搭西裝', '銀線刺繡旗袍式禮服',
+    '黑色羽毛肩飾禮服', '深藍色絲質睡袍', '珍珠灰薄紗層次長裙', '透明黑紗長袖披肩',
+    '金色刺繡腰鏈洋裝', '銀白色緊身連體衣', '薔薇紅緞面短袍', '夜幕藍薄紗罩裙'
   ],
   counts: [
     '單人主體，鏡頭聚焦表情與姿態', '雙人合意互動，距離親密但構圖優雅', '三人成人群像，彼此視線形成三角張力', '四人時裝大片式站位', '一位主角與一位背影陪襯',
@@ -389,12 +312,31 @@ const CUSTOMIZATION_OPTIONS = {
     '地面側躺構圖，布料鋪展成視覺引導線', '沙發扶手上倚坐，腿部斜向畫面角落', '床幔間探身姿勢，前景薄紗柔化輪廓', '站姿抬手觸碰耳環或髮飾，臉部精緻清楚', '雙人慢舞般貼近，手扶肩背與腰側，姿態優雅'
   ],
   scenes: [
-    '高樓落地窗夜景套房', '復古歐式臥室', '極簡白色攝影棚', '霓虹酒吧角落', '雨夜車窗旁',
-    '私人美術館展廳', '天鵝絨窗簾舞台', '海邊玻璃屋', '溫泉旅館房間', '奢華飯店浴室',
-    '燭光餐桌後的昏暗房間', '大型圓床與薄紗帳幔', '城市頂樓露台', '古典柱廊與長階', '暗紅色地下爵士酒吧',
-    '黑色背景時尚攝影棚', '晨光灑入的公寓臥室', '大理石浴池與霧氣', '金色宮殿風內室', '未來感賽博套房',
-    '法式老宅書房', '私人更衣間與落地鏡', '深色木質酒窖', '玫瑰花瓣散落的房間', '雪夜壁爐旁',
-    '熱帶度假別墅', '藝術家工作室', '豪華郵輪艙房', '月光花園涼亭', '紅毯後台休息室'
+    '高樓落地窗夜景套房', '復古歐式臥室', '極簡白色攝影棚', '霓虹酒吧角落',
+    '雨夜車窗旁', '私人美術館展廳', '天鵝絨窗簾舞台', '海邊玻璃屋',
+    '溫泉旅館房間', '奢華飯店浴室', '燭光餐桌後的昏暗房間', '大型圓床與薄紗帳幔',
+    '城市頂樓露台', '古典柱廊與長階', '暗紅色地下爵士酒吧', '黑色背景時尚攝影棚',
+    '晨光灑入的公寓臥室', '大理石浴池與霧氣', '金色宮殿風內室', '未來感賽博套房',
+    '法式老宅書房', '私人更衣間與落地鏡', '深色木質酒窖', '玫瑰花瓣散落的房間',
+    '雪夜壁爐旁', '熱帶度假別墅', '藝術家工作室', '豪華郵輪艙房',
+    '月光花園涼亭', '紅毯後台休息室', '高級飯店總統套房', '城市夜景陽台',
+    '復古唱片房', '黑膠音樂酒廊', '私人攝影暗房', '香氛蠟燭臥室',
+    '玻璃帷幕辦公室夜景', '摩登 loft 公寓', '高級衣帽間', '古董鏡牆房間',
+    '絲絨沙發會客室', '白色大理石走廊', '金色電梯廳', '私人鋼琴房',
+    '歐式陽光溫室', '雨聲環繞的屋簷下', '湖畔木屋室內', '沙漠帳篷豪華房',
+    '私人泳池旁', '海景露台躺椅區', '藍調燈光錄音室', '黑色天幕攝影棚',
+    '紅色絲絨劇院包廂', '古典圖書館角落', '現代藝術裝置空間', '午夜城市天橋',
+    '霧面玻璃淋浴間', '日式旅館榻榻米房', '和風屏風臥室', '竹林旁溫泉小屋',
+    '巴黎老公寓陽台', '紐約高樓公寓客廳', '地中海白牆房間', '摩洛哥拱門房間',
+    '威尼斯鏡面沙龍', '皇家宮殿更衣室', '銀色未來實驗室', '星艦觀景艙',
+    '月面基地休息室', '賽博霓虹街景室內', '粉色霓虹化妝間', '暗紫色夜店 VIP 包廂',
+    '水晶吊燈宴會廳', '私人花園玻璃亭', '玫瑰溫室長廊', '秋日壁爐客廳',
+    '夏日海風臥室', '春日花瓣白房間', '冬夜毛毯沙發區', '午後陽光窗邊床',
+    '黑白棋盤地板房間', '大面積落地鏡舞蹈室', '高級健身房休息區', '私人桑拿房外間',
+    '精品試衣間', '奢華化妝台前', '古典油畫牆客廳', '深色皮革書房',
+    '現代簡約浴室', '金屬質感攝影棚', '柔粉色甜點店包廂', '夜晚雨窗咖啡館',
+    '空中花園休息室', '山景度假木屋', '玻璃天井長廊', '私人電影院沙發區',
+    '復古旅館走廊', '高級香水展示室', '白色帷幕婚禮後台', '黑金主題派對房間'
   ]
 };
 
@@ -483,9 +425,6 @@ function rewritePrompt(input, options = {}) {
   const expressionEn = getPresetEn(EXPRESSION_OPTIONS, options.expression);
   const timePointZh = getPresetZh(TIME_POINTS, options.timePoint);
   const timePointEn = getPresetEn(TIME_POINTS, options.timePoint);
-  const lighting = LIGHTING_DESCRIPTIONS.includes(options.lighting) ? options.lighting : LIGHTING_DESCRIPTIONS[0];
-  const camera = CAMERA_ANGLES.includes(options.camera) ? options.camera : CAMERA_ANGLES[0];
-  const artStyle = ART_STYLES.includes(options.artStyle) ? options.artStyle : ART_STYLES[0];
   const face = getOptionValue('faces', options.face) || CUSTOMIZATION_OPTIONS.faces[0];
   const outfit = getOptionValue('outfits', options.outfit) || CUSTOMIZATION_OPTIONS.outfits[0];
   const count = getOptionValue('counts', options.count) || CUSTOMIZATION_OPTIONS.counts[0];
@@ -551,24 +490,6 @@ function rewritePrompt(input, options = {}) {
       '【English generation prompt】',
       englishPrompt.join(', ')
     ].join('\n'),
-  return {
-    ok: true,
-    prompt: [
-      `subject/action: ${rewritten}`,
-      `face: ${face}`,
-      `outfit: ${outfit}`,
-      `character count/composition: ${count}`,
-      `scene: ${scene}`,
-      `lighting: ${lighting}`,
-      `camera angle: ${camera}`,
-      `art style: ${artStyle}`,
-      `body pose/posture: ${pose}`,
-      `tone: ${DEFAULT_STYLE.tone}`,
-      `intensity: ${INTENSITY_WORDS[intensity]}`,
-      `quality: ${DEFAULT_STYLE.quality}`,
-      `safety: ${DEFAULT_STYLE.safety}`,
-      customConditionValidation.conditions ? `custom conditions: ${customConditionValidation.conditions}` : ''
-    ].filter(Boolean).join(', '),
     reason: ''
   };
 }

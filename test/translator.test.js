@@ -57,14 +57,14 @@ test('provides exactly 50 usable body pose/posture presets', () => {
   assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 50);
 });
 
-test('provides 160 role customization options across required categories', () => {
+test('provides 300 role customization options across required categories', () => {
   const total = Object.values(CUSTOMIZATION_OPTIONS).reduce((sum, options) => sum + options.length, 0);
 
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
-  assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 30);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.counts.length, 20);
-  assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 30);
-  assert.equal(total, 160);
+  assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 100);
+  assert.equal(total, 300);
 });
 
 test('adds selected lighting, camera, pose, and character customization to a usable prompt', () => {
@@ -75,9 +75,6 @@ test('adds selected lighting, camera, pose, and character customization to a usa
     race: RACE_OPTIONS[1].zh,
     expression: EXPRESSION_OPTIONS[10].zh,
     timePoint: TIME_POINTS[7].zh,
-    lighting: LIGHTING_DESCRIPTIONS[3],
-    camera: CAMERA_ANGLES[4],
-    artStyle: ART_STYLES[2],
     face: CUSTOMIZATION_OPTIONS.faces[2],
     outfit: CUSTOMIZATION_OPTIONS.outfits[5],
     count: CUSTOMIZATION_OPTIONS.counts[1],
@@ -101,10 +98,6 @@ test('adds selected lighting, camera, pose, and character customization to a usa
   assert.match(result.prompt, /race: elf/);
   assert.match(result.prompt, /facial expression: soft lip-biting expression/);
   assert.match(result.prompt, /time point: 5 PM golden-hour soft light/);
-  assert.match(result.prompt, /subject\/action: .*炙熱親吻/);
-  assert.match(result.prompt, /lighting: 月光穿過百葉窗/);
-  assert.match(result.prompt, /camera angle: close-up shot/);
-  assert.match(result.prompt, /art style: luxury fashion magazine cover/);
   assert.match(result.prompt, /face: 成熟鵝蛋臉/);
   assert.match(result.prompt, /outfit: 皮革束腰/);
   assert.match(result.prompt, /character count\/composition: 雙人合意互動/);

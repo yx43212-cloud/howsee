@@ -13,7 +13,6 @@
         <h1>好想瑟瑟 Prompt Rewriter</h1>
         <p>
           將直白成人提示詞轉成影像生成器更容易理解的情慾氛圍描述，介面與確認結果全部先用中文呈現；最後才輸出英文生成提示詞。光感改為純粹的打光方向，並加入 50 種種族與 50 種中文畫風。
-          將直白成人提示詞轉成影像生成器更容易理解的情慾氛圍描述，並用光感、鏡位、畫風、體位／姿勢與可插入的客製化條件維持原意，產出可直接使用的提示詞。
         </p>
       </section>
 
@@ -55,8 +54,7 @@
         <div class="section-heading compact">
           <p class="section-kicker">Step 02</p>
           <h2>角色客製化安排</h2>
-          <p>種族 50 種、表情 50 種、時間點 20 種；臉蛋、服裝、人數、場景與體位／姿勢共 160 種可選安排。全程中文確認，最後才產生英文提示詞。</p>
-          <p>臉蛋、服裝、人數、場景與體位／姿勢共 160 種可選安排；另外提供 50 種畫風與一欄可插入的客製化條件。</p>
+          <p>種族 50 種、表情 50 種、時間點 20 種；臉蛋、服裝 100 種、人數、場景 100 種與體位／姿勢共 300 種可選安排。全程中文確認，最後才產生英文提示詞。</p>
         </div>
 
         <div class="custom-grid">
@@ -77,7 +75,7 @@
             <select id="face"></select>
           </div>
           <div class="field">
-            <label for="outfit">服裝</label>
+            <label for="outfit">服裝穿搭（100 種）</label>
             <select id="outfit"></select>
           </div>
           <div class="field">
@@ -85,7 +83,7 @@
             <select id="count"></select>
           </div>
           <div class="field">
-            <label for="scene">場景</label>
+            <label for="scene">場景配置（100 種）</label>
             <select id="scene"></select>
           </div>
           <div class="field wide-field">
@@ -104,7 +102,6 @@
         <div class="section-heading">
           <p class="section-kicker">Step 03</p>
           <h2>中文確認＋英文提示詞</h2>
-          <h2>轉譯結果</h2>
         </div>
         <p id="status" class="status">等待輸入。</p>
         <textarea id="resultPrompt" rows="12" readonly></textarea>
