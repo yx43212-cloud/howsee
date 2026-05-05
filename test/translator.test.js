@@ -8,7 +8,6 @@ const {
   ART_STYLES,
   CUSTOMIZATION_OPTIONS
 } = require('../src/translator');
-const { rewritePrompt, validatePrompt } = require('../src/translator');
 
 test('rewrites direct adult wording into safer descriptive prompt language', () => {
   const result = rewritePrompt('脫衣服 親吻', { intensity: 'medium' });
@@ -17,9 +16,6 @@ test('rewrites direct adult wording into safer descriptive prompt language', () 
   assert.match(result.prompt, /subject\/action: .*布料滑落/);
   assert.match(result.prompt, /炙熱親吻/);
   assert.match(result.prompt, /safety: all characters are clearly 18\+/);
-  assert.match(result.prompt, /布料滑落/);
-  assert.match(result.prompt, /炙熱親吻/);
-  assert.match(result.prompt, /consenting adults/);
 });
 
 test('keeps semantic intent for solo intimate prompt without using the original keyword', () => {
@@ -28,7 +24,6 @@ test('keeps semantic intent for solo intimate prompt without using the original 
   assert.equal(result.ok, true);
   assert.match(result.prompt, /私密獨處/);
   assert.match(result.prompt, /intensity: 柔和曖昧/);
-  assert.match(result.prompt, /柔和曖昧/);
 });
 
 test('rejects underage content', () => {
