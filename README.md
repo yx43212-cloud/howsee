@@ -17,7 +17,7 @@ Open `index.html` in a browser, or run the included static server:
 npm run dev
 ```
 
-By default the app listens on `0.0.0.0:8080`, which is compatible with hosted preview/port-forwarding environments. In a local terminal, open `http://localhost:8080/`. To choose another port, run `PORT=3000 npm run dev`.
+By default the app listens on `0.0.0.0:3000`. In a local terminal, open `http://localhost:3000/`. To choose another port, run `PORT=8080 npm run dev` or `npm run dev -- --port 8080`.
 
 ## Test
 
