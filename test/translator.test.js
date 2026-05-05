@@ -5,6 +5,7 @@ const {
   validatePrompt,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
+  ART_STYLES,
   CUSTOMIZATION_OPTIONS
 } = require('../src/translator');
 
@@ -39,9 +40,10 @@ test('rejects non-consensual content', () => {
   assert.match(result.reason, /非合意/);
 });
 
-test('provides exactly 20 lighting and 20 camera-angle descriptions', () => {
+test('provides exactly 20 lighting, 20 camera-angle, and 50 art-style descriptions', () => {
   assert.equal(LIGHTING_DESCRIPTIONS.length, 20);
   assert.equal(CAMERA_ANGLES.length, 20);
+  assert.equal(ART_STYLES.length, 50);
 });
 
 test('provides exactly 50 usable body pose/posture presets', () => {
@@ -62,6 +64,7 @@ test('adds selected lighting, camera, pose, and character customization to a usa
   const result = rewritePrompt('親吻', {
     lighting: LIGHTING_DESCRIPTIONS[3],
     camera: CAMERA_ANGLES[4],
+    artStyle: ART_STYLES[2],
     face: CUSTOMIZATION_OPTIONS.faces[2],
     outfit: CUSTOMIZATION_OPTIONS.outfits[5],
     count: CUSTOMIZATION_OPTIONS.counts[1],
@@ -73,9 +76,29 @@ test('adds selected lighting, camera, pose, and character customization to a usa
   assert.match(result.prompt, /subject\/action: .*炙熱親吻/);
   assert.match(result.prompt, /lighting: 月光穿過百葉窗/);
   assert.match(result.prompt, /camera angle: close-up shot/);
+  assert.match(result.prompt, /art style: luxury fashion magazine cover/);
   assert.match(result.prompt, /face: 成熟鵝蛋臉/);
   assert.match(result.prompt, /outfit: 皮革束腰/);
   assert.match(result.prompt, /character count\/composition: 雙人合意互動/);
   assert.match(result.prompt, /scene: 海邊玻璃屋/);
   assert.match(result.prompt, /body pose\/posture: 雙人一坐一站/);
+});
+
+
+test('appends safe free-form custom conditions to the usable prompt', () => {
+  const result = rewritePrompt('親吻', {
+    customConditions: '85mm lens, pearl accessories, no watermark, clean background'
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.prompt, /custom conditions: 85mm lens, pearl accessories, no watermark, clean background/);
+});
+
+test('rejects unsafe free-form custom conditions', () => {
+  const result = rewritePrompt('親吻', {
+    customConditions: '學生 costume'
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /未成年人/);
 });

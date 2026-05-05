@@ -74,6 +74,59 @@ const CAMERA_ANGLES = [
   'cinematic two-shot, both adult characters framed clearly with balanced spacing'
 ];
 
+const ART_STYLES = [
+  'photorealistic editorial photography, natural skin texture, high-end retouching',
+  'cinematic film still, 35mm lens feel, dramatic color grading',
+  'luxury fashion magazine cover, polished styling, premium composition',
+  'fine-art boudoir photography, elegant shadows, restrained sensuality',
+  'classic oil painting realism, soft brush texture, museum portrait lighting',
+  'baroque-inspired portrait, rich contrast, ornate visual atmosphere',
+  'neo-noir photography, deep shadows, neon rim light, moody tension',
+  'soft pastel illustration, dreamy colors, delicate linework',
+  'anime key visual style, clean rendering, expressive eyes, cinematic background',
+  'manga cover illustration, sharp line art, dramatic screentone depth',
+  'semi-realistic digital painting, painterly edges, detailed anatomy',
+  'high-fashion runway editorial, bold silhouette, glossy styling',
+  'vintage film photography, subtle grain, warm faded tones',
+  'polaroid-inspired intimate snapshot, soft flash, nostalgic mood',
+  'surreal dreamscape art, symbolic props, floating atmosphere',
+  'cyberpunk neon illustration, reflective surfaces, futuristic palette',
+  'dark gothic romance, velvet shadows, silver highlights, dramatic styling',
+  'minimalist studio portrait, clean backdrop, precise body lines',
+  'romantic watercolor wash, translucent layers, gentle color bleeding',
+  'Art Nouveau poster style, flowing ornamental lines, elegant framing',
+  'Art Deco glamour, geometric framing, gold accents, sleek luxury',
+  'Renaissance portrait mood, balanced composition, soft sfumato lighting',
+  'impressionist light study, visible strokes, luminous color vibration',
+  'hyper-detailed 3D render, cinematic materials, realistic fabric simulation',
+  'soft glam beauty campaign, luminous makeup, creamy highlights',
+  'editorial black-and-white photography, sculptural contrast, timeless mood',
+  'high-key angelic studio style, bright airy tones, soft exposure',
+  'low-key dramatic portrait, black background, focused rim lighting',
+  'Korean webtoon illustration, smooth shading, stylish character design',
+  'Japanese visual novel CG style, polished lighting, emotional framing',
+  'fantasy character art, ornate costume details, magical ambience',
+  'mythic goddess illustration, radiant aura, heroic scale',
+  'luxury perfume advertisement, sensual elegance, glossy product-like finish',
+  'music video frame, dynamic colored lights, performance energy',
+  'fashion lookbook photography, clean poses, precise garment detail',
+  'architectural interior editorial, strong lines, refined spatial composition',
+  'romantic candlelit realism, warm glow, textured shadows',
+  'rainy-night cinematic photography, reflections, blue-orange contrast',
+  'soft-focus glamour photography, gentle bloom, polished skin highlights',
+  'documentary-style intimate portrait, natural framing, believable emotion',
+  'ethereal fantasy realism, mist, glow particles, delicate atmosphere',
+  'retro 1980s neon poster, saturated colors, graphic lighting',
+  'Y2K glossy digital art, chrome accents, playful luxury',
+  'high-detail concept art, cinematic composition, clear focal hierarchy',
+  'premium AI portrait style, crisp details, balanced realism and fantasy',
+  'storybook romantic illustration, warm palette, graceful shapes',
+  'monochrome ink wash, expressive brushwork, elegant negative space',
+  'sculptural marble statue aesthetic, smooth forms, gallery lighting',
+  'red-carpet celebrity editorial, confident pose, flash-lit glamour',
+  'ultra-clean commercial render, sharp focus, production-ready prompt style'
+];
+
 const CUSTOMIZATION_OPTIONS = {
   faces: [
     '冷豔瓜子臉與銳利眼尾', '甜美圓臉與柔亮臥蠶', '成熟鵝蛋臉與高挺鼻樑', '精緻混血感五官', '貓系眼神與小巧下巴',
@@ -138,6 +191,21 @@ function validatePrompt(input) {
   return { ok: true, prompt };
 }
 
+function validateOptionalConditions(input) {
+  const conditions = normalizeInput(input);
+
+  if (!conditions) {
+    return { ok: true, conditions: '' };
+  }
+
+  const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(conditions));
+  if (blocked) {
+    return { ok: false, reason: blocked.reason };
+  }
+
+  return { ok: true, conditions };
+}
+
 function getOptionValue(groupName, value) {
   const group = CUSTOMIZATION_OPTIONS[groupName] || [];
   const normalized = normalizeInput(value);
@@ -154,9 +222,19 @@ function rewritePrompt(input, options = {}) {
     };
   }
 
+  const customConditionValidation = validateOptionalConditions(options.customConditions);
+  if (!customConditionValidation.ok) {
+    return {
+      ok: false,
+      prompt: '',
+      reason: customConditionValidation.reason
+    };
+  }
+
   const intensity = INTENSITY_WORDS[options.intensity] ? options.intensity : 'medium';
   const lighting = LIGHTING_DESCRIPTIONS.includes(options.lighting) ? options.lighting : LIGHTING_DESCRIPTIONS[0];
   const camera = CAMERA_ANGLES.includes(options.camera) ? options.camera : CAMERA_ANGLES[0];
+  const artStyle = ART_STYLES.includes(options.artStyle) ? options.artStyle : ART_STYLES[0];
   const face = getOptionValue('faces', options.face) || CUSTOMIZATION_OPTIONS.faces[0];
   const outfit = getOptionValue('outfits', options.outfit) || CUSTOMIZATION_OPTIONS.outfits[0];
   const count = getOptionValue('counts', options.count) || CUSTOMIZATION_OPTIONS.counts[0];
@@ -179,12 +257,14 @@ function rewritePrompt(input, options = {}) {
       `scene: ${scene}`,
       `lighting: ${lighting}`,
       `camera angle: ${camera}`,
+      `art style: ${artStyle}`,
       `body pose/posture: ${pose}`,
       `tone: ${DEFAULT_STYLE.tone}`,
       `intensity: ${INTENSITY_WORDS[intensity]}`,
       `quality: ${DEFAULT_STYLE.quality}`,
-      `safety: ${DEFAULT_STYLE.safety}`
-    ].join(', '),
+      `safety: ${DEFAULT_STYLE.safety}`,
+      customConditionValidation.conditions ? `custom conditions: ${customConditionValidation.conditions}` : ''
+    ].filter(Boolean).join(', '),
     reason: ''
   };
 }
@@ -197,6 +277,7 @@ if (typeof module !== 'undefined') {
     BLOCKED_PATTERNS,
     LIGHTING_DESCRIPTIONS,
     CAMERA_ANGLES,
+    ART_STYLES,
     CUSTOMIZATION_OPTIONS
   };
 }
