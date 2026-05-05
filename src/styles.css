@@ -1,3 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg: #0f0713;
+  --surface: rgba(25, 16, 35, 0.88);
+  --surface-strong: rgba(37, 23, 52, 0.96);
+  --field: rgba(255, 255, 255, 0.055);
+  --field-strong: rgba(10, 6, 14, 0.72);
+  --text: #fff8fc;
+  --muted: #d5c3df;
+  --faint: #a58db4;
+  --line: rgba(255, 255, 255, 0.13);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --accent: #ff69aa;
+  --accent-strong: #ff2f82;
+  --gold: #f7d58b;
+  --danger: #ffb4a8;
+  --success: #9df3c4;
+  --shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
 :root {
   color-scheme: dark;
   --bg: #170d1f;
@@ -14,10 +34,19 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: 'Noto Sans TC', Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 8% 4%, rgba(255, 105, 170, 0.24), transparent 28rem),
+    radial-gradient(circle at 88% 8%, rgba(247, 213, 139, 0.14), transparent 30rem),
+    linear-gradient(135deg, #0f0713 0%, #23122e 48%, #09050d 100%);
   background:
     radial-gradient(circle at 12% 8%, rgba(255, 104, 170, 0.28), transparent 28rem),
     radial-gradient(circle at 90% 18%, rgba(248, 217, 140, 0.14), transparent 26rem),
@@ -29,6 +58,23 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 0%, black, transparent 72%);
+}
+
+.app-shell {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(36px, 6vw, 72px) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.65fr);
+  gap: 28px;
+  align-items: start;
   pointer-events: none;
   background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 44px 44px;
@@ -63,6 +109,8 @@ body::before {
 }
 
 .hero {
+  max-width: 980px;
+  padding: 12px 0 10px;
   max-width: 940px;
   padding: 18px 0 12px;
 }
@@ -71,6 +119,7 @@ body::before {
 .section-kicker {
   margin: 0 0 10px;
   color: var(--gold);
+  font-size: 0.74rem;
   font-size: 0.76rem;
   font-weight: 900;
   letter-spacing: 0.18em;
@@ -85,6 +134,9 @@ h2 {
 
 h1 {
   margin: 0;
+  max-width: 880px;
+  font-size: clamp(3rem, 7.4vw, 6.2rem);
+  line-height: 0.94;
   font-size: clamp(3rem, 8vw, 6.6rem);
   line-height: 0.92;
   text-wrap: balance;
@@ -92,6 +144,7 @@ h1 {
 
 h2 {
   margin: 0;
+  font-size: clamp(1.45rem, 2.6vw, 2.1rem);
   font-size: clamp(1.35rem, 3vw, 2.1rem);
 .eyebrow {
   color: var(--accent);
@@ -114,6 +167,13 @@ h2 {
 .guardrails,
 .status,
 .section-heading p:not(.section-kicker) {
+  color: var(--muted);
+  line-height: 1.85;
+}
+
+.hero p:not(.eyebrow) {
+  max-width: 820px;
+  font-size: 1.06rem;
 .status {
   color: var(--muted);
   line-height: 1.8;
@@ -127,6 +187,10 @@ h2 {
 .panel,
 .guardrails {
   position: relative;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: linear-gradient(155deg, var(--surface-strong), var(--surface));
+  box-shadow: var(--shadow);
   padding: clamp(22px, 3vw, 34px);
   border: 1px solid var(--line);
   border-radius: 32px;
@@ -136,6 +200,32 @@ h2 {
   overflow: hidden;
 }
 
+.panel {
+  padding: clamp(22px, 2.6vw, 34px);
+}
+
+.guardrails {
+  padding: clamp(20px, 2.6vw, 30px);
+}
+
+.panel::before,
+.guardrails::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 26%, rgba(255, 105, 170, 0.06));
+  opacity: 0.7;
+}
+
+.panel > *,
+.guardrails > * {
+  position: relative;
+}
+
+.input-panel {
+  display: grid;
+  gap: 22px;
 .panel::after,
 .guardrails::after {
   content: '';
@@ -153,6 +243,12 @@ h2 {
 }
 
 .section-heading {
+  margin-bottom: 0;
+}
+
+.section-heading.compact {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
   margin-bottom: 18px;
 }
 
@@ -162,12 +258,17 @@ h2 {
 
 .section-heading.compact p:not(.section-kicker) {
   margin: 8px 0 0;
+  max-width: 680px;
   font-size: 0.92rem;
 }
 
 .control-grid,
 .custom-grid {
   display: grid;
+  gap: 14px;
+}
+
+.control-grid,
   gap: 16px;
 }
 
@@ -181,6 +282,14 @@ h2 {
 
 .wide-field {
   grid-column: 1 / -1;
+}
+
+.field {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  background: var(--field);
 .panel,
 .guardrails {
   padding: 24px;
@@ -193,6 +302,15 @@ h2 {
 
 label {
   display: block;
+  margin: 0 0 9px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.025em;
+}
+
+.input-panel > label {
+  margin-bottom: -12px;
   margin: 18px 0 9px;
   color: var(--muted);
   font-size: 0.92rem;
@@ -219,6 +337,11 @@ button {
 
 textarea,
 select {
+  min-width: 0;
+  padding: 15px 16px;
+  background: var(--field-strong);
+  color: var(--text);
+  outline: 1px solid rgba(255, 255, 255, 0.12);
   padding: 15px 16px;
   background: rgba(13, 7, 17, 0.9);
   color: var(--text);
@@ -228,12 +351,17 @@ select {
 
 select {
   min-height: 52px;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
 textarea {
   resize: vertical;
   line-height: 1.75;
+}
+
+textarea::placeholder {
+  color: rgba(213, 195, 223, 0.58);
   padding: 16px;
   background: #120914;
   color: var(--text);
@@ -243,6 +371,12 @@ textarea {
 textarea:focus,
 select:focus {
   outline: 2px solid var(--accent);
+  box-shadow: 0 0 0 5px rgba(255, 105, 170, 0.13), inset 0 1px 18px rgba(0, 0, 0, 0.24);
+}
+
+button {
+  margin-top: 0;
+  padding: 17px 20px;
   box-shadow: 0 0 0 5px rgba(255, 104, 170, 0.12), inset 0 1px 18px rgba(0, 0, 0, 0.24);
 }
 
@@ -255,11 +389,18 @@ button {
   font-weight: 900;
   letter-spacing: 0.06em;
   box-shadow: 0 18px 42px rgba(255, 47, 130, 0.28);
+  transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
 
 button:hover {
   transform: translateY(-1px);
   filter: brightness(1.08);
+  box-shadow: 0 22px 52px rgba(255, 47, 130, 0.34);
+}
+
+.secondary-button {
+  margin-top: 18px;
+  background: linear-gradient(135deg, rgba(247, 213, 139, 0.96), rgba(255, 105, 170, 0.9));
 }
 
 .secondary-button {
@@ -268,6 +409,11 @@ button:hover {
 
 .status {
   min-height: 1.8em;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
   margin: 0 0 14px;
 }
 
@@ -294,6 +440,16 @@ button:hover {
   color: var(--success);
 }
 
+#resultPrompt {
+  min-height: 360px;
+}
+
+.guardrails ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0;
+  margin: 18px 0 0;
 .guardrails ul {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -307,6 +463,20 @@ button:hover {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 20px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+@media (max-width: 1080px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .output-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
   background: rgba(13, 7, 17, 0.45);
 }
 
@@ -325,6 +495,8 @@ button:hover {
 
 @media (max-width: 560px) {
   .app-shell {
+    width: min(100% - 24px, 1280px);
+    padding: 34px 0;
     width: min(100% - 24px, 1180px);
     padding: 36px 0;
   }
@@ -332,6 +504,10 @@ button:hover {
   .panel,
   .guardrails {
     border-radius: 24px;
+  }
+
+  .field {
+    padding: 12px;
   margin-bottom: 0;
 }
 
