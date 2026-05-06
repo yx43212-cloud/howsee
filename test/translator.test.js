@@ -230,6 +230,13 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
   assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
   assert.match(appSource, /updateBeginnerPreview/);
+  assert.match(appSource, /getPreviewPalette/);
+  assert.match(appSource, /getResolvedLabel/);
+  assert.match(appSource, /getTextRewriteSource/);
+  assert.match(appSource, /selected customization controls/);
+  assert.match(appSource, /previewDetails\.replaceChildren/);
+  assert.match(appSource, /previewStage\.style\.setProperty\('--preview-primary'/);
+  assert.match(appSource, /preview-scene-mark/);
   assert.match(appSource, /你的客製化條件/);
 });
 

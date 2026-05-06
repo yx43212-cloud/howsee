@@ -232,6 +232,8 @@
             <span class="preview-silhouette primary"></span>
           </div>
           <p id="previewSummary" class="preview-summary">先輸入描述或挑選條件，這裡會即時整理你的客製化方向。</p>
+          <div id="previewDetails" class="preview-details" aria-label="分層預覽說明"></div>
+          <p id="previewAdvice" class="preview-advice">AI 判斷會先自動補一組具體建議，方便新手看方向。</p>
           <div id="previewChips" class="preview-chips" aria-label="目前客製化條件摘要"></div>
         </div>
 
@@ -240,7 +242,7 @@
             <p class="section-kicker">Text Output</p>
             <h2>文生圖：中文對照＋英文可複製</h2>
           </div>
-          <p id="textStatus" class="status">等待輸入，通過安全篩選後才會顯示文生圖結果。</p>
+          <p id="textStatus" class="status">可直接用客製化選項轉譯；原始描述空白時會自動建立基本成人視覺主題。</p>
           <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
           <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
           <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>

@@ -32,6 +32,8 @@ const imageVideoPanel = document.querySelector('#imageVideoPanel');
 const beginnerPreview = document.querySelector('#beginnerPreview');
 const previewStage = document.querySelector('#previewStage');
 const previewSummary = document.querySelector('#previewSummary');
+const previewDetails = document.querySelector('#previewDetails');
+const previewAdvice = document.querySelector('#previewAdvice');
 const previewChips = document.querySelector('#previewChips');
 const textOutputArea = document.querySelector('#textOutputArea');
 const videoOutputArea = document.querySelector('#videoOutputArea');
@@ -191,6 +193,53 @@ function getSelectedLabel(element) {
   return element?.value || 'AI判斷';
 }
 
+function getTextRewriteSource() {
+  return sourcePrompt.value.trim() || 'consenting adult visual portrait based on the selected customization controls';
+}
+
+function getPreviewSeed() {
+  return [
+    sourcePrompt.value,
+    intensity.value,
+    count.value,
+    scene.value,
+    artStyle.value
+  ].join('|');
+}
+
+function getSeededIndex(seed, length) {
+  if (length <= 0) {
+    return 0;
+  }
+
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(index);
+    hash |= 0;
+  }
+
+  return Math.abs(hash) % length;
+}
+
+function getResolvedLabel(element) {
+  const selected = getSelectedLabel(element);
+  if (selected !== 'AI判斷') {
+    return selected;
+  }
+
+  const candidates = Array.from(element.options || []).map(({ value }) => value).filter((value) => value && value !== 'AI判斷');
+  if (!candidates.length) {
+    return 'AI建議：依整體提示自動補齊';
+  }
+
+  const index = element === count ? 0 : getSeededIndex(`${getPreviewSeed()}|${element.id}`, candidates.length);
+  return `AI建議：${candidates[index]}`;
+}
+
+function getResolvedPlainLabel(element) {
+  return getResolvedLabel(element).replace(/^AI建議：/, '');
+}
+
 function addPreviewChip(fragment, label, value) {
   const chip = document.createElement('span');
   chip.className = 'preview-chip';
@@ -199,7 +248,7 @@ function addPreviewChip(fragment, label, value) {
 }
 
 function getPreviewCountGroup() {
-  const selectedCount = getSelectedLabel(count);
+  const selectedCount = getResolvedLabel(count);
   if (/三人/.test(selectedCount)) {
     return 'three';
   }
@@ -209,53 +258,200 @@ function getPreviewCountGroup() {
   return 'single';
 }
 
+function getPreviewPalette() {
+  const text = [
+    getResolvedLabel(timePoint),
+    getResolvedLabel(lighting),
+    getResolvedLabel(outfitColor),
+    getResolvedLabel(artStyle)
+  ].join(' ');
+
+  if (/藍|冷|銀|冰|夜|賽博|霓虹|水|海/.test(text)) {
+    return { tone: 'cool', primary: '#55d8ff', secondary: '#7b6cff', outfit: '#7dd8ff' };
+  }
+  if (/金|暖|琥珀|夕陽|火|紅|酒|黑金|節日/.test(text)) {
+    return { tone: 'warm', primary: '#ffb25f', secondary: '#ff4f93', outfit: '#ff9b66' };
+  }
+  if (/粉|玫瑰|糖果|蜜桃|夢幻|柔/.test(text)) {
+    return { tone: 'rose', primary: '#ff8ac7', secondary: '#ffc2dc', outfit: '#ff6fb3' };
+  }
+  if (/綠|森林|青|翡翠/.test(text)) {
+    return { tone: 'forest', primary: '#74f0b2', secondary: '#2fa978', outfit: '#8de0a6' };
+  }
+  return { tone: 'default', primary: '#ff5f9f', secondary: '#f7d98f', outfit: '#ff8fba' };
+}
+
+function getPreviewSceneType() {
+  const selectedScene = getResolvedLabel(scene);
+  if (/浴|泳|海|雨|水/.test(selectedScene)) {
+    return 'water';
+  }
+  if (/宮|城|古|神|魔|森林|花園/.test(selectedScene)) {
+    return 'fantasy';
+  }
+  if (/棚|攝影|白色|黑色/.test(selectedScene)) {
+    return 'studio';
+  }
+  if (/夜|酒吧|霓虹|城市|陽台/.test(selectedScene)) {
+    return 'night';
+  }
+  return 'room';
+}
+
+function getPreviewCameraType() {
+  const selectedCamera = getResolvedLabel(camera);
+  if (/俯|鳥瞰|高角/.test(selectedCamera)) {
+    return 'high';
+  }
+  if (/仰|低角/.test(selectedCamera)) {
+    return 'low';
+  }
+  if (/近|特寫|臉部|半身/.test(selectedCamera)) {
+    return 'close';
+  }
+  if (/遠|全身|廣角/.test(selectedCamera)) {
+    return 'wide';
+  }
+  return 'mid';
+}
+
+function addPreviewLayer(className, text = '') {
+  const layer = document.createElement('span');
+  layer.className = className;
+  layer.textContent = text;
+  previewStage.append(layer);
+  return layer;
+}
+
 function renderPreviewSilhouettes(group) {
   const total = group === 'three' ? 3 : group === 'two' ? 2 : 1;
+  const palette = getPreviewPalette();
+  const selectedPose = getResolvedLabel(pose);
   previewStage.dataset.count = group;
+  previewStage.dataset.scene = getPreviewSceneType();
+  previewStage.dataset.camera = getPreviewCameraType();
+  previewStage.dataset.tone = palette.tone;
+  previewStage.style.setProperty('--preview-primary', palette.primary);
+  previewStage.style.setProperty('--preview-secondary', palette.secondary);
+  previewStage.style.setProperty('--preview-outfit', palette.outfit);
   previewStage.replaceChildren();
+
+  addPreviewLayer('preview-light-beam');
+  addPreviewLayer('preview-scene-mark', getResolvedLabel(scene));
+  addPreviewLayer('preview-camera-mark', getResolvedLabel(camera));
 
   for (let index = 0; index < total; index += 1) {
     const silhouette = document.createElement('span');
     silhouette.className = `preview-silhouette character-${index + 1}`;
+    silhouette.dataset.role = total === 1 ? getResolvedPlainLabel(gender) : `角色 ${index + 1}`;
+    const outfitLayer = document.createElement('span');
+    outfitLayer.className = 'preview-outfit-layer';
+    silhouette.append(outfitLayer);
     previewStage.append(silhouette);
   }
 
-  if (group === 'single' && /手|POV|主觀|鏡頭/.test(getSelectedLabel(pose))) {
-    const hand = document.createElement('span');
-    hand.className = 'preview-hand';
-    previewStage.append(hand);
+  if (group !== 'single') {
+    addPreviewLayer('preview-interaction-line', getResolvedLabel(action));
   }
+
+  if (group === 'single' && /手|POV|主觀|鏡頭/.test(selectedPose)) {
+    addPreviewLayer('preview-hand');
+  }
+
+  const resolvedAccessory = getResolvedLabel(accessory);
+  if (resolvedAccessory) {
+    addPreviewLayer('preview-prop', resolvedAccessory);
+  }
+}
+
+function addPreviewDetail(fragment, title, value) {
+  const item = document.createElement('article');
+  item.className = 'preview-detail-card';
+  const heading = document.createElement('strong');
+  heading.textContent = title;
+  const content = document.createElement('span');
+  content.textContent = value;
+  item.append(heading, content);
+  fragment.append(item);
 }
 
 function updateBeginnerPreview() {
   const group = getPreviewCountGroup();
   renderPreviewSilhouettes(group);
 
-  const source = sourcePrompt.value.trim() || '尚未輸入原始描述';
+  const source = sourcePrompt.value.trim() || '未輸入原始描述，將依目前客製化選項自動建立成人視覺方向';
   const customText = customConditions.value.trim();
   const multiDetails = group === 'single' ? '' : multiCharacterDetails.value.trim();
   const characterDetails = group === 'single' ? [] : collectCharacterDetails();
   const interactionHint = group === 'single' ? '單人：重點放在鏡頭、POV 或入鏡手互動。' : '多人：重點放在角色間距離、視線與互動。';
+  const resolved = {
+    count: getResolvedLabel(count),
+    artStyle: getResolvedLabel(artStyle),
+    lighting: getResolvedLabel(lighting),
+    timePoint: getResolvedLabel(timePoint),
+    gender: getResolvedLabel(gender),
+    race: getResolvedLabel(race),
+    emotion: getResolvedLabel(emotion),
+    ageBracket: getResolvedLabel(ageBracket),
+    occupation: getResolvedLabel(occupation),
+    bodyProportion: getResolvedLabel(bodyProportion),
+    face: getResolvedLabel(face),
+    outfit: getResolvedLabel(outfit),
+    outfitColor: getResolvedLabel(outfitColor),
+    outfitMaterial: getResolvedLabel(outfitMaterial),
+    outfitIntegrity: getResolvedLabel(outfitIntegrity),
+    bodyFeature: getResolvedLabel(bodyFeature),
+    scene: getResolvedLabel(scene),
+    camera: getResolvedLabel(camera),
+    composition: getResolvedLabel(composition),
+    action: getResolvedLabel(action),
+    pose: getResolvedLabel(pose),
+    accessory: getResolvedLabel(accessory)
+  };
 
   previewSummary.textContent = [
     `大概畫面：${source}`,
-    `畫風 ${getSelectedLabel(artStyle)}，${getSelectedLabel(lighting)}，${getSelectedLabel(timePoint)}。`,
-    `角色：${getSelectedLabel(gender)}／${getSelectedLabel(race)}／${getSelectedLabel(emotion)}；服裝：${getSelectedLabel(outfit)}、${getSelectedLabel(outfitColor)}、${getSelectedLabel(outfitMaterial)}。`,
-    `動作與體位：${getSelectedLabel(action)}；${getSelectedLabel(pose)}。`,
+    `畫風 ${resolved.artStyle}，${resolved.lighting}，${resolved.timePoint}。`,
+    `角色：${resolved.gender}／${resolved.race}／${resolved.emotion}；服裝：${resolved.outfit}、${resolved.outfitColor}、${resolved.outfitMaterial}。`,
+    `動作與體位：${resolved.action}；${resolved.pose}。`,
     interactionHint,
     customText ? `你的客製化條件：${customText}` : '',
     multiDetails ? `多人細節：${multiDetails}` : '',
     characterDetails.length ? `角色分別設定：${characterDetails.join('；')}` : ''
   ].filter(Boolean).join(' ');
 
+  const detailFragment = document.createDocumentFragment();
+  addPreviewDetail(detailFragment, '鏡頭構圖', `${resolved.camera}｜${resolved.composition}｜${resolved.count}`);
+  addPreviewDetail(detailFragment, '光色質感', `${resolved.timePoint}｜${resolved.lighting}`);
+  addPreviewDetail(detailFragment, '角色設定', `${resolved.gender}｜${resolved.race}｜${resolved.ageBracket}｜${resolved.bodyProportion}｜${resolved.face}`);
+  addPreviewDetail(detailFragment, '職業情緒', `${resolved.occupation}｜${resolved.emotion}｜${resolved.bodyFeature}`);
+  addPreviewDetail(detailFragment, '服裝道具', `${resolved.outfit}｜${resolved.outfitColor}｜${resolved.outfitMaterial}｜${resolved.outfitIntegrity}｜${resolved.accessory}`);
+  addPreviewDetail(detailFragment, '動作場景', `${resolved.action}｜${resolved.pose}｜${resolved.scene}`);
+  if (customText || multiDetails || characterDetails.length) {
+    addPreviewDetail(detailFragment, '你的客製化', [customText, multiDetails, ...characterDetails].filter(Boolean).join('｜'));
+  }
+  previewDetails.replaceChildren(detailFragment);
+
+  const advice = [];
+  if (!sourcePrompt.value.trim()) {
+    advice.push('未輸入原始描述也可轉譯；系統會用目前客製化選項建立基本主題');
+  }
+  if (count.value === 'AI判斷') {
+    advice.push('人數未選時先以單人構圖示意；選雙人／三人會出現互動線');
+  }
+  if (!customText) {
+    advice.push('可在客製化條件補鏡頭焦段、不要的元素或特殊偏好');
+  }
+  previewAdvice.textContent = advice.length ? `新手建議：${advice.join('；')}。` : '目前條件已足夠，可以按「轉譯提示詞」產生可複製英文提示詞。';
+
   const fragment = document.createDocumentFragment();
-  addPreviewChip(fragment, '人數', getSelectedLabel(count));
-  addPreviewChip(fragment, '畫風', getSelectedLabel(artStyle));
-  addPreviewChip(fragment, '鏡位', getSelectedLabel(camera));
-  addPreviewChip(fragment, '構圖', getSelectedLabel(composition));
-  addPreviewChip(fragment, '場景', getSelectedLabel(scene));
-  addPreviewChip(fragment, '動作', getSelectedLabel(action));
-  addPreviewChip(fragment, '體位', getSelectedLabel(pose));
+  addPreviewChip(fragment, '人數', resolved.count);
+  addPreviewChip(fragment, '畫風', resolved.artStyle);
+  addPreviewChip(fragment, '鏡位', resolved.camera);
+  addPreviewChip(fragment, '構圖', resolved.composition);
+  addPreviewChip(fragment, '場景', resolved.scene);
+  addPreviewChip(fragment, '動作', resolved.action);
+  addPreviewChip(fragment, '體位', resolved.pose);
   if (customText) {
     addPreviewChip(fragment, '客製化', customText);
   }
@@ -497,7 +693,7 @@ imageInput.addEventListener('change', async () => {
 });
 
 rewriteButton.addEventListener('click', () => {
-  const result = rewritePrompt(sourcePrompt.value, {
+  const result = rewritePrompt(getTextRewriteSource(), {
     intensity: intensity.value,
     lighting: lighting.value,
     camera: camera.value,
