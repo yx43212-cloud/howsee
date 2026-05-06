@@ -1,4 +1,3 @@
-const sourcePrompt = document.querySelector('#sourcePrompt');
 const intensity = document.querySelector('#intensity');
 const lighting = document.querySelector('#lighting');
 const camera = document.querySelector('#camera');
@@ -52,6 +51,8 @@ const imageVideoChoiceField = document.querySelector('#imageVideoChoiceField');
 const imageVideoPromptChoice = document.querySelector('#imageVideoPromptChoice');
 const imageVideoStatus = document.querySelector('#imageVideoStatus');
 const characterCards = Array.from(document.querySelectorAll('[data-character-card]'));
+const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
+const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
@@ -59,6 +60,18 @@ let lastImageVideoResult = null;
 function setStatus(element, message, state = 'idle') {
   element.textContent = message;
   element.dataset.state = state;
+}
+
+function setTextStep(stepName) {
+  for (const button of textStepButtons) {
+    const isActive = button.dataset.textStep === stepName;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
+  }
+
+  for (const panel of textStepPanels) {
+    panel.hidden = panel.dataset.textStepPanel !== stepName;
+  }
 }
 
 function setMode(mode) {
@@ -178,7 +191,7 @@ function collectCharacterDetails() {
 }
 
 function getTextRewriteSource() {
-  return sourcePrompt.value.trim() || 'consenting adult visual portrait based on the selected customization controls';
+  return cosplayPrompt.value.trim() || 'consenting adult cosplay character portrait based on the selected customization controls';
 }
 
 
@@ -385,12 +398,17 @@ function applyImageVideoChoice(score) {
 }
 
 setupCustomizationControls();
+setTextStep('visual');
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
 
 textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
+
+for (const button of textStepButtons) {
+  button.addEventListener('click', () => setTextStep(button.dataset.textStep));
+}
 
 count.addEventListener('change', () => {
   updateCharacterCards();
