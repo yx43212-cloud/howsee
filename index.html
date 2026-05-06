@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>好想瑟瑟 SHowSexy</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">18+ consensual prompt atelier</p>
+        <h1>好想瑟瑟 SHowSexy</h1>
+        <p>中文僅供確認，通過安全篩選後，只有英文生成提示詞可複製；也支援上傳圖片產生圖轉影提示詞建議。</p>
+      </section>
+
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <p class="section-kicker">Step 01</p>
+          <h2 id="input-title">輸入提示詞</h2>
+        </div>
+
+        <label for="sourcePrompt">原始描述</label>
+        <textarea id="sourcePrompt" rows="7" placeholder="例如：脫衣服 親吻"></textarea>
+
+        <div class="control-grid">
+          <div class="field">
+            <label for="intensity">情慾強度</label>
+            <select id="intensity">
+              <option value="soft">柔和</option>
+              <option value="medium" selected>中等</option>
+              <option value="strong">強烈</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="lighting">光感描述（50 種）</label>
+            <select id="lighting"></select>
+          </div>
+
+          <div class="field">
+            <label for="camera">鏡位視角（50 種）</label>
+            <select id="camera"></select>
+          </div>
+
+          <div class="field">
+            <label for="artStyle">畫風（50 種）</label>
+            <select id="artStyle"></select>
+          </div>
+        </div>
+
+        <div class="section-heading compact">
+          <p class="section-kicker">Step 02</p>
+          <h2>角色客製化安排</h2>
+          <p>新增性別挑選；種族、服裝、場景、動作、配件與道具都提供大量選項；另有 50 種情緒、服裝配色、身上特徵、服裝完整度、配件道具與多人細節客製化。中文只供確認，複製區只輸出英文提示詞。</p>
+        </div>
+
+        <div class="custom-grid">
+          <div class="field">
+            <label for="gender">性別</label>
+            <select id="gender"></select>
+          </div>
+          <div class="field">
+            <label for="race">種族（100 種）</label>
+            <select id="race"></select>
+          </div>
+          <div class="field">
+            <label for="emotion">情緒（50 種）</label>
+            <select id="emotion"></select>
+          </div>
+          <div class="field">
+            <label for="timePoint">時間點（20 種）</label>
+            <select id="timePoint"></select>
+          </div>
+          <div class="field">
+            <label for="face">臉蛋</label>
+            <select id="face"></select>
+          </div>
+          <div class="field">
+            <label for="outfit">服裝穿搭（100 種）</label>
+            <select id="outfit"></select>
+          </div>
+          <div class="field">
+            <label for="outfitColor">服裝配色（30 種）</label>
+            <select id="outfitColor"></select>
+          </div>
+          <div class="field">
+            <label for="bodyFeature">身上特徵（30 種）</label>
+            <select id="bodyFeature"></select>
+          </div>
+          <div class="field">
+            <label for="outfitIntegrity">服裝完整度</label>
+            <select id="outfitIntegrity"></select>
+          </div>
+          <div class="field">
+            <label for="count">人數</label>
+            <select id="count"></select>
+          </div>
+          <div class="field wide-field">
+            <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
+            <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
+          </div>
+          <div class="field">
+            <label for="scene">場景配置（100 種）</label>
+            <select id="scene"></select>
+          </div>
+          <div class="field">
+            <label for="accessory">配件與道具（100 種）</label>
+            <select id="accessory"></select>
+          </div>
+          <div class="field">
+            <label for="action">動作（100 種）</label>
+            <select id="action"></select>
+          </div>
+          <div class="field wide-field">
+            <label for="pose">體位／互動（50 種）</label>
+            <select id="pose"></select>
+          </div>
+        </div>
+
+        <label for="customConditions">可塞入的客製化條件</label>
+        <textarea id="customConditions" rows="4" placeholder="例如：85mm lens, shallow depth of field, pearl accessories, no watermark"></textarea>
+
+        <button id="rewriteButton" type="button">轉譯提示詞</button>
+      </section>
+
+
+      <section class="panel image-panel" aria-labelledby="image-title">
+        <div class="section-heading">
+          <p class="section-kicker">Image to Video</p>
+          <h2 id="image-title">圖轉影提示詞建議</h2>
+          <p>上傳圖片後，瀏覽器會在本機估算色情程度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
+        </div>
+
+        <div class="image-upload-grid">
+          <div class="field wide-field">
+            <label for="imageInput">上傳參考圖片</label>
+            <input id="imageInput" type="file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label for="videoDuration">影片秒數</label>
+            <select id="videoDuration">
+              <option value="3">3 秒</option>
+              <option value="5" selected>5 秒</option>
+              <option value="8">8 秒</option>
+              <option value="12">12 秒</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="motionStrength">動態強度</label>
+            <select id="motionStrength">
+              <option value="subtle">細微</option>
+              <option value="medium" selected>中等</option>
+              <option value="strong">較強</option>
+            </select>
+          </div>
+        </div>
+
+        <img id="imagePreview" class="image-preview" alt="上傳圖片預覽" hidden />
+
+        <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
+        <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
+
+        <label for="desiredMotion">希望圖轉影怎麼動（選填）</label>
+        <textarea id="desiredMotion" rows="4" placeholder="例如：slow push-in, hair and fabric gently moving, confident gaze to camera"></textarea>
+
+        <button id="imageVideoButton" type="button">產生圖轉影提示詞</button>
+        <div class="field" id="imageVideoChoiceField" hidden>
+          <label for="imageVideoPromptChoice">圖轉影色情程度提示詞（可挑選）</label>
+          <select id="imageVideoPromptChoice"></select>
+        </div>
+        <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
+      </section>
+
+      <section class="panel output-panel" aria-live="polite">
+        <div class="section-heading">
+          <p class="section-kicker">Step 03</p>
+          <h2>中文確認＋英文可複製提示詞</h2>
+        </div>
+        <p id="status" class="status">等待輸入，通過安全篩選後才會顯示結果。</p>
+        <label for="confirmationPrompt" class="output-label" hidden>中文確認（不可複製區）</label>
+        <textarea id="confirmationPrompt" rows="8" readonly hidden></textarea>
+        <label for="resultPrompt" class="output-label" hidden>English generation prompt（可複製）</label>
+        <textarea id="resultPrompt" rows="12" readonly hidden></textarea>
+        <button id="copyButton" type="button" class="secondary-button" hidden>複製英文提示詞</button>
+      </section>
+
+      <section class="guardrails">
+        <div class="section-heading">
+          <p class="section-kicker">Safety</p>
+          <h2>安全邊界</h2>
+        </div>
+        <ul>
+          <li>只允許明確成年且合意的角色與情境。</li>
+          <li>拒絕未成年、非合意、偷拍、血腥暴力等內容。</li>
+          <li>輸出以氛圍、構圖、姿態、光影與情緒描述為主。</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="src/translator.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
