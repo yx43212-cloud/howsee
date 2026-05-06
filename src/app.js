@@ -1,4 +1,3 @@
-const sourcePrompt = document.querySelector('#sourcePrompt');
 const intensity = document.querySelector('#intensity');
 const lighting = document.querySelector('#lighting');
 const camera = document.querySelector('#camera');
@@ -192,7 +191,7 @@ function collectCharacterDetails() {
 }
 
 function getTextRewriteSource() {
-  return sourcePrompt.value.trim() || 'consenting adult visual portrait based on the selected customization controls';
+  return cosplayPrompt.value.trim() || 'consenting adult cosplay character portrait based on the selected customization controls';
 }
 
 

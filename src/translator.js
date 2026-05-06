@@ -8,7 +8,7 @@ const BLOCKED_PATTERNS = [
   { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, reason: '內容疑似涉及未成年人。' },
   { pattern: /強迫|迷姦|下藥|昏迷|睡著|無意識|rape|forced|drugged|unconscious/i, reason: '內容疑似涉及非合意或無法同意情境。' },
   { pattern: /偷拍|偷窺|未同意|voyeur|hidden camera/i, reason: '內容疑似涉及未同意拍攝或偷窺。' },
-  { pattern: /血|虐殺|肢解|重傷|blood|gore|dismember/i, reason: '內容疑似涉及血腥暴力。' }
+  { pattern: /血(?!鬼)|虐殺|肢解|重傷|blood|gore|dismember/i, reason: '內容疑似涉及血腥暴力。' }
 ];
 
 const PHRASE_RULES = [
@@ -963,12 +963,80 @@ function containsCjk(value) {
   return /[\u3400-\u9fff]/.test(String(value ?? ''));
 }
 
+
+const CJK_TO_ENGLISH_DIRECTION_TERMS = [
+  ['吸血鬼女王', 'vampire queen'],
+  ['吸血鬼', 'vampire'],
+  ['女王', 'queen'],
+  ['珍珠配件', 'pearl accessories'],
+  ['珍珠', 'pearl'],
+  ['配件', 'accessories'],
+  ['賽博偶像', 'cyber idol'],
+  ['賽博', 'cyber'],
+  ['偶像', 'idol'],
+  ['優雅護理師', 'elegant nurse'],
+  ['護理師', 'nurse'],
+  ['護士', 'nurse'],
+  ['原創角色', 'original character'],
+  ['原創', 'original'],
+  ['角色', 'character'],
+  ['人設', 'character design'],
+  ['作品風格', 'franchise-inspired style direction'],
+  ['暗黑精靈', 'dark elf'],
+  ['惡魔', 'demon'],
+  ['天使', 'angel'],
+  ['精靈', 'elf'],
+  ['貓女', 'catwoman-inspired adult heroine'],
+  ['兔女郎', 'bunny-inspired adult performer'],
+  ['魔法師', 'mage'],
+  ['女巫', 'witch'],
+  ['公主', 'princess'],
+  ['皇后', 'empress'],
+  ['騎士', 'knight'],
+  ['修女', 'adult nun-inspired styling'],
+  ['秘書', 'secretary'],
+  ['老師', 'adult teacher-inspired styling'],
+  ['成熟', 'mature adult'],
+  ['性感', 'sensual'],
+  ['可愛', 'cute adult'],
+  ['冷艷', 'cool glamorous'],
+  ['華麗', 'ornate'],
+  ['黑色', 'black'],
+  ['白色', 'white'],
+  ['紅色', 'red'],
+  ['金色', 'gold'],
+  ['銀色', 'silver'],
+  ['蕾絲', 'lace'],
+  ['緞面', 'satin'],
+  ['皮革', 'leather']
+];
+
+function translateCjkDirectionToEnglish(value, fallback) {
+  let translated = normalizeInput(value);
+
+  for (const { pattern, replacement } of PHRASE_RULES) {
+    translated = translated.replace(pattern, ` ${replacement} `);
+  }
+
+  for (const [zh, en] of CJK_TO_ENGLISH_DIRECTION_TERMS) {
+    translated = translated.replaceAll(zh, ` ${en} `);
+  }
+
+  translated = translated
+    .replace(/[\u3400-\u9fff]+/g, ' ')
+    .replace(/[，。、；：！？「」『』（）【】]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return translated || fallback;
+}
+
 function toCopySafeEnglishSubject(value) {
   if (!containsCjk(value)) {
     return value;
   }
 
-  return 'adult sensual visual direction based on the reviewed source request';
+  return translateCjkDirectionToEnglish(value, 'adult sensual visual direction based on the reviewed source request');
 }
 
 function getPresetOption(list, value) {
@@ -1011,7 +1079,7 @@ function validateCustomDetailInput(input) {
     ok: true,
     details,
     englishDetails: containsCjk(details)
-      ? 'user-provided cosplay or character direction, apply only as safety-compliant adult styling, roles, spacing, and interaction notes'
+      ? translateCjkDirectionToEnglish(details, 'safety-compliant adult cosplay character direction based on the reviewed Chinese notes')
       : details
   };
 }
@@ -1135,7 +1203,7 @@ function rewritePrompt(input, options = {}) {
     `動作／姿態類型：${actionMode.zh}`,
     `動作／姿態細項：${actionDetail.zh}`,
     `氛圍：${INTENSITY_WORDS[intensity]}`,
-    '優先規則：最上方原始提示詞若與下方客製化選項重樣或衝突，以原始提示詞為主',
+    '優先規則：最上方 Cosplay 若與下方客製化選項重樣或衝突，以 Cosplay 為主',
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
 
@@ -1183,7 +1251,7 @@ function rewritePrompt(input, options = {}) {
     `tone: ${DEFAULT_STYLE.tone}`,
     `intensity: ${INTENSITY_WORDS[intensity]}`,
     `quality: ${DEFAULT_STYLE.quality}`,
-    'priority: if the source prompt conflicts with or duplicates preset options, the source prompt takes precedence',
+    'priority: if the Cosplay input conflicts with or duplicates preset options, the Cosplay input takes precedence',
     `safety: ${DEFAULT_STYLE.safety}`
   ];
 

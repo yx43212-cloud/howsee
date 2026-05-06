@@ -387,9 +387,21 @@ button:active {
   .app-shell,
   .control-grid,
   .custom-grid,
-  .text-step-tabs,
   .guardrails ul {
     grid-template-columns: 1fr;
+  }
+
+  .text-step-tabs {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .text-step-button {
+    flex: 0 0 min(46vw, 168px);
+    scroll-snap-align: start;
+    white-space: nowrap;
   }
 }
 

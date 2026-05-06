@@ -22,16 +22,18 @@
       <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
         <div class="section-heading">
           <p class="section-kicker">Step 01</p>
-          <h2 id="input-title">輸入提示詞</h2>
+          <h2 id="input-title">Cosplay</h2>
+          <p>只要輸入角色、人設或作品風格即可，中文也可以；英文可複製提示詞會自動轉成安全的英文描述。</p>
         </div>
 
-        <label for="sourcePrompt">原始描述</label>
-        <textarea id="sourcePrompt" rows="7" placeholder="例如：脫衣服 親吻"></textarea>
+        <label for="cosplayPrompt">Cosplay（主要輸入：角色／人設／作品風格）</label>
+        <textarea id="cosplayPrompt" rows="4" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
+        <p class="field-help">這是唯一的自由輸入欄位；不要填未成年、偷拍、強迫或血腥內容。不想細調時，填完這欄就能直接轉譯。</p>
 
         <div class="quick-guide" aria-label="操作提示">
           <p class="section-kicker">Easy Flow</p>
           <ol>
-            <li><strong>先寫一句原始描述：</strong>不想細調可直接按轉譯。</li>
+            <li><strong>先填 Cosplay：</strong>中文角色、人設或作品風格都可以。</li>
             <li><strong>用分頁慢慢補設定：</strong>基本畫面、角色設定、場景動作分開處理，每個下拉都可維持 AI 判斷。</li>
             <li><strong>產生後直接複製：</strong>右側會出英文文生圖提示詞，並自動附 5 種可選圖轉影提示詞。</li>
           </ol>
@@ -86,7 +88,7 @@
           <div class="section-heading compact">
             <p class="section-kicker">Step 03</p>
             <h2 id="character-step-title">角色設定</h2>
-            <p>角色細節分頁只處理人物、人設和穿搭。Cosplay 是唯一的客製化置入欄位；多人時才需要看下方角色卡。</p>
+            <p>角色細節分頁只處理人物與穿搭。Cosplay 已移到最上方作為唯一自由輸入欄位；多人時才需要看下方角色卡。</p>
           </div>
           <div class="custom-grid">
             <div class="field">
@@ -145,11 +147,6 @@
             <div class="field">
               <label for="count">人數</label>
               <select id="count"></select>
-            </div>
-            <div class="field wide-field">
-              <label for="cosplayPrompt">Cosplay（指定要套用的角色／人設／作品風格）</label>
-              <textarea id="cosplayPrompt" rows="3" placeholder="例如：vampire queen, cyber idol, elegant nurse, original character with pearl accessories, no watermark"></textarea>
-              <p class="field-help">只填角色方向或作品風格；不要填未成年、偷拍、強迫或血腥內容。</p>
             </div>
             <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
               <article class="character-card" data-character-card="1">
@@ -259,7 +256,7 @@
             <p class="section-kicker">Text Output</p>
             <h2>文生圖：中文對照＋英文可複製</h2>
           </div>
-          <p id="textStatus" class="status">可直接用客製化選項轉譯；原始描述空白時會自動建立基本成人視覺主題。</p>
+          <p id="textStatus" class="status">填寫 Cosplay 後可直接轉譯；其他分頁都可保持 AI 判斷。</p>
           <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
           <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
           <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>

@@ -195,17 +195,19 @@ test('keeps copyable output English-only even when the source has unsupported Ch
   assert.equal(result.ok, true);
   assert.doesNotMatch(result.englishPrompt, /[\u3400-\u9fff]/);
   assert.match(result.chineseConfirmation, /性感站著/);
-  assert.match(result.englishPrompt, /adult sensual visual direction based on the reviewed source request/);
+  assert.match(result.englishPrompt, /subject\/action: sensual/);
 });
 
-test('appends safe Cosplay character direction to the English prompt and confirmation', () => {
-  const result = rewritePrompt('親吻', {
-    cosplayPrompt: '珍珠配件 vampire queen'
+test('translates safe Chinese Cosplay character direction into English prompt text', () => {
+  const result = rewritePrompt('吸血鬼女王 珍珠配件', {
+    cosplayPrompt: '吸血鬼女王 珍珠配件'
   });
 
   assert.equal(result.ok, true);
-  assert.match(result.chineseConfirmation, /Cosplay：珍珠配件 vampire queen/);
-  assert.match(result.englishPrompt, /cosplay\/character direction: user-provided cosplay or character direction/);
+  assert.match(result.chineseConfirmation, /Cosplay：吸血鬼女王 珍珠配件/);
+  assert.match(result.englishPrompt, /subject\/action: vampire queen pearl accessories/);
+  assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen pearl accessories/);
+  assert.doesNotMatch(result.englishPrompt, /[㐀-鿿]|user-provided cosplay/);
 });
 
 test('rejects unsafe Cosplay character direction', () => {
@@ -238,6 +240,9 @@ test('text-to-image controls are split into guided setup tabs', () => {
   const styleSource = fs.readFileSync(path.join(__dirname, '../src/styles.css'), 'utf8');
 
   assert.match(indexSource, /Easy Flow/);
+  assert.match(indexSource, /<h2 id="input-title">Cosplay<\/h2>/);
+  assert.doesNotMatch(indexSource, /sourcePrompt|原始描述|輸入提示詞/);
+  assert.match(indexSource, /中文也可以/);
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
@@ -250,6 +255,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
   assert.match(styleSource, /\.quick-guide/);
   assert.match(styleSource, /\.text-step-tabs/);
+  assert.match(styleSource, /overflow-x: auto/);
+  assert.match(styleSource, /flex: 0 0 min\(46vw, 168px\)/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {
@@ -260,6 +267,8 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
   assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
   assert.match(appSource, /getTextRewriteSource/);
+  assert.match(appSource, /cosplayPrompt\.value\.trim\(\)/);
+  assert.doesNotMatch(appSource, /sourcePrompt/);
   assert.match(appSource, /selected customization controls/);
   assert.match(appSource, /buildAutoVideoChoices/);
   assert.match(appSource, /autoVideoChoice/);
