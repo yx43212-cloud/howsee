@@ -75,6 +75,9 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'rare').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'sensual').length, 50);
@@ -105,8 +108,10 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     outfitIntegrity: CUSTOMIZATION_OPTIONS.outfitIntegrity[3].zh,
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
+    accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
     action: CUSTOMIZATION_OPTIONS.actions[50].zh,
-    pose: CUSTOMIZATION_OPTIONS.poses[10].zh
+    pose: CUSTOMIZATION_OPTIONS.poses[10].zh,
+    multiCharacterDetails: 'A wears black styling, B wears white styling, A leads the interaction'
   });
 
   assert.equal(result.ok, true);
@@ -119,6 +124,8 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
   assert.match(result.chineseConfirmation, /場景：金色宮殿內室/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
+  assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
+  assert.match(result.chineseConfirmation, /多人細節客製化：A wears black styling/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
@@ -128,11 +135,20 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
   assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
+  assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
+  assert.match(result.englishPrompt, /multi-character custom details: A wears black styling/);
   assert.match(result.chineseConfirmation, /動作：指尖滑過鎖骨/);
   assert.match(result.englishPrompt, /action: fingertips tracing the collarbone/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
 });
 
+
+test('does not append category tag text to browser option labels', () => {
+  const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
+
+  assert.doesNotMatch(appSource, /稀少|少見|（日常）|（情趣）|rarityLabel/);
+  assert.match(appSource, /return typeof optionText === 'string' \? optionText : optionText\.zh/);
+});
 
 test('keeps copyable output English-only even when the source has unsupported Chinese terms', () => {
   const result = rewritePrompt('性感站著', { intensity: 'medium' });
@@ -141,6 +157,17 @@ test('keeps copyable output English-only even when the source has unsupported Ch
   assert.doesNotMatch(result.englishPrompt, /[\u3400-\u9fff]/);
   assert.match(result.chineseConfirmation, /性感站著/);
   assert.match(result.englishPrompt, /adult sensual visual direction based on the reviewed source request/);
+});
+
+test('does not apply multi-character detail field when a single-person count is selected', () => {
+  const result = rewritePrompt('親吻', {
+    count: CUSTOMIZATION_OPTIONS.counts[0].zh,
+    multiCharacterDetails: 'A and B detailed styling'
+  });
+
+  assert.equal(result.ok, true);
+  assert.doesNotMatch(result.chineseConfirmation, /多人細節客製化/);
+  assert.doesNotMatch(result.englishPrompt, /multi-character custom details/);
 });
 
 test('appends safe free-form custom conditions to the English prompt and confirmation', () => {

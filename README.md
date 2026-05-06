@@ -9,9 +9,9 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues.
 - Browser-only implementation with no backend or data collection.
 - 50 lighting-direction presets, 50 camera-angle/viewpoint presets, and 50 art-style presets for richer visual direction.
-- Gender selection plus 100 race presets, split into 50 daily and 50 rare options.
-- 100 outfit presets and 100 scene presets, each split into 50 daily and 50 rare options.
-- 50 emotion presets, 30 outfit-color presets, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, and 100 action presets split into 50 daily interactions and 50 sensual/flirty actions, plus 50 position/interaction presets.
+- Gender selection plus 100 race presets without visible category tags in the selector labels.
+- 100 outfit presets, 100 scene presets, and 100 accessory/prop presets without visible category tags in the selector labels.
+- 50 emotion presets, 30 outfit-color presets, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, 100 action presets, 50 position/interaction presets, and free-form multi-character detail customization when more than one character is selected.
 - Lighting presets avoid scene terms, and pose/outfit presets avoid leaking lighting or scene terms so prompt elements do not conflict.
 - Output shows Chinese confirmation text only for review; the copyable result area contains the English generation prompt only.
 - Image-to-video prompt suggestions: upload a reference image, estimate an adult-only explicitness score from 1-10 locally in the browser, and generate selectable score-aware Chinese meaning confirmations plus English copyable image-to-video prompts.

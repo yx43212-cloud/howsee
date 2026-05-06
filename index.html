@@ -52,7 +52,7 @@
         <div class="section-heading compact">
           <p class="section-kicker">Step 02</p>
           <h2>角色客製化安排</h2>
-          <p>新增性別挑選；種族、服裝、場景各 100 種，皆拆成 50 日常／50 稀少；另有 30 種情緒、30 種服裝配色、30 種身上特徵與服裝完整度。中文只供確認，複製區只輸出英文提示詞。</p>
+          <p>新增性別挑選；種族、服裝、場景、動作、配件與道具都提供大量選項；另有 50 種情緒、服裝配色、身上特徵、服裝完整度、配件道具與多人細節客製化。中文只供確認，複製區只輸出英文提示詞。</p>
         </div>
 
         <div class="custom-grid">
@@ -61,7 +61,7 @@
             <select id="gender"></select>
           </div>
           <div class="field">
-            <label for="race">種族（100 種：50 日常／50 稀少）</label>
+            <label for="race">種族（100 種）</label>
             <select id="race"></select>
           </div>
           <div class="field">
@@ -77,7 +77,7 @@
             <select id="face"></select>
           </div>
           <div class="field">
-            <label for="outfit">服裝穿搭（100 種：50 日常／50 稀少）</label>
+            <label for="outfit">服裝穿搭（100 種）</label>
             <select id="outfit"></select>
           </div>
           <div class="field">
@@ -96,16 +96,24 @@
             <label for="count">人數</label>
             <select id="count"></select>
           </div>
+          <div class="field wide-field">
+            <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
+            <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
+          </div>
           <div class="field">
-            <label for="scene">場景配置（100 種：50 日常／50 稀少）</label>
+            <label for="scene">場景配置（100 種）</label>
             <select id="scene"></select>
           </div>
           <div class="field">
-            <label for="action">動作（100 種：50 日常互動／50 性感騷氣）</label>
+            <label for="accessory">配件與道具（100 種）</label>
+            <select id="accessory"></select>
+          </div>
+          <div class="field">
+            <label for="action">動作（100 種）</label>
             <select id="action"></select>
           </div>
           <div class="field wide-field">
-            <label for="pose">體位／互動（50 種：鏡頭與角色互動）</label>
+            <label for="pose">體位／互動（50 種）</label>
             <select id="pose"></select>
           </div>
         </div>

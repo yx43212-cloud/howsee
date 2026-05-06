@@ -533,6 +533,38 @@ const rareScenePairs = [
   ['鏡像迷宮沙龍', 'mirror-maze salon'], ['漂浮島花園', 'floating-island garden'], ['外星貴族會客艙', 'alien noble reception cabin'], ['夢境薄霧房間', 'dreamlike mist room'], ['古神祭壇遠景室', 'eldritch altar distant chamber']
 ];
 
+
+const dailyAccessoryPairs = [
+  ['珍珠耳環', 'pearl earrings'], ['細金項鍊', 'thin gold necklace'], ['銀色手環', 'silver bracelet'], ['絲巾', 'silk scarf'], ['髮夾', 'hair clip'],
+  ['緞帶髮帶', 'ribbon hairband'], ['細框眼鏡', 'thin-frame glasses'], ['復古墨鏡', 'vintage sunglasses'], ['腕錶', 'wristwatch'], ['香水瓶', 'perfume bottle'],
+  ['小手包', 'small clutch bag'], ['皮革手套', 'leather gloves'], ['蕾絲手套', 'lace gloves'], ['寬簷帽', 'wide-brim hat'], ['貝雷帽', 'beret'],
+  ['高跟鞋', 'high heels'], ['長靴', 'long boots'], ['踝鍊', 'anklet'], ['戒指組', 'ring set'], ['胸針', 'brooch'],
+  ['羽毛披肩', 'feather shawl'], ['薄紗披肩', 'tulle shawl'], ['緞面披肩', 'satin shawl'], ['花束', 'bouquet'], ['紅酒杯', 'wine glass'],
+  ['咖啡杯', 'coffee cup'], ['書本', 'book'], ['復古相機', 'vintage camera'], ['黑膠唱片', 'vinyl record'], ['化妝刷', 'makeup brush'],
+  ['口紅', 'lipstick'], ['粉餅盒', 'compact powder case'], ['鏡子', 'hand mirror'], ['手機', 'smartphone'], ['耳機', 'headphones'],
+  ['羽毛扇', 'feather fan'], ['紙扇', 'paper fan'], ['摺扇', 'folding fan'], ['手提燈', 'hand lantern'], ['燭台', 'candlestick'],
+  ['玫瑰花瓣', 'rose petals'], ['緞面枕頭', 'satin pillow'], ['毛毯', 'soft blanket'], ['相框', 'photo frame'], ['小托盤', 'small tray'],
+  ['珠寶盒', 'jewelry box'], ['香氛蠟燭', 'scented candle'], ['水晶杯', 'crystal glass'], ['金屬腰鏈', 'metal waist chain'], ['透明雨傘', 'transparent umbrella']
+];
+
+const intimateAccessoryPairs = [
+  ['絲質眼罩', 'silk blindfold styling prop'], ['羽毛逗弄棒', 'feather teasing wand'], ['緞帶手腕裝飾', 'ribbon wrist adornment'], ['愛心項圈', 'heart choker'], ['金屬頸環', 'metal collar necklace'],
+  ['皮革腿環', 'leather thigh garter'], ['蕾絲腿環', 'lace thigh garter'], ['緞面綁帶', 'satin tie ribbon'], ['透明薄紗', 'transparent gauze veil'], ['珍珠身體鏈', 'pearl body chain'],
+  ['金色身體鏈', 'gold body chain'], ['心形手拿牌', 'heart-shaped handheld sign'], ['羽毛尾飾', 'feather tail accessory'], ['貓耳髮箍', 'cat-ear headband'], ['兔耳髮箍', 'rabbit-ear headband'],
+  ['狐耳髮箍', 'fox-ear headband'], ['惡魔角髮箍', 'demon-horn headband'], ['天使光環髮箍', 'angel halo headband'], ['小翅膀背飾', 'small wing back accessory'], ['腿部緞帶綁飾', 'leg ribbon wrap'],
+  ['腰間緞帶綁飾', 'waist ribbon wrap'], ['皮革腰封道具', 'leather waist cincher prop'], ['蕾絲面紗', 'lace face veil'], ['薄紗眼紗', 'sheer eye veil'], ['唇印卡片', 'kiss-mark card'],
+  ['心形抱枕', 'heart-shaped pillow'], ['絲質床巾', 'silk sheet prop'], ['緞面長手套', 'satin opera gloves'], ['皮革短手套', 'short leather gloves'], ['透明高跟鞋', 'clear high heels'],
+  ['金屬腳鍊', 'metal ankle chain'], ['珍珠肩鏈', 'pearl shoulder chain'], ['胸前吊鏈裝飾', 'chest chain adornment'], ['腰側吊鏈', 'side-waist chain'], ['水晶流蘇', 'crystal tassel prop'],
+  ['毛絨手銬造型道具', 'fluffy cuff styling prop'], ['緞面束縛造型帶', 'satin restraint-inspired styling ribbon'], ['皮革 harness 造型配件', 'leather harness-inspired accessory'], ['愛心貼紙', 'heart stickers'], ['星形亮片貼飾', 'star sequin stickers'],
+  ['身體亮粉', 'body glitter'], ['香氛按摩油瓶', 'aroma massage oil bottle'], ['玫瑰金鍊條', 'rose-gold chain prop'], ['黑色蕾絲扇', 'black lace fan'], ['紅色緞帶蝴蝶結', 'red satin bow'],
+  ['透明披覆薄膜', 'transparent drape film'], ['羽毛肩飾', 'feather shoulder accessory'], ['水鑽腰帶', 'rhinestone waist belt'], ['心形鎖頭吊飾', 'heart-lock charm'], ['小鈴鐺飾品', 'small bell charm accessory']
+];
+
+const ACCESSORY_OPTIONS = [
+  ...dailyAccessoryPairs.map(([zh, en]) => option(zh, en, 'daily')),
+  ...intimateAccessoryPairs.map(([zh, en]) => option(zh, en, 'intimate'))
+];
+
 const CUSTOMIZATION_OPTIONS = {
   genders: GENDER_OPTIONS,
   faces: FACE_OPTIONS,
@@ -544,6 +576,7 @@ const CUSTOMIZATION_OPTIONS = {
   outfitIntegrity: OUTFIT_INTEGRITY_OPTIONS,
   bodyFeatures,
   counts: COUNT_OPTIONS,
+  accessories: ACCESSORY_OPTIONS,
   actions: ACTION_OPTIONS,
   poses: POSE_OPTIONS,
   scenes: [
@@ -612,6 +645,31 @@ function getCustomizationOption(groupName, value) {
   return getPresetOption(group, value);
 }
 
+function isMultiCharacterCount(countZh) {
+  return !/^單人/.test(countZh);
+}
+
+function validateCustomDetailInput(input) {
+  const details = normalizeInput(input);
+
+  if (!details) {
+    return { ok: true, details: '', englishDetails: '' };
+  }
+
+  const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(details));
+  if (blocked) {
+    return { ok: false, reason: blocked.reason };
+  }
+
+  return {
+    ok: true,
+    details,
+    englishDetails: containsCjk(details)
+      ? 'user-provided multi-character detail customization, apply only as safety-compliant adult styling, roles, spacing, and interaction notes'
+      : details
+  };
+}
+
 function hasSceneLeak(text) {
   const chineseScenePattern = /臥室|房|套房|公寓|旅館|酒店|宮殿|酒吧|露台|花園|泳池|浴室|窗|床|沙發|舞台|圖書館/;
   const englishScenePattern = /\b(studio|bedroom|room|suite|apartment|hotel|palace|bar|terrace|garden|pool|bathroom|window|bed|sofa|stage|library)\b/i;
@@ -657,6 +715,18 @@ function rewritePrompt(input, options = {}) {
     };
   }
 
+  const multiCharacterDetailValidation = validateCustomDetailInput(options.multiCharacterDetails);
+  if (!multiCharacterDetailValidation.ok) {
+    return {
+      ok: false,
+      prompt: '',
+      englishPrompt: '',
+      chineseConfirmation: '',
+      reason: multiCharacterDetailValidation.reason,
+      screened: false
+    };
+  }
+
   const intensity = INTENSITY_WORDS[options.intensity] ? options.intensity : 'medium';
   const lighting = getPresetOption(LIGHTING_DESCRIPTIONS, options.lighting);
   const camera = getPresetOption(CAMERA_ANGLES, options.camera);
@@ -672,6 +742,7 @@ function rewritePrompt(input, options = {}) {
   const outfitIntegrity = getCustomizationOption('outfitIntegrity', options.outfitIntegrity);
   const count = getCustomizationOption('counts', options.count);
   const scene = getCustomizationOption('scenes', options.scene);
+  const accessory = getCustomizationOption('accessories', options.accessory);
   const action = getCustomizationOption('actions', options.action);
   const pose = getCustomizationOption('poses', options.pose);
 
@@ -699,6 +770,7 @@ function rewritePrompt(input, options = {}) {
     `服裝完整度：${outfitIntegrity.zh}`,
     `人數／構圖：${count.zh}`,
     `場景：${scene.zh}`,
+    `配件／道具：${accessory.zh}`,
     `光感：${lighting.zh}`,
     `鏡位：${camera.zh}`,
     `畫風：${artStyle.zh}`,
@@ -710,6 +782,11 @@ function rewritePrompt(input, options = {}) {
 
   if (customConditionValidation.conditions) {
     chinesePrompt.push(`客製化條件：${customConditionValidation.conditions}`);
+  }
+
+  const shouldApplyMultiCharacterDetails = isMultiCharacterCount(count.zh) && multiCharacterDetailValidation.details;
+  if (shouldApplyMultiCharacterDetails) {
+    chinesePrompt.push(`多人細節客製化：${multiCharacterDetailValidation.details}`);
   }
 
   const englishSubject = toCopySafeEnglishSubject(rewritten);
@@ -727,6 +804,7 @@ function rewritePrompt(input, options = {}) {
     `outfit integrity: ${outfitIntegrity.en}`,
     `character count/composition: ${count.en}`,
     `scene: ${scene.en}`,
+    `accessory/prop: ${accessory.en}`,
     `lighting: ${lighting.en}`,
     `camera angle: ${camera.en}`,
     `art style: ${artStyle.en}`,
@@ -740,6 +818,10 @@ function rewritePrompt(input, options = {}) {
 
   if (customConditionValidation.conditions) {
     englishPrompt.push(`custom conditions: ${customConditionValidation.conditions}`);
+  }
+
+  if (shouldApplyMultiCharacterDetails) {
+    englishPrompt.push(`multi-character custom details: ${multiCharacterDetailValidation.englishDetails}`);
   }
 
   return {
@@ -932,6 +1014,7 @@ if (typeof module !== 'undefined') {
     TIME_POINTS,
     GENDER_OPTIONS,
     ACTION_OPTIONS,
+    ACCESSORY_OPTIONS,
     CUSTOMIZATION_OPTIONS,
     IMAGE_TO_VIDEO_TIER_PROMPTS,
     getImageToVideoPromptChoices,

@@ -13,7 +13,9 @@ const outfitColor = document.querySelector('#outfitColor');
 const bodyFeature = document.querySelector('#bodyFeature');
 const outfitIntegrity = document.querySelector('#outfitIntegrity');
 const count = document.querySelector('#count');
+const multiCharacterDetails = document.querySelector('#multiCharacterDetails');
 const scene = document.querySelector('#scene');
+const accessory = document.querySelector('#accessory');
 const action = document.querySelector('#action');
 const pose = document.querySelector('#pose');
 const customConditions = document.querySelector('#customConditions');
@@ -58,14 +60,7 @@ function setResultVisibility(isVisible) {
 }
 
 function getOptionLabel(optionText) {
-  const baseLabel = typeof optionText === 'string' ? optionText : optionText.zh;
-
-  if (typeof optionText !== 'object' || !optionText.rarity) {
-    return baseLabel;
-  }
-
-  const rarityLabel = optionText.rarity === 'rare' ? '稀少' : '日常';
-  return `${baseLabel}（${rarityLabel}）`;
+  return typeof optionText === 'string' ? optionText : optionText.zh;
 }
 
 function populateSelect(select, options) {
@@ -189,6 +184,7 @@ function setupCustomizationControls() {
   populateSelect(bodyFeature, CUSTOMIZATION_OPTIONS.bodyFeatures);
   populateSelect(outfitIntegrity, CUSTOMIZATION_OPTIONS.outfitIntegrity);
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
+  populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
   populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
   populateSelect(action, CUSTOMIZATION_OPTIONS.actions);
   populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
@@ -281,6 +277,8 @@ rewriteButton.addEventListener('click', () => {
     bodyFeature: bodyFeature.value,
     outfitIntegrity: outfitIntegrity.value,
     count: count.value,
+    multiCharacterDetails: multiCharacterDetails.value,
+    accessory: accessory.value,
     scene: scene.value,
     action: action.value,
     pose: pose.value,
