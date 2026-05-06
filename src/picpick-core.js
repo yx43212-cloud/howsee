@@ -33,27 +33,31 @@
 
   const basicStyleGroups = Object.keys(basicPlanGroups);
 
-  const basicPlans = Object.entries(basicPlanGroups).flatMap(([group, labels]) => Array.from({ length: 50 }, (_, index) => {
-    const label = labels[index % labels.length];
-    const variant = Math.floor(index / labels.length) + 1;
-    const finalLabel = variant === 1 ? label : `${label} ${variant}`;
+  const planModifiers = ['清透', '高級', '活潑', '復古', '電影感', '極簡', '潮流', '溫柔', '強視覺', '故事感'];
+
+  const basicPlans = Object.entries(basicPlanGroups).flatMap(([group, labels]) => planModifiers.flatMap((modifier) => labels.map((label, index) => {
+    const finalLabel = `${modifier}${label}`;
     return {
-      id: `basic-plan-${group}-${String(index + 1).padStart(2, '0')}`,
+      id: `basic-plan-${group}-${modifier}-${String(index + 1).padStart(2, '0')}`,
       label: finalLabel,
       category: group,
       prompt: `以「${group}」作為統整性視覺規劃，方向為「${finalLabel}」。請由 AI 自行統整畫風、光線、場景、配色、構圖、排版、用途與細節，不要要求使用者逐項指定元素；整體要清楚、可執行、適合快速生成。`
     };
-  }));
+  })));
+
+  const styleModifiers = ['標準', '高級', '柔光', '強對比'];
 
   const makeOptions = (categories, perCategory, prefix) => categories.flatMap((category) => {
     const base = categoryItems[category] || [];
     return Array.from({ length: perCategory }, (_, index) => {
-      const label = base[index % base.length] || `${category}${index + 1}`;
+      const label = base[index % base.length] || category;
+      const modifier = styleModifiers[Math.floor(index / Math.max(base.length, 1)) % styleModifiers.length];
+      const finalLabel = modifier === '標準' ? label : `${modifier}${label}`;
       return {
         id: `${prefix}-${category}-${String(index + 1).padStart(2, '0')}`,
-        label: index < base.length ? label : `${label} ${Math.floor(index / base.length) + 1}`,
+        label: finalLabel,
         category,
-        prompt: `${category}的${index < base.length ? label : `${label}延伸變化`}，保持照片主體辨識度並提升整體完成度`
+        prompt: `${category}的${finalLabel}，保持照片主體辨識度並提升整體完成度`
       };
     });
   });
@@ -74,6 +78,53 @@
   };
   const makeGrouped = (groups, prefix, promptSuffix = '') => Object.entries(groups).flatMap(([category, labels]) => labels.map((label, index) => ({ id: `${prefix}-${category}-${index + 1}`, label, category, prompt: `${label}${promptSuffix}` })));
 
+  const makeCombinationOptions = ({ prefix, category, starts, ends, promptSuffix }) => starts.flatMap((start) => ends.map((end, index) => ({
+    id: `${prefix}-${start}-${String(index + 1).padStart(2, '0')}`,
+    label: `${start}${end}`,
+    category,
+    prompt: `${start}${end}${promptSuffix}`
+  })));
+
+  const maleOutfits = makeCombinationOptions({
+    prefix: 'male-outfit',
+    category: '男裝',
+    starts: ['俐落', '高級', '休閒', '街頭', '商務', '復古', '韓系', '日系', '極簡', '潮流'],
+    ends: ['白襯衫', '深色西裝', '針織外套', '寬版長褲', '牛仔夾克', 'Polo衫', '風衣', '亞麻套裝', '機能背心', '短版外套'],
+    promptSuffix: '，男裝造型自然合身，依人物比例與用途調整，不指定道具或場景'
+  });
+
+  const femaleOutfits = makeCombinationOptions({
+    prefix: 'female-outfit',
+    category: '女裝',
+    starts: ['優雅', '韓系', '法式', '甜美', '俐落', '復古', '高級', '日系', '極簡', '潮流'],
+    ends: ['襯衫裙', '針織套裝', '西裝外套', '高腰長裙', '緞面洋裝', '寬褲套裝', '短版外套', '柔軟毛衣', '俐落襯衫', '長版風衣'],
+    promptSuffix: '，女裝造型自然合身，依人物比例與用途調整，不指定道具或場景'
+  });
+
+  const maleActions = makeCombinationOptions({
+    prefix: 'male-action',
+    category: '男動作',
+    starts: ['沉穩', '自信', '放鬆', '專注', '轉身', '行走', '凝視', '微笑', '挺身', '側身'],
+    ends: ['站姿', '半身姿態', '肩線延伸', '視線引導', '重心轉移', '手部自然擺放', '低角度氣場', '上半身律動', '步伐停格', '安靜張力'],
+    promptSuffix: '，只描述身體姿態與表情張力，不包含任何指定道具或場景限定'
+  });
+
+  const femaleActions = makeCombinationOptions({
+    prefix: 'female-action',
+    category: '女動作',
+    starts: ['柔和', '自信', '優雅', '俏皮', '沉思', '轉身', '行走', '凝視', '微笑', '伸展'],
+    ends: ['站姿', '半身姿態', '肩頸線條', '視線引導', '重心轉移', '手部自然擺放', '低角度氣場', '上半身律動', '步伐停格', '安靜張力'],
+    promptSuffix: '，只描述身體姿態與表情張力，不包含任何指定道具或場景限定'
+  });
+
+  const actionTensions = makeCombinationOptions({
+    prefix: 'action-tension',
+    category: '動作張力',
+    starts: ['低調', '自然', '柔和', '清爽', '穩定', '專注', '自信', '鮮明', '戲劇', '強烈'],
+    ends: ['眼神張力', '肩線張力', '姿態張力', '步伐張力', '停格張力', '情緒張力', '輪廓張力', '節奏張力', '構圖張力', '鏡頭張力'],
+    promptSuffix: '，用於控制動作能量、視線、姿態與畫面節奏，不綁定道具或場景'
+  });
+
   const data = {
     photo_types: photoTypes,
     person_modes: photoTypes,
@@ -84,6 +135,11 @@
     styles: makeOptions(styleCategories, 20, 'style'),
     lights: makeGrouped(lightCategories, 'light', '，光線合理、層次清楚'),
     locations: makeGrouped({ '攝影棚': ['白背景棚', '灰牆棚', '彩色紙棚', '自然光棚', '商攝棚'], '咖啡廳': ['木質咖啡廳', '韓系咖啡廳', '窗邊座位', '復古咖啡館', '夜間咖啡吧'], '街頭': ['城市街頭', '霓虹巷弄', '斑馬線', '老街', '雨後街景'], '商辦空間': ['高樓辦公室', '會議室', '共享空間', '玻璃大廳', '主管辦公室'], '百貨商場': ['精品櫥窗', '百貨中庭', '電扶梯旁', '香氛專櫃', '時尚走廊'], '家居空間': ['客廳', '臥室', '廚房', '陽台', '閱讀角'], '校園': ['圖書館', '教室', '校園步道', '操場', '社團教室'], '大自然': ['森林', '海邊', '草地', '山景', '花園'], '旅遊場景': ['機場', '飯店大廳', '歐洲小鎮', '海島度假', '夜市'], '特殊主題場景': ['未來城市', '魔法森林', '美術館', '音樂祭', '節慶市集'] }, 'location', '作為場景'),
+    male_outfits: maleOutfits,
+    female_outfits: femaleOutfits,
+    male_actions: maleActions,
+    female_actions: femaleActions,
+    action_tensions: actionTensions,
     outfits: makeGrouped({ '保留 / 自動': ['保留原服裝', '自動換裝'], '男裝': ['俐落襯衫', '西裝套裝', '針織外套', '街頭帽T', '機能外套'], '女裝': ['韓系洋裝', '法式襯衫', '高腰套裝', '柔軟針織', '小禮服'], '男女搭配': ['簡約同色系', '黑白對比', '休閒牛仔', '高級商務', '度假亞麻'], '雙人搭配': ['協調情侶色', '主從層次', '一正式一休閒', '雙人雜誌感', '同材質呼應'], '多人群體搭配': ['群體同色系', '層次制服感', '品牌團隊感', '派對亮色', '自然休閒'], '商務搭配': ['正式西裝', '商務休閒', '履歷襯衫', '高階主管', '創業者形象'], '主題造型搭配': ['奇幻斗篷', '復古禮服', '未來科技裝', '節慶造型', '舞台造型'] }, 'outfit', '，服裝自然合身'),
     accessories: makeGrouped({ '配件模式': ['不加配件', '保留原配件', '替換配件', '新增 1 個配件', '新增 2–3 個配件', '主題配件組合'], '個人形象配件': ['眼鏡', '帽子', '耳環', '手錶', '絲巾'], '商務專業配件': ['筆電', '文件夾', '名片', '鋼筆', '皮革公事包'], '攝影創作配件': ['相機', '反光板', '底片機', '花束', '咖啡杯'], '時尚潮流配件': ['墨鏡', '鏈條包', '潮流球鞋', '棒球帽', '金屬飾品'], '生活日常配件': ['書本', '手機', '帆布袋', '水杯', '耳機'], '奇幻變身配件': ['魔法杖', '羽毛冠', '星光飾品', '披風扣', '水晶球'], '復古懷舊配件': ['拍立得', '黑膠唱片', '老式電話', '復古行李箱', '膠框眼鏡'], '社群拍攝配件': ['手拿牌', '小道具', '貼紙元素', '品牌立牌', '打卡小物'], '節慶主題配件': ['聖誕花圈', '燈串', '紅包', '派對帽', '節慶花束'] }, 'accessory', '，避免過多雜物'),
     color_palettes: makeGrouped({ '常用': ['奶油色', '黑金', '粉色', '藍灰', '莫蘭迪', '復古棕', '霓虹色'], '高級': ['象牙白與香檳金', '深海藍與銀灰', '可可棕與米白', '墨綠與古銅', '酒紅與黑'], '清新': ['霧粉與杏色', '湖水藍與白', '鼠尾草綠', '淡紫灰', '淺檸檬黃'], '品牌': ['主色強化', '輔色平衡', '點綴色醒目', '背景色乾淨', '文字建議高對比'] }, 'palette', '配色'),
@@ -377,6 +433,11 @@
     const style = value(normalized, 'styleId', 'styles');
     const light = value(normalized, 'lightId', 'lights');
     const location = value(normalized, 'locationId', 'locations');
+    const maleOutfit = value(normalized, 'maleOutfitId', 'male_outfits');
+    const femaleOutfit = value(normalized, 'femaleOutfitId', 'female_outfits');
+    const maleAction = value(normalized, 'maleActionId', 'male_actions');
+    const femaleAction = value(normalized, 'femaleActionId', 'female_actions');
+    const actionTension = value(normalized, 'actionTensionId', 'action_tensions');
     const outfit = value(normalized, 'outfitId', 'outfits');
     const accessory = value(normalized, 'accessoryId', 'accessories');
     const palette = value(normalized, 'paletteId', 'color_palettes');
@@ -391,8 +452,8 @@
       : `框線設定：${frame.label}，${describeFrameSettings(normalized.tuning)}；這裡的框線是畫面內的設計線條，不是裁切外框。`;
     const textPart = buildTextPart(normalized);
     const briefPart = normalized.text?.note ? `使用者簡短需求：${normalized.text.note}。` : '';
-    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${agePart}。${normalized.mode === 'basic' ? `基礎版統整規劃：「${basicPlan.category}／${basicPlan.label}」，${basicPlan.prompt}。` : ''}整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${briefPart}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
-    const shortPrompt = `${photo.label}照片編輯，${normalized.mode === 'basic' ? `${basicPlan.category}／${basicPlan.label}、` : ''}${style.label}、${light.label}、${location.label}、${outfit.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，${sliderGuidance('identity', normalized.tuning.identity, photo.label)}，${normalized.includeText ? '含指定文字且需準確排版' : '不加文字'}。`;
+    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${agePart}。${normalized.mode === 'basic' ? `基礎版統整規劃：「${basicPlan.category}／${basicPlan.label}」，${basicPlan.prompt}。` : ''}整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；性別服裝補充：男裝「${maleOutfit.label}」：${maleOutfit.prompt}；女裝「${femaleOutfit.label}」：${femaleOutfit.prompt}。動作補充：男動作「${maleAction.label}」：${maleAction.prompt}；女動作「${femaleAction.label}」：${femaleAction.prompt}；動作張力「${actionTension.label}」：${actionTension.prompt}。配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${briefPart}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
+    const shortPrompt = `${photo.label}照片編輯，${normalized.mode === 'basic' ? `${basicPlan.category}／${basicPlan.label}、` : ''}${style.label}、${light.label}、${location.label}、${outfit.label}、${maleOutfit.label}、${femaleOutfit.label}、${actionTension.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，${sliderGuidance('identity', normalized.tuning.identity, photo.label)}，${normalized.includeText ? '含指定文字且需準確排版' : '不加文字'}。`;
     const negativePrompt = data.negative_prompt_rules.join('、') + '、過度磨皮、主體失真、文字位置錯亂、品牌資訊遺漏。';
     return { fullPrompt, shortPrompt, negativePrompt, styleCode: getStyleCode(normalized), state: normalized };
   }
@@ -406,6 +467,11 @@
       styleId: state.styleId || data.styles[0].id,
       lightId: state.lightId || data.lights[0].id,
       locationId: state.locationId || data.locations[0].id,
+      maleOutfitId: state.maleOutfitId || data.male_outfits[0].id,
+      femaleOutfitId: state.femaleOutfitId || data.female_outfits[0].id,
+      maleActionId: state.maleActionId || data.male_actions[0].id,
+      femaleActionId: state.femaleActionId || data.female_actions[0].id,
+      actionTensionId: state.actionTensionId || data.action_tensions[0].id,
       outfitId: state.outfitId || data.outfits[0].id,
       accessoryId: state.accessoryId || data.accessories[0].id,
       paletteId: state.paletteId || data.color_palettes[0].id,

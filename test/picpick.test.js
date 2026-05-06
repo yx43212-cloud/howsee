@@ -9,8 +9,15 @@ test('provides PicPick expandable option structures and requested counts', () =>
   assert.equal(picpickData.styles.length, 200);
   assert.equal(picpickData.basic_style_groups.length, 10);
   assert.equal(picpickData.basic_plans.length, 500);
+  assert.ok(picpickData.styles.every(({ label }) => !/\s\d+$/.test(label)));
+  assert.ok(picpickData.basic_plans.every(({ label }) => !/\s\d+$/.test(label)));
   assert.equal(picpickData.locations.length, 100);
   assert.equal(picpickData.outfits.length, 100);
+  assert.equal(picpickData.male_outfits.length, 100);
+  assert.equal(picpickData.female_outfits.length, 100);
+  assert.equal(picpickData.male_actions.length, 100);
+  assert.equal(picpickData.female_actions.length, 100);
+  assert.equal(picpickData.action_tensions.length, 100);
   assert.equal(picpickData.accessories.length, 100);
   assert.equal(picpickData.color_palettes.length, 100);
   assert.ok(picpickData.color_palettes.every((palette) => palette.category));
@@ -42,6 +49,9 @@ test('assembles full, short, negative prompts and deterministic style code witho
 
   assert.match(result.fullPrompt, /照片類型 \/ 人物模式為「雙人」/);
   assert.match(result.fullPrompt, /加入文字：主標題「新品上市」、副標題「PicPick 風格測試」/);
+  assert.match(result.fullPrompt, /性別服裝補充：男裝/);
+  assert.match(result.fullPrompt, /動作補充：男動作/);
+  assert.match(result.fullPrompt, /不包含任何指定道具或場景限定/);
   assert.match(result.fullPrompt, /嚴格保留原照片人物 \/ 主體的五官/);
   assert.doesNotMatch(result.fullPrompt, /\d+\/100/);
   assert.doesNotMatch(result.shortPrompt, /\d+\/100/);
@@ -93,4 +103,9 @@ test('basic and expert generators are separated into tabbed pages', () => {
   assert.match(html, /aria-label="高手版分頁"/);
   assert.match(html, /data-tab-button="expert-style"/);
   assert.match(html, /data-tab-panel="expert-text"/);
+  assert.match(html, /name="maleOutfitId" data-source="male_outfits"/);
+  assert.match(html, /name="femaleOutfitId" data-source="female_outfits"/);
+  assert.match(html, /name="maleActionId" data-source="male_actions"/);
+  assert.match(html, /name="femaleActionId" data-source="female_actions"/);
+  assert.match(html, /name="actionTensionId" data-source="action_tensions"/);
 });
