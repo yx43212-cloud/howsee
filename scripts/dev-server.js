@@ -64,7 +64,7 @@ server.listen(port, host, () => {
   const localUrl = `http://localhost:${port}/`;
   const loopbackUrl = `http://127.0.0.1:${port}/`;
 
-  console.log('好想瑟瑟 Prompt Rewriter is running.');
+  console.log('PicPick AI Photo Prompt Generator is running.');
   console.log(`Local:   ${localUrl}`);
   console.log(`Loopback: ${loopbackUrl}`);
   console.log(`Network: http://${host}:${port}/`);

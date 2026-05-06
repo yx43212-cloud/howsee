@@ -2,13 +2,13 @@
   "name": "howsee",
   "version": "0.1.0",
   "private": true,
-  "description": "Adult-only prompt rewriting prototype with safety guardrails.",
+  "description": "PicPick AI photo prompt generator MVP.",
   "scripts": {
     "test": "node --test",
     "dev": "node scripts/dev-server.js",
     "start": "npm run dev",
     "build": "node scripts/build-static.js",
-    "check": "node --check src/translator.js && node --check src/app.js && node --check scripts/dev-server.js && node --check scripts/build-static.js && node --check test/translator.test.js"
+    "check": "node --check src/picpick-core.js && node --check src/app.js && node --check scripts/dev-server.js && node --check scripts/build-static.js && node --check test/picpick.test.js"
   },
   "devDependencies": {},
   "engines": {

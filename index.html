@@ -3,281 +3,150 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>好色之圖HowSir</title>
+    <title>PicPick 挑一張｜AI 照片提示詞生成器</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="hero">
-        <p class="eyebrow">18+ consensual prompt atelier</p>
-        <h1>好色之圖HowSir</h1>
-        <p>祝各位老司機安心上路</p>
-      </section>
-
-      <nav class="mode-switch" aria-label="提示詞模式切換">
-        <button id="textModeButton" type="button" class="mode-button active">文生圖提示詞</button>
-        <button id="videoModeButton" type="button" class="mode-button">圖轉影提示詞</button>
+    <header class="topbar">
+      <a class="brand" href="#home" data-route="home"><span>PicPick</span><small>挑一張</small></a>
+      <nav aria-label="主要導覽">
+        <a href="#basic" data-route="basic">快速生成</a>
+        <a href="#expert" data-route="expert">進階客製</a>
+        <a href="#library" data-route="library">我的風格庫</a>
       </nav>
+    </header>
 
-      <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
-        <div class="section-heading">
-          <p class="section-kicker">Step 01</p>
-          <h2 id="input-title">輸入提示詞</h2>
-        </div>
-
-        <label for="sourcePrompt">原始描述</label>
-        <textarea id="sourcePrompt" rows="7" placeholder="例如：脫衣服 親吻"></textarea>
-
-        <div class="control-grid">
-          <div class="field">
-            <label for="intensity">情慾強度</label>
-            <select id="intensity">
-              <option value="soft">柔和</option>
-              <option value="medium" selected>中等</option>
-              <option value="strong">強烈</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="lighting">光感描述（50 種）</label>
-            <select id="lighting"></select>
-          </div>
-
-          <div class="field">
-            <label for="camera">鏡位視角（50 種）</label>
-            <select id="camera"></select>
-          </div>
-
-          <div class="field">
-            <label for="composition">構圖結構（50 種）</label>
-            <select id="composition"></select>
-          </div>
-
-          <div class="field">
-            <label for="artStyle">畫風（100 種）</label>
-            <select id="artStyle"></select>
+    <main id="app" class="app-shell">
+      <section id="homePage" class="page home-page">
+        <div class="hero-card">
+          <p class="eyebrow">AI photo prompt generator</p>
+          <h1>PicPick 挑一張</h1>
+          <p class="hero-copy">不是修圖軟體，而是把你的照片需求轉成可直接貼到 ChatGPT、Midjourney、Grok、Gemini、可靈、即夢的 AI 照片編輯提示詞。</p>
+          <div class="hero-actions">
+            <button class="primary" data-route="basic" type="button">開始快速生成</button>
+            <button class="secondary" data-route="expert" type="button">打開高手版</button>
           </div>
         </div>
-
-        <div class="section-heading compact">
-          <p class="section-kicker">Step 02</p>
-          <h2>角色客製化安排</h2>
-          <p>新增性別挑選；種族後 50 項為非自然幻想／科幻類，服裝前 50 項日常、後 50 項騷氣情趣感但不顯示標籤；動作與體位會依人數切換，單人偏鏡頭／POV／入鏡手互動，多人偏角色間互動。中文只供確認，複製區只輸出英文提示詞。</p>
-        </div>
-
-        <div class="custom-grid">
-          <div class="field">
-            <label for="gender">性別</label>
-            <select id="gender"></select>
-          </div>
-          <div class="field">
-            <label for="race">種族（100 種，後 50 非自然）</label>
-            <select id="race"></select>
-          </div>
-          <div class="field">
-            <label for="emotion">情緒（50 種）</label>
-            <select id="emotion"></select>
-          </div>
-          <div class="field">
-            <label for="timePoint">時間點／光色質感（20 種）</label>
-            <select id="timePoint"></select>
-          </div>
-          <div class="field">
-            <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
-            <select id="ageBracket"></select>
-          </div>
-          <div class="field">
-            <label for="occupation">職業（50 種）</label>
-            <select id="occupation"></select>
-          </div>
-          <div class="field">
-            <label for="bodyProportion">身材比例（50 種）</label>
-            <select id="bodyProportion"></select>
-          </div>
-          <div class="field">
-            <label for="face">臉蛋</label>
-            <select id="face"></select>
-          </div>
-          <div class="field">
-            <label for="outfit">服裝穿搭（前50日常／後50情趣）</label>
-            <select id="outfit"></select>
-          </div>
-          <div class="field">
-            <label for="outfitColor">服裝顏色（50 種）</label>
-            <select id="outfitColor"></select>
-          </div>
-          <div class="field">
-            <label for="outfitMaterial">服裝材質（50 種）</label>
-            <select id="outfitMaterial"></select>
-          </div>
-          <div class="field">
-            <label for="bodyFeature">身上特徵（30 種）</label>
-            <select id="bodyFeature"></select>
-          </div>
-          <div class="field">
-            <label for="outfitIntegrity">服裝完整度</label>
-            <select id="outfitIntegrity"></select>
-          </div>
-          <div class="field">
-            <label for="count">人數</label>
-            <select id="count"></select>
-          </div>
-          <div class="field wide-field">
-            <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
-            <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
-          </div>
-          <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
-            <article class="character-card" data-character-card="1">
-              <h3>角色 1</h3>
-              <label for="character1Gender">性別</label><select id="character1Gender"></select>
-              <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
-              <label for="character1Age">年齡</label><select id="character1Age"></select>
-              <label for="character1Body">身材比例</label><select id="character1Body"></select>
-            </article>
-            <article class="character-card" data-character-card="2" hidden>
-              <h3>角色 2</h3>
-              <label for="character2Gender">性別</label><select id="character2Gender"></select>
-              <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
-              <label for="character2Age">年齡</label><select id="character2Age"></select>
-              <label for="character2Body">身材比例</label><select id="character2Body"></select>
-            </article>
-            <article class="character-card" data-character-card="3" hidden>
-              <h3>角色 3</h3>
-              <label for="character3Gender">性別</label><select id="character3Gender"></select>
-              <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
-              <label for="character3Age">年齡</label><select id="character3Age"></select>
-              <label for="character3Body">身材比例</label><select id="character3Body"></select>
-            </article>
-          </div>
-          <div class="field">
-            <label for="scene">場景配置（100 種）</label>
-            <select id="scene"></select>
-          </div>
-          <div class="field">
-            <label for="accessory">配件與道具（100 種）</label>
-            <select id="accessory"></select>
-          </div>
-          <div class="field">
-            <label for="action">動作（依人數各 100 種）</label>
-            <select id="action"></select>
-          </div>
-          <div class="field wide-field">
-            <label for="pose">體位／互動（依人數各 100 種）</label>
-            <select id="pose"></select>
-          </div>
-        </div>
-
-        <label for="customConditions">可塞入的客製化條件</label>
-        <textarea id="customConditions" rows="4" placeholder="例如：85mm lens, shallow depth of field, pearl accessories, no watermark"></textarea>
-
-        <button id="rewriteButton" type="button">轉譯提示詞</button>
-      </section>
-
-
-      <section id="imageVideoPanel" class="panel image-panel" aria-labelledby="image-title" hidden>
-        <div class="section-heading">
-          <p class="section-kicker">Image to Video</p>
-          <h2 id="image-title">圖轉影提示詞建議</h2>
-          <p>上傳圖片後，瀏覽器會在本機估算色情程度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
-        </div>
-
-        <div class="image-upload-grid">
-          <div class="field wide-field">
-            <label for="imageInput">上傳參考圖片</label>
-            <input id="imageInput" type="file" accept="image/*" />
-          </div>
-          <div class="field">
-            <label for="videoDuration">影片秒數</label>
-            <select id="videoDuration">
-              <option value="3">3 秒</option>
-              <option value="5" selected>5 秒</option>
-              <option value="8">8 秒</option>
-              <option value="12">12 秒</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="motionStrength">動態強度</label>
-            <select id="motionStrength">
-              <option value="subtle">細微</option>
-              <option value="medium" selected>中等</option>
-              <option value="strong">較強</option>
-            </select>
-          </div>
-        </div>
-
-        <img id="imagePreview" class="image-preview" alt="上傳圖片預覽" hidden />
-
-        <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
-        <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
-
-        <label for="desiredMotion">希望圖轉影怎麼動（選填）</label>
-        <textarea id="desiredMotion" rows="4" placeholder="例如：slow push-in, hair and fabric gently moving, confident gaze to camera"></textarea>
-
-        <button id="imageVideoButton" type="button">產生圖轉影提示詞</button>
-        <div class="field" id="imageVideoChoiceField" hidden>
-          <label for="imageVideoPromptChoice">圖轉影色情程度提示詞（可挑選）</label>
-          <select id="imageVideoPromptChoice"></select>
-        </div>
-        <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
-      </section>
-
-      <section class="panel output-panel" aria-live="polite">
-        <div id="beginnerPreview" class="beginner-preview">
-          <div class="section-heading">
-            <p class="section-kicker">Beginner Preview</p>
-            <h2>新手大概預覽</h2>
-            <p>這不是生成圖片，只是依照你選的客製化條件做構圖、角色與氛圍摘要，方便先確認方向。</p>
-          </div>
-          <div id="previewStage" class="preview-stage" data-count="single" aria-label="大概構圖預覽">
-            <span class="preview-silhouette primary"></span>
-          </div>
-          <p id="previewSummary" class="preview-summary">先輸入描述或挑選條件，這裡會即時整理你的客製化方向。</p>
-          <div id="previewDetails" class="preview-details" aria-label="分層預覽說明"></div>
-          <p id="previewAdvice" class="preview-advice">AI 判斷會先自動補一組具體建議，方便新手看方向。</p>
-          <div id="previewChips" class="preview-chips" aria-label="目前客製化條件摘要"></div>
-        </div>
-
-        <div id="textOutputArea" class="output-mode-area">
-          <div class="section-heading">
-            <p class="section-kicker">Text Output</p>
-            <h2>文生圖：中文對照＋英文可複製</h2>
-          </div>
-          <p id="textStatus" class="status">可直接用客製化選項轉譯；原始描述空白時會自動建立基本成人視覺主題。</p>
-          <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
-          <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
-          <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
-          <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
-          <button id="copyTextButton" type="button" class="secondary-button" hidden>複製文生圖英文提示詞</button>
-        </div>
-
-        <div id="videoOutputArea" class="output-mode-area" hidden>
-          <div class="section-heading">
-            <p class="section-kicker">Video Output</p>
-            <h2>圖轉影：中文對照＋英文可複製</h2>
-          </div>
-          <p id="videoStatus" class="status">等待上傳圖片並產生圖轉影提示詞。</p>
-          <label for="videoConfirmationPrompt" class="video-output-label" hidden>中文圖轉影提示詞（對照用）</label>
-          <textarea id="videoConfirmationPrompt" rows="8" readonly hidden></textarea>
-          <label for="videoResultPrompt" class="video-output-label" hidden>English image-to-video prompt（可複製）</label>
-          <textarea id="videoResultPrompt" rows="12" readonly hidden></textarea>
-          <button id="copyVideoButton" type="button" class="secondary-button" hidden>複製圖轉影英文提示詞</button>
+        <div class="entry-grid">
+          <article class="entry-card soft-pink">
+            <span class="entry-icon">⚡</span>
+            <h2>快速生成</h2>
+            <p>菜鳥版：選風格 → 微調 → 產提示詞。步驟少、選項少，適合第一次使用。</p>
+            <button data-route="basic" type="button">進入菜鳥版</button>
+          </article>
+          <article class="entry-card soft-blue">
+            <span class="entry-icon">🎛️</span>
+            <h2>進階客製</h2>
+            <p>高手版：完整模組、分類篩選、進階 BAR、框線與文字細節都能深度控制。</p>
+            <button data-route="expert" type="button">進入高手版</button>
+          </article>
+          <article class="entry-card soft-green">
+            <span class="entry-icon">🗂️</span>
+            <h2>我的風格庫</h2>
+            <p>保存常用組合、模板與風格碼，之後可再次套用、編輯或刪除。</p>
+            <button data-route="library" type="button">查看風格庫</button>
+          </article>
         </div>
       </section>
 
-      <section class="guardrails">
-        <div class="section-heading">
-          <p class="section-kicker">Safety</p>
-          <h2>安全邊界</h2>
+      <section id="basicPage" class="page generator-page" hidden>
+        <div class="page-heading">
+          <p class="eyebrow">Basic customization</p>
+          <h1>快速生成｜菜鳥版</h1>
+          <p>用 4 個卡片步驟完成。只顯示大分類與常用選項，不會一開始把全部設定丟給你。</p>
         </div>
-        <ul>
-          <li>只允許明確成年且合意的角色與情境。</li>
-          <li>拒絕未成年、非合意、偷拍、血腥暴力等內容。</li>
-          <li>輸出以氛圍、構圖、姿態、光影與情緒描述為主。</li>
-        </ul>
+        <form id="basicForm" class="workflow" data-mode="basic">
+          <aside class="steps" aria-label="菜鳥版步驟">
+            <span class="active">1 上傳</span><span>2 選風格</span><span>3 微調</span><span>4 產提示詞</span>
+          </aside>
+          <div class="form-stack">
+            <section class="panel step-card">
+              <div class="section-title"><span>Step 01</span><h2>上傳照片與照片類型</h2></div>
+              <div class="upload-grid">
+                <label class="upload-drop">選擇照片<input id="basicImage" name="image" type="file" accept="image/*" /></label>
+                <div class="preview-box"><img id="basicPreview" alt="照片預覽" hidden /><span id="basicPreviewText">尚未上傳照片</span></div>
+              </div>
+              <div class="option-grid" data-field="photoTypeId" data-source="photo_types"></div>
+              <label class="field-label">年紀</label>
+              <select name="ageModeId" data-source="age_modes"></select>
+            </section>
+
+            <section class="panel step-card">
+              <div class="section-title"><span>Step 02</span><h2>選風格與常用條件</h2></div>
+              <div class="category-grid basic-style-grid" data-field="styleId" data-basic="styles"></div>
+              <div class="two-col">
+                <label>光線<select name="lightId" data-basic-labels="lights"></select></label>
+                <label>地點<select name="locationId" data-basic-labels="locations"></select></label>
+                <label>服裝<select name="outfitId" data-basic-labels="outfits"></select></label>
+                <label>配件<select name="accessoryId" data-basic-labels="accessories"></select></label>
+                <label>配色<select name="paletteId" data-basic-labels="palettes"></select></label>
+                <label>氛圍<select name="moodId" data-basic-labels="moods"></select></label>
+                <label>框線<select name="frameId" data-source="frames" data-limit="6"></select></label>
+                <label>排版<select name="layoutId" data-basic-labels="layouts"></select></label>
+                <label>用途<select name="outputId" data-basic-labels="outputs"></select></label>
+              </div>
+            </section>
+
+            <section class="panel step-card">
+              <div class="section-title"><span>Step 03</span><h2>少量 BAR 微調</h2></div>
+              <div class="slider-grid" data-sliders="basic"></div>
+              <label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label>
+              <div class="text-fields" data-text-panel hidden>
+                <label>主標題<input name="text.title" type="text" placeholder="例如：春季新品上市" /></label>
+                <label>副標題<input name="text.subtitle" type="text" placeholder="例如：用一張照片完成品牌感" /></label>
+                <label>字體風格<select name="textStyleId" data-source="text_styles"></select></label>
+              </div>
+            </section>
+
+            <section class="panel step-card action-card">
+              <div><h2>準備好了嗎？</h2><p>PicPick 會產出完整提示詞、精簡提示詞、負面提示詞與專屬風格碼。</p></div>
+              <button class="primary" type="submit">生成提示詞</button>
+            </section>
+          </div>
+        </form>
+      </section>
+
+      <section id="expertPage" class="page generator-page" hidden>
+        <div class="page-heading">
+          <p class="eyebrow">Expert customization</p>
+          <h1>進階客製｜高手版</h1>
+          <p>完整模組展開，支援搜尋、分類切換與極度客製化。資料結構已可擴充到大量選項。</p>
+        </div>
+        <form id="expertForm" class="expert-layout" data-mode="expert">
+          <aside class="expert-sidebar panel">
+            <label class="upload-drop compact">上傳照片<input id="expertImage" name="image" type="file" accept="image/*" /></label>
+            <div class="preview-box tall"><img id="expertPreview" alt="照片預覽" hidden /><span id="expertPreviewText">預覽會顯示在這裡</span></div>
+            <button class="primary" type="submit">生成提示詞</button>
+          </aside>
+          <div class="accordion-stack">
+            <details class="panel" open><summary>01 主體與年紀</summary><div class="option-grid" data-field="photoTypeId" data-source="photo_types"></div><label>年紀<select name="ageModeId" data-source="age_modes"></select></label></details>
+            <details class="panel" open><summary>02 畫風（200 種架構）</summary><div class="filter-row"><input type="search" data-search="styles" placeholder="搜尋畫風，例如 韓系、電影、商業" /><select data-category-filter="styles"></select></div><div class="option-grid dense" data-field="styleId" data-source="styles" data-filterable="styles"></div></details>
+            <details class="panel"><summary>03 光線、地點、服裝、配件</summary><div class="two-col"><label>光線<select name="lightId" data-source="lights" data-grouped="true"></select></label><label>地點<select name="locationId" data-source="locations" data-grouped="true"></select></label><label>服裝<select name="outfitId" data-source="outfits" data-grouped="true"></select></label><label>配件<select name="accessoryId" data-source="accessories" data-grouped="true"></select></label></div></details>
+            <details class="panel"><summary>04 配色、氛圍、框線、排版、用途</summary><div class="two-col"><label>配色<select name="paletteId" data-source="color_palettes" data-grouped="true"></select></label><label>氛圍<select name="moodId" data-source="moods" data-grouped="true"></select></label><label>框線<select name="frameId" data-source="frames" data-grouped="true"></select></label><label>排版<select name="layoutId" data-source="layouts" data-grouped="true"></select></label><label>用途<select name="outputId" data-source="outputs" data-grouped="true"></select></label></div></details>
+            <details class="panel" open><summary>05 高階 BAR 微調</summary><div class="slider-grid" data-sliders="expert"></div></details>
+            <details class="panel"><summary>06 框線細節</summary><div class="slider-grid" data-sliders="frame"></div></details>
+            <details class="panel"><summary>07 文字內容與字體</summary><label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label><div class="text-fields three" data-text-panel hidden><label>主標題<input name="text.title" type="text" /></label><label>副標題<input name="text.subtitle" type="text" /></label><label>內文說明<input name="text.body" type="text" /></label><label>重點標語<input name="text.highlight" type="text" /></label><label>CTA 行動句<input name="text.cta" type="text" /></label><label>名字 / 品牌名 / 活動名<input name="text.name" type="text" /></label><label>日期 / 地點 / 價格 / 聯絡資訊<input name="text.info" type="text" /></label><label>備註文字<input name="text.note" type="text" /></label><label>字體風格<select name="textStyleId" data-source="text_styles"></select></label><label>對齊方式<select name="textAlign"><option>置中</option><option>靠左</option><option>靠右</option><option>分散對齊</option></select></label><div class="slider-grid full" data-sliders="text"></div></div></details>
+          </div>
+        </form>
+      </section>
+
+      <section id="resultPage" class="page result-page" hidden>
+        <div class="page-heading"><p class="eyebrow">Prompt result</p><h1>生成結果</h1><p>可直接複製到你常用的 AI 圖像工具，也可以儲存成我的風格。</p></div>
+        <div class="result-grid">
+          <article class="prompt-card large"><div class="card-head"><h2>完整提示詞</h2><button data-copy="fullPrompt">複製完整提示詞</button></div><textarea id="fullPrompt" readonly></textarea></article>
+          <article class="prompt-card"><div class="card-head"><h2>精簡提示詞</h2><button data-copy="shortPrompt">複製精簡提示詞</button></div><textarea id="shortPrompt" readonly></textarea></article>
+          <article class="prompt-card"><div class="card-head"><h2>負面提示詞</h2><button data-copy="negativePrompt">複製負面提示詞</button></div><textarea id="negativePrompt" readonly></textarea></article>
+          <article class="style-code-card"><span>專屬風格碼</span><strong id="styleCode">PP-STYLE-000</strong><input id="presetName" type="text" placeholder="替這個風格取名，例如：品牌形象照" /><div class="button-row"><button id="regenerateButton" class="secondary" type="button">重新生成</button><button id="savePresetButton" class="primary" type="button">儲存我的風格</button></div><p id="resultStatus" class="status"></p></article>
+        </div>
+      </section>
+
+      <section id="libraryPage" class="page library-page" hidden>
+        <div class="page-heading"><p class="eyebrow">Style library</p><h1>我的風格庫</h1><p>使用 localStorage 暫存。可再次套用到高手版、重新命名或刪除。</p></div>
+        <div id="libraryList" class="library-list"></div>
       </section>
     </main>
 
-    <script src="src/translator.js"></script>
+    <script src="src/picpick-core.js"></script>
     <script src="src/app.js"></script>
   </body>
 </html>
