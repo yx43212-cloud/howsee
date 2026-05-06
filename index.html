@@ -55,12 +55,12 @@
           <h1>快速生成｜基礎版</h1>
           <p>基礎版不用上傳圖片，也不用逐項客製光線、服裝、配件。只要選「統整風格規劃」與少量需求，PicPick 會自動整理成可用提示詞。</p>
         </div>
-        <form id="basicForm" class="workflow" data-mode="basic">
-          <aside class="steps" aria-label="基礎版步驟">
-            <span class="active">1 主題</span><span>2 統整風格</span><span>3 簡單微調</span><span>4 產提示詞</span>
+        <form id="basicForm" class="workflow" data-mode="basic" data-tabs="basic">
+          <aside class="steps" aria-label="基礎版分頁">
+            <button class="active" type="button" data-tab-button="basic-topic">1 主題</button><button type="button" data-tab-button="basic-style">2 統整風格</button><button type="button" data-tab-button="basic-tune">3 簡單微調</button><button type="button" data-tab-button="basic-generate">4 產提示詞</button>
           </aside>
           <div class="form-stack">
-            <section class="panel step-card">
+            <section class="panel step-card" data-tab-panel="basic-topic">
               <div class="section-title"><span>Step 01</span><h2>先說你要做什麼</h2></div>
               <div class="two-col">
                 <label>照片 / 內容類型<select name="photoTypeId" data-source="photo_types"></select></label>
@@ -70,14 +70,14 @@
               <p class="helper-copy">如果你沒有照片，也可以只描述想做的畫面；如果之後要套用照片，把生成結果貼到 AI 工具時再附圖即可。</p>
             </section>
 
-            <section class="panel step-card">
+            <section class="panel step-card" data-tab-panel="basic-style" hidden>
               <div class="section-title"><span>Step 02</span><h2>選一個統整風格規劃</h2></div>
               <p class="helper-copy">每個大方向都已建立 50 種可擴充風格，例如雜誌插頁、兒童塗鴉、美式漫畫、線上遊戲、寫實商攝。基礎版只需要選方向，不需要拆成光線、地點、服裝、配件。</p>
               <div class="category-grid basic-plan-grid" data-field="basicPlanGroup" data-basic-plan-groups></div>
               <label>細項風格<select name="basicPlanId" data-basic-plan-select></select></label>
             </section>
 
-            <section class="panel step-card">
+            <section class="panel step-card" data-tab-panel="basic-tune" hidden>
               <div class="section-title"><span>Step 03</span><h2>簡單微調</h2></div>
               <div class="slider-grid" data-sliders="basic"></div>
               <label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label>
@@ -88,7 +88,7 @@
               </div>
             </section>
 
-            <section class="panel step-card action-card">
+            <section class="panel step-card action-card" data-tab-panel="basic-generate" hidden>
               <div><h2>讓 PicPick 統整成提示詞</h2><p>基礎版會自動補齊畫風、構圖、配色、氛圍、用途與細節要求，輸出完整提示詞、精簡提示詞、負面提示詞與風格碼。</p></div>
               <button class="primary" type="submit">生成提示詞</button>
             </section>
@@ -102,20 +102,31 @@
           <h1>進階客製｜高手版</h1>
           <p>完整模組展開，支援搜尋、分類切換與極度客製化。資料結構已可擴充到大量選項。</p>
         </div>
-        <form id="expertForm" class="expert-layout" data-mode="expert">
+        <form id="expertForm" class="expert-layout" data-mode="expert" data-tabs="expert">
           <aside class="expert-sidebar panel">
             <label class="upload-drop compact">上傳照片<input id="expertImage" name="image" type="file" accept="image/*" /></label>
             <div class="preview-box tall"><img id="expertPreview" alt="照片預覽" hidden /><span id="expertPreviewText">預覽會顯示在這裡</span></div>
             <button class="primary" type="submit">生成提示詞</button>
           </aside>
-          <div class="accordion-stack">
-            <details class="panel" open><summary>01 主體與年紀</summary><div class="option-grid" data-field="photoTypeId" data-source="photo_types"></div><label>年紀<select name="ageModeId" data-source="age_modes"></select></label></details>
-            <details class="panel" open><summary>02 畫風（200 種架構）</summary><div class="filter-row"><input type="search" data-search="styles" placeholder="搜尋畫風，例如 韓系、電影、商業" /><select data-category-filter="styles"></select></div><div class="option-grid dense" data-field="styleId" data-source="styles" data-filterable="styles"></div></details>
-            <details class="panel"><summary>03 光線、地點、服裝、配件</summary><div class="two-col"><label>光線<select name="lightId" data-source="lights" data-grouped="true"></select></label><label>地點<select name="locationId" data-source="locations" data-grouped="true"></select></label><label>服裝<select name="outfitId" data-source="outfits" data-grouped="true"></select></label><label>配件<select name="accessoryId" data-source="accessories" data-grouped="true"></select></label></div></details>
-            <details class="panel"><summary>04 配色、氛圍、框線、排版、用途</summary><div class="two-col"><label>配色<select name="paletteId" data-source="color_palettes" data-grouped="true"></select></label><label>氛圍<select name="moodId" data-source="moods" data-grouped="true"></select></label><label>框線<select name="frameId" data-source="frames" data-grouped="true"></select></label><label>排版<select name="layoutId" data-source="layouts" data-grouped="true"></select></label><label>用途<select name="outputId" data-source="outputs" data-grouped="true"></select></label></div></details>
-            <details class="panel" open><summary>05 高階 BAR 微調</summary><div class="slider-grid" data-sliders="expert"></div></details>
-            <details class="panel"><summary>06 框線細節</summary><div class="slider-grid" data-sliders="frame"></div></details>
-            <details class="panel"><summary>07 文字內容與字體</summary><label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label><div class="text-fields three" data-text-panel hidden><label>主標題<input name="text.title" type="text" /></label><label>副標題<input name="text.subtitle" type="text" /></label><label>內文說明<input name="text.body" type="text" /></label><label>重點標語<input name="text.highlight" type="text" /></label><label>CTA 行動句<input name="text.cta" type="text" /></label><label>名字 / 品牌名 / 活動名<input name="text.name" type="text" /></label><label>日期 / 地點 / 價格 / 聯絡資訊<input name="text.info" type="text" /></label><label>備註文字<input name="text.note" type="text" /></label><label>字體風格<select name="textStyleId" data-source="text_styles"></select></label><label>對齊方式<select name="textAlign"><option>置中</option><option>靠左</option><option>靠右</option><option>分散對齊</option></select></label><div class="slider-grid full" data-sliders="text"></div></div></details>
+          <div class="expert-workspace">
+            <nav class="tab-strip" aria-label="高手版分頁">
+              <button class="active" type="button" data-tab-button="expert-subject">主體</button>
+              <button type="button" data-tab-button="expert-style">畫風</button>
+              <button type="button" data-tab-button="expert-scene">場景穿搭</button>
+              <button type="button" data-tab-button="expert-design">設計輸出</button>
+              <button type="button" data-tab-button="expert-bars">高階 BAR</button>
+              <button type="button" data-tab-button="expert-frame">框線</button>
+              <button type="button" data-tab-button="expert-text">文字</button>
+            </nav>
+            <div class="accordion-stack">
+            <details class="panel" data-tab-panel="expert-subject" open><summary>01 主體與年紀</summary><div class="option-grid" data-field="photoTypeId" data-source="photo_types"></div><label>年紀<select name="ageModeId" data-source="age_modes"></select></label></details>
+            <details class="panel" data-tab-panel="expert-style" open hidden><summary>02 畫風（200 種架構）</summary><div class="filter-row"><input type="search" data-search="styles" placeholder="搜尋畫風，例如 韓系、電影、商業" /><select data-category-filter="styles"></select></div><div class="option-grid dense" data-field="styleId" data-source="styles" data-filterable="styles"></div></details>
+            <details class="panel" data-tab-panel="expert-scene" open hidden><summary>03 光線、地點、服裝、配件</summary><div class="two-col"><label>光線<select name="lightId" data-source="lights" data-grouped="true"></select></label><label>地點<select name="locationId" data-source="locations" data-grouped="true"></select></label><label>服裝<select name="outfitId" data-source="outfits" data-grouped="true"></select></label><label>配件<select name="accessoryId" data-source="accessories" data-grouped="true"></select></label></div></details>
+            <details class="panel" data-tab-panel="expert-design" open hidden><summary>04 配色、氛圍、框線、排版、用途</summary><div class="two-col"><label>配色<select name="paletteId" data-source="color_palettes" data-grouped="true"></select></label><label>氛圍<select name="moodId" data-source="moods" data-grouped="true"></select></label><label>框線<select name="frameId" data-source="frames" data-grouped="true"></select></label><label>排版<select name="layoutId" data-source="layouts" data-grouped="true"></select></label><label>用途<select name="outputId" data-source="outputs" data-grouped="true"></select></label></div></details>
+            <details class="panel" data-tab-panel="expert-bars" open hidden><summary>05 高階 BAR 微調</summary><div class="slider-grid" data-sliders="expert"></div></details>
+            <details class="panel" data-tab-panel="expert-frame" open hidden><summary>06 框線細節</summary><div class="slider-grid" data-sliders="frame"></div></details>
+            <details class="panel" data-tab-panel="expert-text" open hidden><summary>07 文字內容與字體</summary><label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label><div class="text-fields three" data-text-panel hidden><label>主標題<input name="text.title" type="text" /></label><label>副標題<input name="text.subtitle" type="text" /></label><label>內文說明<input name="text.body" type="text" /></label><label>重點標語<input name="text.highlight" type="text" /></label><label>CTA 行動句<input name="text.cta" type="text" /></label><label>名字 / 品牌名 / 活動名<input name="text.name" type="text" /></label><label>日期 / 地點 / 價格 / 聯絡資訊<input name="text.info" type="text" /></label><label>備註文字<input name="text.note" type="text" /></label><label>字體風格<select name="textStyleId" data-source="text_styles"></select></label><label>對齊方式<select name="textAlign"><option>置中</option><option>靠左</option><option>靠右</option><option>分散對齊</option></select></label><div class="slider-grid full" data-sliders="text"></div></div></details>
+            </div>
           </div>
         </form>
       </section>

@@ -185,6 +185,30 @@ function setupFilters() {
   categorySelect.addEventListener('change', apply);
 }
 
+function setupTabs() {
+  document.querySelectorAll('form[data-tabs]').forEach((form) => {
+    const buttons = Array.from(form.querySelectorAll('[data-tab-button]'));
+    const panels = Array.from(form.querySelectorAll('[data-tab-panel]'));
+    const showTab = (tabName) => {
+      buttons.forEach((button) => {
+        const isActive = button.dataset.tabButton === tabName;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.tabPanel !== tabName;
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => showTab(button.dataset.tabButton));
+    });
+
+    const initial = buttons.find((button) => button.classList.contains('active')) || buttons[0];
+    if (initial) showTab(initial.dataset.tabButton);
+  });
+}
+
 function setupTextToggles() {
   document.querySelectorAll('input[name="includeText"]').forEach((toggle) => {
     toggle.addEventListener('change', () => {
@@ -322,6 +346,7 @@ function init() {
   populateBasicPlanGroups();
   setupSliders();
   setupFilters();
+  setupTabs();
   setupTextToggles();
   setupPreviews();
 

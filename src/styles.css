@@ -96,9 +96,12 @@ p { color: var(--muted); line-height: 1.75; }
 .generator-page .page-heading p { max-width: 760px; }
 .workflow { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; align-items: start; }
 .steps { position: sticky; top: 88px; display: grid; gap: 10px; }
-.steps span { padding: 13px 14px; border-radius: 16px; background: var(--card); color: var(--muted); font-weight: 900; border: 1px solid var(--line); }
-.steps span.active { color: #fff; background: var(--brand); }
-.form-stack, .accordion-stack { display: grid; gap: 16px; }
+.steps button { width: 100%; padding: 13px 14px; border-radius: 16px; background: var(--card); color: var(--muted); font-weight: 900; border: 1px solid var(--line); text-align: left; }
+.steps button.active { color: #fff; background: var(--brand); }
+.form-stack, .accordion-stack, .expert-workspace { display: grid; gap: 16px; }
+.tab-strip { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255, 255, 255, 0.72); box-shadow: var(--shadow); }
+.tab-strip button { flex: 1 1 110px; min-height: 44px; padding: 10px 14px; border-radius: 14px; color: var(--muted); background: #fff; font-weight: 900; border: 1px solid var(--line); }
+.tab-strip button.active { color: #fff; background: var(--brand); border-color: var(--brand); }
 .panel { padding: clamp(18px, 3vw, 28px); }
 .step-card { display: grid; gap: 18px; }
 .section-title span { color: var(--brand-2); font-size: 0.78rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -164,7 +167,7 @@ details > :not(summary) { margin: 20px 24px 24px; }
   .entry-grid, .workflow, .expert-layout, .result-grid, .upload-grid { grid-template-columns: 1fr; }
   .steps, .expert-sidebar { position: static; }
   .steps { display: flex; overflow-x: auto; padding-bottom: 3px; }
-  .steps span { white-space: nowrap; }
+  .steps button { white-space: nowrap; text-align: center; }
   .text-fields.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .prompt-card.large { grid-row: auto; }
   .prompt-card.large textarea { min-height: 340px; }
@@ -175,6 +178,8 @@ details > :not(summary) { margin: 20px 24px 24px; }
   .topbar nav { justify-content: flex-start; }
   .hero-actions, .button-row, .card-head, .library-card { flex-direction: column; align-items: stretch; }
   .two-col, .slider-grid, .text-fields, .text-fields.three, .filter-row { grid-template-columns: 1fr; }
+  .tab-strip { overflow-x: auto; flex-wrap: nowrap; }
+  .tab-strip button { flex: 0 0 auto; }
   .app-shell { width: min(100% - 18px, 1180px); padding-top: 18px; }
   .hero-card, .panel, .entry-card, .prompt-card, .style-code-card, .library-card, .empty-card { border-radius: 22px; }
 }

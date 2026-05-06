@@ -80,3 +80,17 @@ test('basic mode uses integrated planning instead of requiring granular customiz
   assert.match(result.fullPrompt, /使用者簡短需求：咖啡新品 IG 商品廣告/);
   assert.match(result.shortPrompt, /商品照片編輯，雜誌插頁/);
 });
+
+
+test('basic and expert generators are separated into tabbed pages', () => {
+  const html = require('node:fs').readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
+
+  assert.match(html, /id="basicForm"[^>]+data-tabs="basic"/);
+  assert.match(html, /data-tab-button="basic-topic"/);
+  assert.match(html, /data-tab-panel="basic-style" hidden/);
+  assert.doesNotMatch(html, /id="basicImage"|basicPreview/);
+  assert.match(html, /id="expertForm"[^>]+data-tabs="expert"/);
+  assert.match(html, /aria-label="高手版分頁"/);
+  assert.match(html, /data-tab-button="expert-style"/);
+  assert.match(html, /data-tab-panel="expert-text"/);
+});
