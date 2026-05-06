@@ -62,7 +62,7 @@
         <div class="section-heading compact">
           <p class="section-kicker">Step 02</p>
           <h2>角色客製化安排</h2>
-          <p>新增性別挑選；種族後 50 項為非自然幻想／科幻類，服裝前 50 項日常、後 50 項騷氣情趣感但不顯示標籤；動作與體位會依人數切換，單人偏鏡頭／POV／入鏡手互動，多人偏角色間互動。中文只供確認，複製區只輸出英文提示詞。</p>
+          <p>新增性別挑選；兩個客製化置入已合併為 Cosplay；動作／姿態採二擇一流程，先選肩膀以上、手部動作、下半身或不同姿態，再選該類 50 個細項（25 正常／25 情慾）。中文只供確認，複製區只輸出英文提示詞。</p>
         </div>
 
         <div class="custom-grid">
@@ -123,8 +123,8 @@
             <select id="count"></select>
           </div>
           <div class="field wide-field">
-            <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
-            <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
+            <label for="cosplayPrompt">Cosplay（指定要套用的角色／人設／作品風格）</label>
+            <textarea id="cosplayPrompt" rows="3" placeholder="例如：vampire queen, cyber idol, elegant nurse, original character with pearl accessories, no watermark"></textarea>
           </div>
           <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
             <article class="character-card" data-character-card="1">
@@ -158,17 +158,15 @@
             <select id="accessory"></select>
           </div>
           <div class="field">
-            <label for="action">動作（依人數各 100 種）</label>
-            <select id="action"></select>
+            <label for="actionMode">動作／姿態類型（4 類）</label>
+            <select id="actionMode"></select>
           </div>
           <div class="field wide-field">
-            <label for="pose">體位／互動（依人數各 100 種）</label>
-            <select id="pose"></select>
+            <label for="actionDetail">動作或姿態細項（每類 50：25 正常／25 情慾）</label>
+            <select id="actionDetail"></select>
           </div>
         </div>
 
-        <label for="customConditions">可塞入的客製化條件</label>
-        <textarea id="customConditions" rows="4" placeholder="例如：85mm lens, shallow depth of field, pearl accessories, no watermark"></textarea>
 
         <button id="rewriteButton" type="button">轉譯提示詞</button>
       </section>
@@ -204,9 +202,6 @@
             </select>
           </div>
         </div>
-
-        <img id="imagePreview" class="image-preview" alt="上傳圖片預覽" hidden />
-
         <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
         <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
 
@@ -222,21 +217,6 @@
       </section>
 
       <section class="panel output-panel" aria-live="polite">
-        <div id="beginnerPreview" class="beginner-preview">
-          <div class="section-heading">
-            <p class="section-kicker">Beginner Preview</p>
-            <h2>新手大概預覽</h2>
-            <p>這不是生成圖片，只是依照你選的客製化條件做構圖、角色與氛圍摘要，方便先確認方向。</p>
-          </div>
-          <div id="previewStage" class="preview-stage" data-count="single" aria-label="大概構圖預覽">
-            <span class="preview-silhouette primary"></span>
-          </div>
-          <p id="previewSummary" class="preview-summary">先輸入描述或挑選條件，這裡會即時整理你的客製化方向。</p>
-          <div id="previewDetails" class="preview-details" aria-label="分層預覽說明"></div>
-          <p id="previewAdvice" class="preview-advice">AI 判斷會先自動補一組具體建議，方便新手看方向。</p>
-          <div id="previewChips" class="preview-chips" aria-label="目前客製化條件摘要"></div>
-        </div>
-
         <div id="textOutputArea" class="output-mode-area">
           <div class="section-heading">
             <p class="section-kicker">Text Output</p>
@@ -248,6 +228,19 @@
           <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
           <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
           <button id="copyTextButton" type="button" class="secondary-button" hidden>複製文生圖英文提示詞</button>
+
+          <div id="autoVideoPanel" class="auto-video-panel" hidden>
+            <div class="section-heading compact">
+              <p class="section-kicker">Auto Video</p>
+              <h2>AI 判定圖轉影提示詞（5 種）</h2>
+              <p>文生圖提示詞產生後自動建立，可選一種並複製英文圖轉影提示詞。</p>
+            </div>
+            <label for="autoVideoChoice">選擇圖轉影版本</label>
+            <select id="autoVideoChoice"></select>
+            <label for="autoVideoPrompt" class="text-output-label">English image-to-video prompt（可複製）</label>
+            <textarea id="autoVideoPrompt" rows="8" readonly></textarea>
+            <button id="copyAutoVideoButton" type="button" class="secondary-button">複製自動圖轉影英文提示詞</button>
+          </div>
         </div>
 
         <div id="videoOutputArea" class="output-mode-area" hidden>

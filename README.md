@@ -11,12 +11,11 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 - 50 lighting-direction presets, 50 pure camera/viewpoint presets, 50 composition-structure presets, and 100 art-style presets for richer visual direction.
 - Gender selection plus 100 race presets, with the latter 50 dedicated to non-natural fantasy/sci-fi races and no visible category tags in the selector labels.
 - 100 outfit presets split into 50 everyday looks followed by 50 seductive/intimate looks, plus 100 scene presets and 100 accessory/prop presets without visible category tags in the selector labels.
-- 20 time-point presets with Chinese light/color/texture annotations, 50 emotion presets, 50 outfit-color presets, 50 outfit-material presets, 50 occupation presets, 50 body-proportion presets, age brackets through 60, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, 300 count-aware action presets for 1/2/3 characters including 50 more provocative adult-only actions, 300 count-aware position/interaction presets, and per-character customization when more than one character is selected.
+- 20 time-point presets with Chinese light/color/texture annotations, 50 emotion presets, 50 outfit-color presets, 50 outfit-material presets, 50 occupation presets, 50 body-proportion presets, age brackets through 60, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, 200 action/posture presets split into four modes, each with 25 normal and 25 sensual options, and per-character customization when more than one character is selected.
 - Every selector includes an AI-decide option; camera/viewpoint presets avoid scenes/actions, lighting presets avoid expression terms, and source prompt text takes precedence over duplicate or conflicting presets.
-- Beginner-friendly approximate preview panel visualizes count, palette, scene, camera, outfit color, props, and selected customization choices in Chinese before generation; output still shows Chinese confirmation text only for review, and the copyable result area contains the English generation prompt only.
-- Image-to-video prompt suggestions: upload a reference image, estimate an adult-only explicitness score from 1-10 locally in the browser, and generate selectable score-aware Chinese meaning confirmations plus English copyable image-to-video prompts.
+- Cosplay field consolidates custom character direction into one place; output shows Chinese confirmation text only for review, and the copyable result area contains the English generation prompt only.
+- Text-to-image generation automatically creates 5 AI-judged copyable image-to-video prompt variants; separate image-upload video suggestions still estimate adult-only explicitness 1-10 locally in the browser with selectable score-aware outputs.
 - Optional user-directed image-to-video motion requests are safety-screened; rejected requests include Chinese/English revision advice for making the prompt pass guardrails.
-- Free-form custom conditions field that can be appended to the final prompt after the same safety validation.
 
 ## Run locally
 

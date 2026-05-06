@@ -8,8 +8,9 @@ const {
   OCCUPATION_OPTIONS,
   BODY_PROPORTION_OPTIONS,
   AGE_BRACKET_OPTIONS,
-  getActionsForCount,
-  getPosesForCount,
+  getActionDetailsForMode,
+  ACTION_MODE_OPTIONS,
+  ACTION_DETAIL_OPTIONS,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
@@ -94,14 +95,16 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 300);
-  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
-  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
-  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 300);
-  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
-  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
-  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
+  assert.equal(ACTION_MODE_OPTIONS.length, 4);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 200);
+  for (const mode of ACTION_MODE_OPTIONS) {
+    const details = getActionDetailsForMode(mode.zh);
+    assert.equal(details.length, 50);
+    assert.equal(details.filter(({ zh }) => /正常/.test(zh)).length, 25);
+    assert.equal(details.filter(({ zh }) => /情慾/.test(zh)).length, 25);
+  }
+  assert.equal(Object.keys(ACTION_DETAIL_OPTIONS).length, 4);
+  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 0);
 });
 
 test('keeps lighting, pose, and outfit preset domains from leaking conflicting scene or light terms', () => {
@@ -131,9 +134,9 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
-    action: getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[0].zh,
-    pose: getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[10].zh,
-    multiCharacterDetails: 'A wears black styling, B wears white styling, A leads the interaction'
+    actionMode: ACTION_MODE_OPTIONS[1].zh,
+    actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[1].zh)[25].zh,
+    cosplayPrompt: 'vampire queen with pearl accessories'
   });
 
   assert.equal(result.ok, true);
@@ -147,7 +150,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /場景：金色宮殿內室/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
-  assert.match(result.chineseConfirmation, /多人細節客製化：A wears black styling/);
+  assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
@@ -158,9 +161,10 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
   assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
-  assert.match(result.englishPrompt, /multi-character custom details: A wears black styling/);
-  assert.match(result.chineseConfirmation, /動作：雙人對視靠近/);
-  assert.match(result.englishPrompt, /action: two adults move closer with eye contact/);
+  assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen with pearl accessories/);
+  assert.match(result.chineseConfirmation, /動作／姿態類型：手部動作/);
+  assert.match(result.chineseConfirmation, /動作／姿態細項：.*情慾/);
+  assert.match(result.englishPrompt, /action\/posture detail: kneading fabric over chest/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
 });
 
@@ -181,47 +185,36 @@ test('keeps copyable output English-only even when the source has unsupported Ch
   assert.match(result.englishPrompt, /adult sensual visual direction based on the reviewed source request/);
 });
 
-test('does not apply multi-character detail field when a single-person count is selected', () => {
+test('appends safe Cosplay character direction to the English prompt and confirmation', () => {
   const result = rewritePrompt('親吻', {
-    count: CUSTOMIZATION_OPTIONS.counts[0].zh,
-    multiCharacterDetails: 'A and B detailed styling'
+    cosplayPrompt: '珍珠配件 vampire queen'
   });
 
   assert.equal(result.ok, true);
-  assert.doesNotMatch(result.chineseConfirmation, /多人細節客製化/);
-  assert.doesNotMatch(result.englishPrompt, /multi-character custom details/);
+  assert.match(result.chineseConfirmation, /Cosplay：珍珠配件 vampire queen/);
+  assert.match(result.englishPrompt, /cosplay\/character direction: user-provided cosplay or character direction/);
 });
 
-test('appends safe free-form custom conditions to the English prompt and confirmation', () => {
+test('rejects unsafe Cosplay character direction', () => {
   const result = rewritePrompt('親吻', {
-    customConditions: '85mm lens, pearl accessories, no watermark, clean background'
-  });
-
-  assert.equal(result.ok, true);
-  assert.match(result.chineseConfirmation, /客製化條件：85mm lens, pearl accessories, no watermark, clean background/);
-  assert.match(result.englishPrompt, /custom conditions: 85mm lens, pearl accessories, no watermark, clean background/);
-});
-
-test('rejects Chinese free-form custom conditions because copy output is English-only', () => {
-  const result = rewritePrompt('親吻', {
-    customConditions: '珍珠配件'
-  });
-
-  assert.equal(result.ok, false);
-  assert.match(result.reason, /英文/);
-});
-
-test('rejects unsafe free-form custom conditions', () => {
-  const result = rewritePrompt('親吻', {
-    customConditions: '學生 costume'
+    cosplayPrompt: '學生 costume'
   });
 
   assert.equal(result.ok, false);
   assert.match(result.reason, /未成年人/);
 });
 
+test('preview UI is removed from the simplified layout', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  const appSource = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
+  const styleSource = fs.readFileSync(path.join(__dirname, '../src/styles.css'), 'utf8');
 
-
+  assert.doesNotMatch(indexSource, /beginnerPreview|imagePreview|客製化條件/);
+  assert.doesNotMatch(appSource, /beginnerPreview|imagePreview|customConditions/);
+  assert.doesNotMatch(styleSource, /beginner-preview|image-preview/);
+});
 
 test('all customization selectors include AI judgment in the browser', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
@@ -229,15 +222,11 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
   assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
-  assert.match(appSource, /updateBeginnerPreview/);
-  assert.match(appSource, /getPreviewPalette/);
-  assert.match(appSource, /getResolvedLabel/);
+  assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
   assert.match(appSource, /getTextRewriteSource/);
   assert.match(appSource, /selected customization controls/);
-  assert.match(appSource, /previewDetails\.replaceChildren/);
-  assert.match(appSource, /previewStage\.style\.setProperty\('--preview-primary'/);
-  assert.match(appSource, /preview-scene-mark/);
-  assert.match(appSource, /你的客製化條件/);
+  assert.match(appSource, /buildAutoVideoChoices/);
+  assert.match(appSource, /autoVideoChoice/);
 });
 
 test('key prompt element groups do not contain duplicate visible labels', () => {
@@ -252,7 +241,6 @@ test('key prompt element groups do not contain duplicate visible labels', () => 
     CUSTOMIZATION_OPTIONS.outfitMaterials,
     CUSTOMIZATION_OPTIONS.accessories,
     CUSTOMIZATION_OPTIONS.actions,
-    CUSTOMIZATION_OPTIONS.poses,
     OCCUPATION_OPTIONS,
     BODY_PROPORTION_OPTIONS
   ];

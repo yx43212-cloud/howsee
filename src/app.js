@@ -18,23 +18,20 @@ const outfitMaterial = document.querySelector('#outfitMaterial');
 const bodyFeature = document.querySelector('#bodyFeature');
 const outfitIntegrity = document.querySelector('#outfitIntegrity');
 const count = document.querySelector('#count');
-const multiCharacterDetails = document.querySelector('#multiCharacterDetails');
+const cosplayPrompt = document.querySelector('#cosplayPrompt');
 const scene = document.querySelector('#scene');
 const accessory = document.querySelector('#accessory');
-const action = document.querySelector('#action');
-const pose = document.querySelector('#pose');
-const customConditions = document.querySelector('#customConditions');
+const actionMode = document.querySelector('#actionMode');
+const actionDetail = document.querySelector('#actionDetail');
+const autoVideoPanel = document.querySelector('#autoVideoPanel');
+const autoVideoChoice = document.querySelector('#autoVideoChoice');
+const autoVideoPrompt = document.querySelector('#autoVideoPrompt');
+const copyAutoVideoButton = document.querySelector('#copyAutoVideoButton');
 const rewriteButton = document.querySelector('#rewriteButton');
 const textModeButton = document.querySelector('#textModeButton');
 const videoModeButton = document.querySelector('#videoModeButton');
 const textPromptPanel = document.querySelector('#textPromptPanel');
 const imageVideoPanel = document.querySelector('#imageVideoPanel');
-const beginnerPreview = document.querySelector('#beginnerPreview');
-const previewStage = document.querySelector('#previewStage');
-const previewSummary = document.querySelector('#previewSummary');
-const previewDetails = document.querySelector('#previewDetails');
-const previewAdvice = document.querySelector('#previewAdvice');
-const previewChips = document.querySelector('#previewChips');
 const textOutputArea = document.querySelector('#textOutputArea');
 const videoOutputArea = document.querySelector('#videoOutputArea');
 const textConfirmationPrompt = document.querySelector('#textConfirmationPrompt');
@@ -46,7 +43,6 @@ const videoResultPrompt = document.querySelector('#videoResultPrompt');
 const videoStatus = document.querySelector('#videoStatus');
 const copyVideoButton = document.querySelector('#copyVideoButton');
 const imageInput = document.querySelector('#imageInput');
-const imagePreview = document.querySelector('#imagePreview');
 const imageDescription = document.querySelector('#imageDescription');
 const desiredMotion = document.querySelector('#desiredMotion');
 const videoDuration = document.querySelector('#videoDuration');
@@ -71,7 +67,6 @@ function setMode(mode) {
   videoModeButton.classList.toggle('active', !isTextMode);
   textPromptPanel.hidden = !isTextMode;
   imageVideoPanel.hidden = isTextMode;
-  beginnerPreview.hidden = !isTextMode;
   textOutputArea.hidden = !isTextMode;
   videoOutputArea.hidden = isTextMode;
 }
@@ -148,20 +143,13 @@ function updateCharacterCards() {
   });
 }
 
-function updateCountAwareOptions() {
-  const previousAction = action.value;
-  const previousPose = pose.value;
-  const actionOptions = getActionsForCount(count.value);
-  const poseOptions = getPosesForCount(count.value);
-  populateSelect(action, actionOptions);
-  populateSelect(pose, poseOptions);
+function updateActionDetailOptions() {
+  const previousDetail = actionDetail.value;
+  const detailOptions = getActionDetailsForMode(actionMode.value);
+  populateSelect(actionDetail, detailOptions);
 
-  if (actionOptions.some((option) => option.zh === previousAction)) {
-    action.value = previousAction;
-  }
-
-  if (poseOptions.some((option) => option.zh === previousPose)) {
-    pose.value = previousPose;
+  if (detailOptions.some((option) => option.zh === previousDetail)) {
+    actionDetail.value = previousDetail;
   }
 }
 
@@ -189,274 +177,10 @@ function collectCharacterDetails() {
   return details;
 }
 
-function getSelectedLabel(element) {
-  return element?.value || 'AI判斷';
-}
-
 function getTextRewriteSource() {
   return sourcePrompt.value.trim() || 'consenting adult visual portrait based on the selected customization controls';
 }
 
-function getPreviewSeed() {
-  return [
-    sourcePrompt.value,
-    intensity.value,
-    count.value,
-    scene.value,
-    artStyle.value
-  ].join('|');
-}
-
-function getSeededIndex(seed, length) {
-  if (length <= 0) {
-    return 0;
-  }
-
-  let hash = 0;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(index);
-    hash |= 0;
-  }
-
-  return Math.abs(hash) % length;
-}
-
-function getResolvedLabel(element) {
-  const selected = getSelectedLabel(element);
-  if (selected !== 'AI判斷') {
-    return selected;
-  }
-
-  const candidates = Array.from(element.options || []).map(({ value }) => value).filter((value) => value && value !== 'AI判斷');
-  if (!candidates.length) {
-    return 'AI建議：依整體提示自動補齊';
-  }
-
-  const index = element === count ? 0 : getSeededIndex(`${getPreviewSeed()}|${element.id}`, candidates.length);
-  return `AI建議：${candidates[index]}`;
-}
-
-function getResolvedPlainLabel(element) {
-  return getResolvedLabel(element).replace(/^AI建議：/, '');
-}
-
-function addPreviewChip(fragment, label, value) {
-  const chip = document.createElement('span');
-  chip.className = 'preview-chip';
-  chip.textContent = `${label}: ${value || 'AI判斷'}`;
-  fragment.append(chip);
-}
-
-function getPreviewCountGroup() {
-  const selectedCount = getResolvedLabel(count);
-  if (/三人/.test(selectedCount)) {
-    return 'three';
-  }
-  if (/雙人|兩人/.test(selectedCount)) {
-    return 'two';
-  }
-  return 'single';
-}
-
-function getPreviewPalette() {
-  const text = [
-    getResolvedLabel(timePoint),
-    getResolvedLabel(lighting),
-    getResolvedLabel(outfitColor),
-    getResolvedLabel(artStyle)
-  ].join(' ');
-
-  if (/藍|冷|銀|冰|夜|賽博|霓虹|水|海/.test(text)) {
-    return { tone: 'cool', primary: '#55d8ff', secondary: '#7b6cff', outfit: '#7dd8ff' };
-  }
-  if (/金|暖|琥珀|夕陽|火|紅|酒|黑金|節日/.test(text)) {
-    return { tone: 'warm', primary: '#ffb25f', secondary: '#ff4f93', outfit: '#ff9b66' };
-  }
-  if (/粉|玫瑰|糖果|蜜桃|夢幻|柔/.test(text)) {
-    return { tone: 'rose', primary: '#ff8ac7', secondary: '#ffc2dc', outfit: '#ff6fb3' };
-  }
-  if (/綠|森林|青|翡翠/.test(text)) {
-    return { tone: 'forest', primary: '#74f0b2', secondary: '#2fa978', outfit: '#8de0a6' };
-  }
-  return { tone: 'default', primary: '#ff5f9f', secondary: '#f7d98f', outfit: '#ff8fba' };
-}
-
-function getPreviewSceneType() {
-  const selectedScene = getResolvedLabel(scene);
-  if (/浴|泳|海|雨|水/.test(selectedScene)) {
-    return 'water';
-  }
-  if (/宮|城|古|神|魔|森林|花園/.test(selectedScene)) {
-    return 'fantasy';
-  }
-  if (/棚|攝影|白色|黑色/.test(selectedScene)) {
-    return 'studio';
-  }
-  if (/夜|酒吧|霓虹|城市|陽台/.test(selectedScene)) {
-    return 'night';
-  }
-  return 'room';
-}
-
-function getPreviewCameraType() {
-  const selectedCamera = getResolvedLabel(camera);
-  if (/俯|鳥瞰|高角/.test(selectedCamera)) {
-    return 'high';
-  }
-  if (/仰|低角/.test(selectedCamera)) {
-    return 'low';
-  }
-  if (/近|特寫|臉部|半身/.test(selectedCamera)) {
-    return 'close';
-  }
-  if (/遠|全身|廣角/.test(selectedCamera)) {
-    return 'wide';
-  }
-  return 'mid';
-}
-
-function addPreviewLayer(className, text = '') {
-  const layer = document.createElement('span');
-  layer.className = className;
-  layer.textContent = text;
-  previewStage.append(layer);
-  return layer;
-}
-
-function renderPreviewSilhouettes(group) {
-  const total = group === 'three' ? 3 : group === 'two' ? 2 : 1;
-  const palette = getPreviewPalette();
-  const selectedPose = getResolvedLabel(pose);
-  previewStage.dataset.count = group;
-  previewStage.dataset.scene = getPreviewSceneType();
-  previewStage.dataset.camera = getPreviewCameraType();
-  previewStage.dataset.tone = palette.tone;
-  previewStage.style.setProperty('--preview-primary', palette.primary);
-  previewStage.style.setProperty('--preview-secondary', palette.secondary);
-  previewStage.style.setProperty('--preview-outfit', palette.outfit);
-  previewStage.replaceChildren();
-
-  addPreviewLayer('preview-light-beam');
-  addPreviewLayer('preview-scene-mark', getResolvedLabel(scene));
-  addPreviewLayer('preview-camera-mark', getResolvedLabel(camera));
-
-  for (let index = 0; index < total; index += 1) {
-    const silhouette = document.createElement('span');
-    silhouette.className = `preview-silhouette character-${index + 1}`;
-    silhouette.dataset.role = total === 1 ? getResolvedPlainLabel(gender) : `角色 ${index + 1}`;
-    const outfitLayer = document.createElement('span');
-    outfitLayer.className = 'preview-outfit-layer';
-    silhouette.append(outfitLayer);
-    previewStage.append(silhouette);
-  }
-
-  if (group !== 'single') {
-    addPreviewLayer('preview-interaction-line', getResolvedLabel(action));
-  }
-
-  if (group === 'single' && /手|POV|主觀|鏡頭/.test(selectedPose)) {
-    addPreviewLayer('preview-hand');
-  }
-
-  const resolvedAccessory = getResolvedLabel(accessory);
-  if (resolvedAccessory) {
-    addPreviewLayer('preview-prop', resolvedAccessory);
-  }
-}
-
-function addPreviewDetail(fragment, title, value) {
-  const item = document.createElement('article');
-  item.className = 'preview-detail-card';
-  const heading = document.createElement('strong');
-  heading.textContent = title;
-  const content = document.createElement('span');
-  content.textContent = value;
-  item.append(heading, content);
-  fragment.append(item);
-}
-
-function updateBeginnerPreview() {
-  const group = getPreviewCountGroup();
-  renderPreviewSilhouettes(group);
-
-  const source = sourcePrompt.value.trim() || '未輸入原始描述，將依目前客製化選項自動建立成人視覺方向';
-  const customText = customConditions.value.trim();
-  const multiDetails = group === 'single' ? '' : multiCharacterDetails.value.trim();
-  const characterDetails = group === 'single' ? [] : collectCharacterDetails();
-  const interactionHint = group === 'single' ? '單人：重點放在鏡頭、POV 或入鏡手互動。' : '多人：重點放在角色間距離、視線與互動。';
-  const resolved = {
-    count: getResolvedLabel(count),
-    artStyle: getResolvedLabel(artStyle),
-    lighting: getResolvedLabel(lighting),
-    timePoint: getResolvedLabel(timePoint),
-    gender: getResolvedLabel(gender),
-    race: getResolvedLabel(race),
-    emotion: getResolvedLabel(emotion),
-    ageBracket: getResolvedLabel(ageBracket),
-    occupation: getResolvedLabel(occupation),
-    bodyProportion: getResolvedLabel(bodyProportion),
-    face: getResolvedLabel(face),
-    outfit: getResolvedLabel(outfit),
-    outfitColor: getResolvedLabel(outfitColor),
-    outfitMaterial: getResolvedLabel(outfitMaterial),
-    outfitIntegrity: getResolvedLabel(outfitIntegrity),
-    bodyFeature: getResolvedLabel(bodyFeature),
-    scene: getResolvedLabel(scene),
-    camera: getResolvedLabel(camera),
-    composition: getResolvedLabel(composition),
-    action: getResolvedLabel(action),
-    pose: getResolvedLabel(pose),
-    accessory: getResolvedLabel(accessory)
-  };
-
-  previewSummary.textContent = [
-    `大概畫面：${source}`,
-    `畫風 ${resolved.artStyle}，${resolved.lighting}，${resolved.timePoint}。`,
-    `角色：${resolved.gender}／${resolved.race}／${resolved.emotion}；服裝：${resolved.outfit}、${resolved.outfitColor}、${resolved.outfitMaterial}。`,
-    `動作與體位：${resolved.action}；${resolved.pose}。`,
-    interactionHint,
-    customText ? `你的客製化條件：${customText}` : '',
-    multiDetails ? `多人細節：${multiDetails}` : '',
-    characterDetails.length ? `角色分別設定：${characterDetails.join('；')}` : ''
-  ].filter(Boolean).join(' ');
-
-  const detailFragment = document.createDocumentFragment();
-  addPreviewDetail(detailFragment, '鏡頭構圖', `${resolved.camera}｜${resolved.composition}｜${resolved.count}`);
-  addPreviewDetail(detailFragment, '光色質感', `${resolved.timePoint}｜${resolved.lighting}`);
-  addPreviewDetail(detailFragment, '角色設定', `${resolved.gender}｜${resolved.race}｜${resolved.ageBracket}｜${resolved.bodyProportion}｜${resolved.face}`);
-  addPreviewDetail(detailFragment, '職業情緒', `${resolved.occupation}｜${resolved.emotion}｜${resolved.bodyFeature}`);
-  addPreviewDetail(detailFragment, '服裝道具', `${resolved.outfit}｜${resolved.outfitColor}｜${resolved.outfitMaterial}｜${resolved.outfitIntegrity}｜${resolved.accessory}`);
-  addPreviewDetail(detailFragment, '動作場景', `${resolved.action}｜${resolved.pose}｜${resolved.scene}`);
-  if (customText || multiDetails || characterDetails.length) {
-    addPreviewDetail(detailFragment, '你的客製化', [customText, multiDetails, ...characterDetails].filter(Boolean).join('｜'));
-  }
-  previewDetails.replaceChildren(detailFragment);
-
-  const advice = [];
-  if (!sourcePrompt.value.trim()) {
-    advice.push('未輸入原始描述也可轉譯；系統會用目前客製化選項建立基本主題');
-  }
-  if (count.value === 'AI判斷') {
-    advice.push('人數未選時先以單人構圖示意；選雙人／三人會出現互動線');
-  }
-  if (!customText) {
-    advice.push('可在客製化條件補鏡頭焦段、不要的元素或特殊偏好');
-  }
-  previewAdvice.textContent = advice.length ? `新手建議：${advice.join('；')}。` : '目前條件已足夠，可以按「轉譯提示詞」產生可複製英文提示詞。';
-
-  const fragment = document.createDocumentFragment();
-  addPreviewChip(fragment, '人數', resolved.count);
-  addPreviewChip(fragment, '畫風', resolved.artStyle);
-  addPreviewChip(fragment, '鏡位', resolved.camera);
-  addPreviewChip(fragment, '構圖', resolved.composition);
-  addPreviewChip(fragment, '場景', resolved.scene);
-  addPreviewChip(fragment, '動作', resolved.action);
-  addPreviewChip(fragment, '體位', resolved.pose);
-  if (customText) {
-    addPreviewChip(fragment, '客製化', customText);
-  }
-  previewChips.replaceChildren(fragment);
-}
 
 function setupCustomizationControls() {
   populateSelect(lighting, LIGHTING_DESCRIPTIONS);
@@ -479,8 +203,9 @@ function setupCustomizationControls() {
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
   populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
   populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
+  populateSelect(actionMode, ACTION_MODE_OPTIONS);
   setupCharacterControls();
-  updateCountAwareOptions();
+  updateActionDetailOptions();
   updateCharacterCards();
 }
 
@@ -529,15 +254,13 @@ function loadImageAnalysis(file) {
 
     image.addEventListener('load', () => {
       try {
-        imagePreview.src = objectUrl;
-        imagePreview.hidden = false;
         const skinToneRatio = getSkinToneRatioFromImage(image);
+        URL.revokeObjectURL(objectUrl);
         resolve({
           fileName: file.name,
           skinToneRatio,
           width: image.naturalWidth,
-          height: image.naturalHeight,
-          objectUrl
+          height: image.naturalHeight
         });
       } catch (error) {
         URL.revokeObjectURL(objectUrl);
@@ -554,11 +277,46 @@ function loadImageAnalysis(file) {
   });
 }
 
+
+function buildAutoVideoChoices(textPrompt) {
+  const base = textPrompt.replace(/\s+/g, ' ').trim();
+  const variants = [
+    ['AI 1｜柔和呼吸運鏡', 'subtle breathing, gentle hair and fabric motion, slow cinematic push-in, preserve the source composition'],
+    ['AI 2｜眼神與唇部微動', 'slow eye movement, soft lip micro-expression, slight head turn, elegant camera easing, no explicit act animation'],
+    ['AI 3｜手部與服裝細節', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled adult sensual tension'],
+    ['AI 4｜姿態重心變化', 'slow posture weight shift, graceful body-line motion, light parallax, keep tasteful artistic coverage'],
+    ['AI 5｜電影感環繞鏡頭', 'short cinematic orbit, layered depth, atmospheric light drift, smooth loop-ready motion']
+  ];
+
+  return variants.map(([label, motion], index) => ({
+    label,
+    prompt: `image-to-video prompt option ${index + 1}, adult-only consenting subject, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, duration: 5 seconds, motion strength: medium, preserve identity-agnostic appearance, outfit, scene, camera angle, and art style, no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame`
+  }));
+}
+
+function renderAutoVideoChoices(textPrompt) {
+  const choices = buildAutoVideoChoices(textPrompt);
+  autoVideoChoice.replaceChildren();
+
+  for (const choice of choices) {
+    const option = document.createElement('option');
+    option.value = choice.prompt;
+    option.textContent = choice.label;
+    autoVideoChoice.append(option);
+  }
+
+  autoVideoChoice.value = choices[0].prompt;
+  autoVideoPrompt.value = choices[0].prompt;
+  autoVideoPanel.hidden = false;
+}
+
 function renderTextResult(result, successMessage) {
   if (!result.ok || !result.screened) {
     textConfirmationPrompt.value = '';
     textResultPrompt.value = '';
     setOutputVisibility('text', false);
+    autoVideoPanel.hidden = true;
+    autoVideoPrompt.value = '';
     setStatus(textStatus, result.reason || '提示詞未通過安全篩選。', 'error');
     return;
   }
@@ -566,7 +324,8 @@ function renderTextResult(result, successMessage) {
   textConfirmationPrompt.value = result.chineseConfirmation;
   textResultPrompt.value = result.englishPrompt;
   setOutputVisibility('text', true);
-  setStatus(textStatus, successMessage, 'success');
+  renderAutoVideoChoices(result.englishPrompt);
+  setStatus(textStatus, `${successMessage} 已同步產生 5 種 AI 判定圖轉影提示詞。`, 'success');
 }
 
 function renderVideoResult(result, successMessage) {
@@ -626,7 +385,6 @@ function applyImageVideoChoice(score) {
 }
 
 setupCustomizationControls();
-updateBeginnerPreview();
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
@@ -635,28 +393,14 @@ textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
 
 count.addEventListener('change', () => {
-  updateCountAwareOptions();
   updateCharacterCards();
-  updateBeginnerPreview();
 });
 
-const previewInputs = [
-  sourcePrompt, intensity, lighting, camera, composition, artStyle, gender, race, emotion,
-  timePoint, ageBracket, occupation, bodyProportion, face, outfit, outfitColor,
-  outfitMaterial, bodyFeature, outfitIntegrity, multiCharacterDetails, scene, accessory,
-  action, pose, customConditions
-];
+actionMode.addEventListener('change', updateActionDetailOptions);
 
-for (const element of previewInputs) {
-  element.addEventListener('input', updateBeginnerPreview);
-  element.addEventListener('change', updateBeginnerPreview);
-}
-
-for (let index = 1; index <= 3; index += 1) {
-  for (const field of ['Gender', 'Occupation', 'Age', 'Body']) {
-    document.querySelector(`#character${index}${field}`).addEventListener('change', updateBeginnerPreview);
-  }
-}
+autoVideoChoice.addEventListener('change', () => {
+  autoVideoPrompt.value = autoVideoChoice.value;
+});
 
 imageInput.addEventListener('change', async () => {
   const [file] = imageInput.files;
@@ -666,14 +410,11 @@ imageInput.addEventListener('change', async () => {
   setImageVideoChoiceVisibility(false);
 
   if (!file) {
-    imagePreview.hidden = true;
-    imagePreview.removeAttribute('src');
     setStatus(imageVideoStatus, '尚未上傳圖片；圖片分析只在本機瀏覽器進行。');
     return;
   }
 
   if (!file.type.startsWith('image/')) {
-    imagePreview.hidden = true;
     setStatus(imageVideoStatus, '請上傳圖片檔案。', 'error');
     return;
   }
@@ -713,13 +454,12 @@ rewriteButton.addEventListener('click', () => {
     bodyFeature: bodyFeature.value,
     outfitIntegrity: outfitIntegrity.value,
     count: count.value,
-    multiCharacterDetails: multiCharacterDetails.value,
+    cosplayPrompt: cosplayPrompt.value,
     characterDetails: collectCharacterDetails(),
     accessory: accessory.value,
     scene: scene.value,
-    action: action.value,
-    pose: pose.value,
-    customConditions: customConditions.value
+    actionMode: actionMode.value,
+    actionDetail: actionDetail.value
   });
 
   renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');
@@ -757,6 +497,16 @@ imageVideoButton.addEventListener('click', () => {
 imageVideoPromptChoice.addEventListener('change', () => {
   applyImageVideoChoice(imageVideoPromptChoice.value);
   setStatus(videoStatus, `已切換為 ${imageVideoPromptChoice.value}/10 圖轉影英文提示詞，可複製貼上。`, 'success');
+});
+
+copyAutoVideoButton.addEventListener('click', async () => {
+  if (!autoVideoPrompt.value) {
+    setStatus(textStatus, '尚未產生可複製的自動圖轉影提示詞。', 'error');
+    return;
+  }
+
+  await navigator.clipboard.writeText(autoVideoPrompt.value);
+  setStatus(textStatus, '已複製自動圖轉影英文提示詞到剪貼簿。', 'success');
 });
 
 copyTextButton.addEventListener('click', async () => {

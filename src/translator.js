@@ -1482,6 +1482,52 @@ const ACCESSORY_OPTIONS = [
   ...intimateAccessoryPairs.map(([zh, en]) => option(zh, en, 'intimate'))
 ];
 
+
+const ACTION_MODE_OPTIONS = [
+  option('肩膀以上（舌頭／眼神／嘴唇）', 'above-shoulder facial, tongue, gaze, and lip movement', 'above'),
+  option('手部動作（揉捏／擁抱／搓揉）', 'hand and arm movement, kneading, hugging, rubbing', 'hands'),
+  option('下半身（張開／攤躺）', 'lower-body posing, opening lines, sprawled recline', 'lower'),
+  option('不同姿態（躺著／坐著）', 'overall posture such as lying, sitting, kneeling, standing', 'posture')
+];
+
+const actionDetailSeeds = {
+  above: {
+    normalZh: ['自然微笑','直視鏡頭','側臉回望','低頭含笑','抬眼凝視','撥髮露耳','手扶下巴','輕閉眼呼吸','微張唇','挑眉側看','髮絲遮半臉','臉頰近鏡頭','耳環成焦點','頸側線條','柔和眨眼','嘴角微揚','輕吐氣','視線向下','視線上挑','三分之二臉角度','髮尾掃臉側','肩頸放鬆','唇部柔焦','眼神光明亮','安靜凝望'],
+    normalEn: ['natural smile','direct camera gaze','side-profile glance back','lowered smiling gaze','raised-eye stare','hair tuck revealing the ear','hand supporting chin','closed-eye breathing','softly parted lips','raised-brow side gaze','hair veiling half the face','cheek close to camera','earring focal detail','clear neck-side line','gentle blink','subtle upturned mouth corner','soft exhale','downward gaze','upward teasing glance','three-quarter face angle','hair ends brushing face side','relaxed shoulder-neck line','soft-focus lip detail','bright catchlights in eyes','quiet steady gaze'],
+    sensualZh: ['慢舔嘴唇','咬住下唇','舌尖碰唇角','阿黑顏挑逗表情','濕潤唇面特寫','吐舌靠近鏡頭','含住指尖','輕咬食指','舌尖掃過下唇','挑逗吹氣','用唇拉住薄紗','咬住緞帶末端','眼神迷離','唇峰慢舔','舌尖碰項鍊墜飾','用牙齒勾手套','濕唇貼近鏡頭','指尖分開唇瓣','咬唇忍笑','親吻手心','吻過肩頭','舔過肩頸線','用唇含珍珠鏈','半閉眼吐氣','舌尖停在唇邊'],
+    sensualEn: ['slow lip lick','lower-lip bite','tongue touching lip corner','ahegao-inspired teasing expression','glossy wet-lip close-up','tongue-out camera approach','fingertips held between lips','soft index-finger bite','tongue sweeping lower lip','teasing breath','lips catching sheer fabric','biting satin ribbon end','hazy desirous gaze','slow lick across cupid bow','tongue touching necklace pendant','teeth catching glove edge','glossy lips close to camera','fingertips parting lips','lip-biting restrained smile','kiss to the palm','kiss across shoulder','lick along shoulder-neck line','lips holding pearl chain','half-lidded exhale','tongue paused near lips']
+  },
+  hands: {
+    normalZh: ['整理頭髮','拉直衣領','扶住肩線','交疊在胸前','托住下巴','撫過髮尾','握住緞帶','調整手套','輕碰耳環','整理項鍊','扶住腰側','自然垂放','拉住外套邊','按住裙襬','輕握酒杯道具','撥髮到耳後','掌心朝鏡頭','指尖近唇邊','交握放膝上','握住椅背','扶住門框','輕按胸前布料','整理腰帶','拉住袖口','指尖勾飾品'],
+    normalEn: ['arranging hair','straightening collar','resting on shoulder line','crossed over chest area','supporting chin','brushing hair ends','holding satin ribbon','adjusting gloves','touching earring','arranging necklace','at side waist','resting naturally','holding jacket edge','holding hem','holding glass prop','tucking hair behind ear','palm toward camera','fingertips near lips','clasped over knees','holding chair back','holding frame edge','pressing front fabric lightly','adjusting waist belt','pulling sleeve cuffs','hooking accessory'],
+    sensualZh: ['揉捏胸前布料','擁抱貼近身體','搓揉手臂線條','慢滑過側腰','托住雙峰輪廓','揉過臀側布料','拉鬆肩帶','勾住腰鏈','慢拉領口','按住胸口起伏','搓揉大腿外側','擁住後頸','揉捏肩背線條','交纏在腰前','裙襬拉高但保持遮擋','拉住吊帶扣','慢撫腹側','環抱胸前布料','搓揉掌心靠近鏡頭','捏住緞帶繃緊','輕拍臀側','揉捏腰側布料','拉開外套露內搭','擁抱另一角色腰線','搓揉手腕內側'],
+    sensualEn: ['kneading fabric over chest','hugging close to body','rubbing along arm line','slowly sliding over side waist','cupping bust silhouette over fabric','kneading fabric over hip side','loosening shoulder strap','hooking waist chain','slowly opening neckline','covering rising chest','rubbing outer thigh','embracing nape','kneading shoulder-back line','intertwined at front waist','lifting hem while maintaining coverage','holding garter clasp','slowly stroking side abdomen','hugging front fabric','rubbing palms then moving close to camera','pinching satin ribbon taut','lightly patting hip side','kneading waist-side fabric','opening jacket to reveal inner styling','embracing another adult waist','rubbing inner wrist']
+  },
+  lower: {
+    normalZh: ['自然站姿','雙腿交叉站姿','側坐腿部延伸','膝蓋微彎','坐姿雙腳收攏','一腿前伸','階梯式坐姿','靠牆站姿','長裙垂落線條','步伐停格','跪坐保持端正','腳尖踮起','坐姿腿部斜放','盤腿坐姿','半跪拾起布料','側躺腿線延伸','站姿重心轉移','高低腿坐姿','腳踝交疊','膝上布料成焦點','腿部靠近畫面邊緣','腿部自然收折','扶膝坐姿','長靴線條展示','裙襬鋪展'],
+    normalEn: ['natural standing stance','crossed-leg standing stance','side-seated leg extension','slight knee bend','seated feet together','one leg extended forward','tiered seated position','wall-lean standing stance','long skirt drape line','paused walking step','upright kneeling sit','tiptoe emphasis','seated legs angled aside','cross-legged seated pose','half-kneel picking up fabric','side-lying leg-line extension','standing weight shift','high-low leg seated pose','ankles crossed','fabric over knees focal detail','legs near frame edge','naturally folded legs','seated with hands near knees','boot line display','spread skirt hem'],
+    sensualZh: ['腿部微張但保持遮擋','攤躺腿線延伸','跪姿腿部靠近鏡頭','側躺大腿成焦點','坐姿膝蓋分開但遮擋','一腿抬高調整鞋帶','慢拉絲襪邊緣','吊帶扣成焦點','臀腿曲線側向展示','低腰坐姿挑逗重心','趴姿腿部交疊','膝跪向鏡頭靠近','裙襬微掀但遮擋','腿部開合動勢停格','攤躺單腿彎曲','高衩布料露出腿線','腳尖勾住布料','大腿外側手掌停住','雙腿斜向鏡頭','臀側輕拍動作','跪坐腿部打開層次','腿部壓住薄紗','坐姿向後攤躺','側跪腰臀線突出','伸展到畫面前景'],
+    sensualEn: ['legs slightly open while maintaining coverage','sprawled recline with leg-line extension','kneeling legs close to camera','side-lying thigh emphasis','seated knees apart while maintaining coverage','one leg raised to adjust shoe strap','slowly pulling stocking edge','garter clasp focal detail','side display of hip-leg curve','low seated teasing weight','prone crossed legs','kneeling approach toward camera','hem slightly lifted while maintaining coverage','paused opening-closing leg motion','sprawled recline with one leg bent','high-slit fabric showing leg line','toes hooking fabric','palm paused on outer thigh','legs angled toward camera','light hip-side pat motion','kneeling sit with opened leg layering','legs pressing sheer fabric','seated lean-back sprawl','side-kneel emphasizing waist-hip line','extension into foreground']
+  },
+  posture: {
+    normalZh: ['站著正面構圖','站著側身構圖','坐著端正構圖','坐著前傾構圖','躺著側臥構圖','躺著仰臥構圖','跪坐端正構圖','半跪構圖','靠牆站立','靠椅坐姿','趴臥看向鏡頭','盤腿坐著','低身蹲姿','階梯高低坐姿','背對回望','框線旁倚靠','站坐轉換瞬間','一手支撐坐姿','雙手支撐跪姿','伸展手臂站姿','長袍披掛站姿','坐在邊緣','地面側坐','回身跨步','自然慢舞站位'],
+    normalEn: ['standing front composition','standing side-turn composition','upright seated composition','seated forward lean composition','side-lying composition','supine lying composition','upright kneeling-sit composition','half-kneeling composition','standing wall lean','seated leaning on chair','prone looking toward camera','cross-legged seated','low crouch','tiered high-low seated','back-facing glance over shoulder','leaning by frame edge','between standing and sitting','seated with one-hand support','kneeling with both-hand support','standing with arms extended','standing with robe drape','seated on edge','side-seated on floor','turning step back','slow-dance standing placement'],
+    sensualZh: ['慵懶攤躺','低腰坐著後仰','跪著向鏡頭靠近','趴著回頭挑逗','側躺腿線拉長','仰躺單腿彎曲','坐著膝蓋分開但遮擋','半跪腰線前傾','靠牆拱身','坐在邊緣低頭咬唇','跪坐整理吊帶','攤躺伸手邀請','側坐拉開衣料','趴臥腿部交疊','坐著向鏡頭滑近','仰躺薄紗覆身','跪姿背線突出','站姿肩帶滑落','側躺扶住腰臀','低身蹲姿抬眼','坐姿腿部斜向前景','半躺胸前布料成焦點','趴姿向前伸展','跪坐腿部開合層次','站姿臀腿側線展示'],
+    sensualEn: ['languid sprawled recline','low seated backward lean','kneeling close toward camera','prone teasing glance back','side-lying elongated leg line','supine with one leg bent','seated knees apart with coverage','half-kneel forward waist line','arched wall lean','edge-seated lowered lip bite','kneeling-sit adjusting straps','sprawled reaching invitation','side-seated opening fabric','prone crossed legs','seated sliding closer to camera','supine under sheer fabric','kneeling with emphasized back line','standing with slipping shoulder strap','side-lying holding waist-hip line','low crouch with raised eyes','seated legs angled into foreground','half-reclined with front fabric focus','prone forward stretch','kneeling-sit with opened leg layering','standing side display of hip-leg line']
+  }
+};
+
+function makeActionDetailOptions(mode) {
+  const group = actionDetailSeeds[mode] || actionDetailSeeds.above;
+  return [
+    ...group.normalZh.map((zh, index) => option(`${ACTION_MODE_OPTIONS.find((item) => item.rarity === mode).zh}｜正常｜${zh}`, group.normalEn[index], mode)),
+    ...group.sensualZh.map((zh, index) => option(`${ACTION_MODE_OPTIONS.find((item) => item.rarity === mode).zh}｜情慾｜${zh}`, group.sensualEn[index], mode))
+  ];
+}
+
+const ACTION_DETAIL_OPTIONS = Object.fromEntries(Object.keys(actionDetailSeeds).map((mode) => [mode, makeActionDetailOptions(mode)]));
+const ALL_ACTION_DETAIL_OPTIONS = Object.values(ACTION_DETAIL_OPTIONS).flat();
+
 const CUSTOMIZATION_OPTIONS = {
   genders: GENDER_OPTIONS,
   faces: FACE_OPTIONS,
@@ -1495,8 +1541,10 @@ const CUSTOMIZATION_OPTIONS = {
   bodyFeatures,
   counts: COUNT_OPTIONS,
   accessories: ACCESSORY_OPTIONS,
-  actions: ACTION_OPTIONS,
-  poses: POSE_OPTIONS,
+  actionModes: ACTION_MODE_OPTIONS,
+  actionDetails: ALL_ACTION_DETAIL_OPTIONS,
+  actions: ALL_ACTION_DETAIL_OPTIONS,
+  poses: [],
   scenes: [
     ...dailyScenePairs.map(([zh, en]) => option(zh, en, 'daily')),
     ...rareScenePairs.map(([zh, en]) => option(zh, en, 'rare'))
@@ -1590,6 +1638,11 @@ function getPosesForCount(countZh) {
   return POSE_OPTIONS.filter((poseOption) => poseOption.rarity === group);
 }
 
+function getActionDetailsForMode(modeZh) {
+  const selectedMode = ACTION_MODE_OPTIONS.find((modeOption) => modeOption.zh === modeZh || modeOption.rarity === modeZh) || ACTION_MODE_OPTIONS[0];
+  return ACTION_DETAIL_OPTIONS[selectedMode.rarity] || ACTION_DETAIL_OPTIONS.above;
+}
+
 function isMultiCharacterCount(countZh) {
   return countZh !== AI_OPTION.zh && !/^單人/.test(countZh);
 }
@@ -1610,7 +1663,7 @@ function validateCustomDetailInput(input) {
     ok: true,
     details,
     englishDetails: containsCjk(details)
-      ? 'user-provided multi-character detail customization, apply only as safety-compliant adult styling, roles, spacing, and interaction notes'
+      ? 'user-provided cosplay or character direction, apply only as safety-compliant adult styling, roles, spacing, and interaction notes'
       : details
   };
 }
@@ -1662,26 +1715,14 @@ function rewritePrompt(input, options = {}) {
     };
   }
 
-  const customConditionValidation = validateOptionalConditions(options.customConditions);
-  if (!customConditionValidation.ok) {
+  const cosplayValidation = validateCustomDetailInput(options.cosplayPrompt);
+  if (!cosplayValidation.ok) {
     return {
       ok: false,
       prompt: '',
       englishPrompt: '',
       chineseConfirmation: '',
-      reason: customConditionValidation.reason,
-      screened: false
-    };
-  }
-
-  const multiCharacterDetailValidation = validateCustomDetailInput(options.multiCharacterDetails);
-  if (!multiCharacterDetailValidation.ok) {
-    return {
-      ok: false,
-      prompt: '',
-      englishPrompt: '',
-      chineseConfirmation: '',
-      reason: multiCharacterDetailValidation.reason,
+      reason: cosplayValidation.reason,
       screened: false
     };
   }
@@ -1707,10 +1748,8 @@ function rewritePrompt(input, options = {}) {
   const count = getCustomizationOption('counts', options.count);
   const scene = getCustomizationOption('scenes', options.scene);
   const accessory = getCustomizationOption('accessories', options.accessory);
-  const actionGroupOptions = getActionsForCount(count.zh);
-  const action = getPresetOption(actionGroupOptions, options.action);
-  const poseGroupOptions = getPosesForCount(count.zh);
-  const pose = getPresetOption(poseGroupOptions, options.pose);
+  const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
+  const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1745,15 +1784,15 @@ function rewritePrompt(input, options = {}) {
     `鏡位：${camera.zh}`,
     `構圖結構：${composition.zh}`,
     `畫風：${artStyle.zh}`,
-    `動作：${action.zh}`,
-    `體位／互動：${pose.zh}`,
+    `動作／姿態類型：${actionMode.zh}`,
+    `動作／姿態細項：${actionDetail.zh}`,
     `氛圍：${INTENSITY_WORDS[intensity]}`,
     '優先規則：最上方原始提示詞若與下方客製化選項重樣或衝突，以原始提示詞為主',
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
 
-  if (customConditionValidation.conditions) {
-    chinesePrompt.push(`客製化條件：${customConditionValidation.conditions}`);
+  if (cosplayValidation.details) {
+    chinesePrompt.push(`Cosplay：${cosplayValidation.details}`);
   }
 
   const characterDetailLines = Array.isArray(options.characterDetails)
@@ -1762,11 +1801,6 @@ function rewritePrompt(input, options = {}) {
   const safeCharacterDetailLines = isMultiCharacterCount(count.zh)
     ? characterDetailLines.filter((detail) => detail.ok && detail.details)
     : [];
-
-  const shouldApplyMultiCharacterDetails = isMultiCharacterCount(count.zh) && multiCharacterDetailValidation.details;
-  if (shouldApplyMultiCharacterDetails) {
-    chinesePrompt.push(`多人細節客製化：${multiCharacterDetailValidation.details}`);
-  }
 
   for (const characterDetail of safeCharacterDetailLines) {
     chinesePrompt.push(`角色${characterDetail.index}細節：${characterDetail.details}`);
@@ -1796,8 +1830,8 @@ function rewritePrompt(input, options = {}) {
     `camera angle/viewpoint: ${camera.en}`,
     `composition structure: ${composition.en}`,
     `art style: ${artStyle.en}`,
-    `action: ${action.en}`,
-    `position/interaction: ${pose.en}`,
+    `action/posture mode: ${actionMode.en}`,
+    `action/posture detail: ${actionDetail.en}`,
     `tone: ${DEFAULT_STYLE.tone}`,
     `intensity: ${INTENSITY_WORDS[intensity]}`,
     `quality: ${DEFAULT_STYLE.quality}`,
@@ -1805,12 +1839,8 @@ function rewritePrompt(input, options = {}) {
     `safety: ${DEFAULT_STYLE.safety}`
   ];
 
-  if (customConditionValidation.conditions) {
-    englishPrompt.push(`custom conditions: ${customConditionValidation.conditions}`);
-  }
-
-  if (shouldApplyMultiCharacterDetails) {
-    englishPrompt.push(`multi-character custom details: ${multiCharacterDetailValidation.englishDetails}`);
+  if (cosplayValidation.details) {
+    englishPrompt.push(`cosplay/character direction: ${cosplayValidation.englishDetails}`);
   }
 
   for (const characterDetail of safeCharacterDetailLines) {
@@ -2010,7 +2040,10 @@ if (typeof module !== 'undefined') {
     OCCUPATION_OPTIONS,
     BODY_PROPORTION_OPTIONS,
     AGE_BRACKET_OPTIONS,
-    ACTION_OPTIONS,
+    ACTION_OPTIONS: ALL_ACTION_DETAIL_OPTIONS,
+    ACTION_MODE_OPTIONS,
+    ACTION_DETAIL_OPTIONS,
+    ALL_ACTION_DETAIL_OPTIONS,
     ACCESSORY_OPTIONS,
     OUTFIT_MATERIAL_OPTIONS,
     CUSTOMIZATION_OPTIONS,
@@ -2018,6 +2051,7 @@ if (typeof module !== 'undefined') {
     getImageToVideoPromptChoices,
     getActionsForCount,
     getPosesForCount,
+    getActionDetailsForMode,
     checkElementBoundaries
   };
 }
