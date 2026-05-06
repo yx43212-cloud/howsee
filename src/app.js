@@ -209,21 +209,108 @@ function getPreviewCountGroup() {
   return 'single';
 }
 
+function getPreviewPalette() {
+  const text = [
+    getSelectedLabel(timePoint),
+    getSelectedLabel(lighting),
+    getSelectedLabel(outfitColor),
+    getSelectedLabel(artStyle)
+  ].join(' ');
+
+  if (/藍|冷|銀|冰|夜|賽博|霓虹|水|海/.test(text)) {
+    return { tone: 'cool', primary: '#55d8ff', secondary: '#7b6cff', outfit: '#7dd8ff' };
+  }
+  if (/金|暖|琥珀|夕陽|火|紅|酒|黑金|節日/.test(text)) {
+    return { tone: 'warm', primary: '#ffb25f', secondary: '#ff4f93', outfit: '#ff9b66' };
+  }
+  if (/粉|玫瑰|糖果|蜜桃|夢幻|柔/.test(text)) {
+    return { tone: 'rose', primary: '#ff8ac7', secondary: '#ffc2dc', outfit: '#ff6fb3' };
+  }
+  if (/綠|森林|青|翡翠/.test(text)) {
+    return { tone: 'forest', primary: '#74f0b2', secondary: '#2fa978', outfit: '#8de0a6' };
+  }
+  return { tone: 'default', primary: '#ff5f9f', secondary: '#f7d98f', outfit: '#ff8fba' };
+}
+
+function getPreviewSceneType() {
+  const selectedScene = getSelectedLabel(scene);
+  if (/浴|泳|海|雨|水/.test(selectedScene)) {
+    return 'water';
+  }
+  if (/宮|城|古|神|魔|森林|花園/.test(selectedScene)) {
+    return 'fantasy';
+  }
+  if (/棚|攝影|白色|黑色/.test(selectedScene)) {
+    return 'studio';
+  }
+  if (/夜|酒吧|霓虹|城市|陽台/.test(selectedScene)) {
+    return 'night';
+  }
+  return 'room';
+}
+
+function getPreviewCameraType() {
+  const selectedCamera = getSelectedLabel(camera);
+  if (/俯|鳥瞰|高角/.test(selectedCamera)) {
+    return 'high';
+  }
+  if (/仰|低角/.test(selectedCamera)) {
+    return 'low';
+  }
+  if (/近|特寫|臉部|半身/.test(selectedCamera)) {
+    return 'close';
+  }
+  if (/遠|全身|廣角/.test(selectedCamera)) {
+    return 'wide';
+  }
+  return 'mid';
+}
+
+function addPreviewLayer(className, text = '') {
+  const layer = document.createElement('span');
+  layer.className = className;
+  layer.textContent = text;
+  previewStage.append(layer);
+  return layer;
+}
+
 function renderPreviewSilhouettes(group) {
   const total = group === 'three' ? 3 : group === 'two' ? 2 : 1;
+  const palette = getPreviewPalette();
+  const selectedPose = getSelectedLabel(pose);
   previewStage.dataset.count = group;
+  previewStage.dataset.scene = getPreviewSceneType();
+  previewStage.dataset.camera = getPreviewCameraType();
+  previewStage.dataset.tone = palette.tone;
+  previewStage.style.setProperty('--preview-primary', palette.primary);
+  previewStage.style.setProperty('--preview-secondary', palette.secondary);
+  previewStage.style.setProperty('--preview-outfit', palette.outfit);
   previewStage.replaceChildren();
+
+  addPreviewLayer('preview-light-beam');
+  addPreviewLayer('preview-scene-mark', getSelectedLabel(scene).replace('AI判斷', '場景由 AI 判斷'));
+  addPreviewLayer('preview-camera-mark', getSelectedLabel(camera).replace('AI判斷', '鏡位由 AI 判斷'));
 
   for (let index = 0; index < total; index += 1) {
     const silhouette = document.createElement('span');
     silhouette.className = `preview-silhouette character-${index + 1}`;
+    silhouette.dataset.role = `角色 ${index + 1}`;
+    const outfitLayer = document.createElement('span');
+    outfitLayer.className = 'preview-outfit-layer';
+    silhouette.append(outfitLayer);
     previewStage.append(silhouette);
   }
 
-  if (group === 'single' && /手|POV|主觀|鏡頭/.test(getSelectedLabel(pose))) {
-    const hand = document.createElement('span');
-    hand.className = 'preview-hand';
-    previewStage.append(hand);
+  if (group !== 'single') {
+    addPreviewLayer('preview-interaction-line', getSelectedLabel(action).replace('AI判斷', '互動由 AI 判斷'));
+  }
+
+  if (group === 'single' && /手|POV|主觀|鏡頭/.test(selectedPose)) {
+    addPreviewLayer('preview-hand');
+  }
+
+  if (getSelectedLabel(accessory) !== 'AI判斷') {
+    addPreviewLayer('preview-prop', getSelectedLabel(accessory));
   }
 }
 
