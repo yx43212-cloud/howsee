@@ -113,10 +113,38 @@ const CAMERA_ANGLES = [
   { zh: '鏡面反射鏡位，雙重視線層次', en: 'mirror-reflection shot with layered gaze direction' },
   { zh: '半身肖像鏡位，肩頸與表情清楚', en: 'half-body portrait shot with clear shoulders, neck, and expression' },
   { zh: '背面回眸鏡位，姿態曲線明確', en: 'back-view glance shot with clear posture curve' },
-  { zh: '雙人對角線鏡位，互動關係清楚', en: 'two-person diagonal framing with readable interaction' }
-];
-
-const ART_STYLES = [
+  { zh: '雙人對角線鏡位，互動關係清楚', en: 'two-person diagonal framing with readable interaction' },
+  { zh: '正面半身鏡位，視線直接連結', en: 'front half-body shot with direct eye-line connection' },
+  { zh: '側前方近景，臉部與肩線兼具', en: 'front-side close shot balancing face and shoulder line' },
+  { zh: '側後方回望鏡位，背部姿態清楚', en: 'rear three-quarter glance shot with readable back posture' },
+  { zh: '膝上中近景，服裝層次突出', en: 'knee-up medium close shot emphasizing outfit layers' },
+  { zh: '手部前景鏡位，指尖動作突出', en: 'hand-foreground shot emphasizing fingertip motion' },
+  { zh: '唇眼切換鏡位，情緒節奏明確', en: 'eyes-to-lips detail framing with clear emotional rhythm' },
+  { zh: '肩後反打鏡位，雙人互動自然', en: 'reverse over-shoulder shot for natural two-person interaction' },
+  { zh: '雙人平行鏡位，肢體距離可讀', en: 'parallel two-person shot with readable body distance' },
+  { zh: '雙人交錯前後景，層次清楚', en: 'staggered two-person foreground-background shot' },
+  { zh: '低機位全身拉長，腿部線條突出', en: 'low full-body shot elongating leg lines' },
+  { zh: '高機位半身俯視，親密距離感', en: 'high half-body top-down shot with intimate distance' },
+  { zh: '貼近肩頸特寫，呼吸感明顯', en: 'tight shoulder-and-neck close-up with visible breathing mood' },
+  { zh: '背光剪影鏡位，外輪廓優先', en: 'silhouette-priority framing with outer contour emphasis' },
+  { zh: '窗框式框景鏡位，人物被框住', en: 'frame-within-frame shot using compositional borders' },
+  { zh: '門框式回身鏡位，邀請感構圖', en: 'doorframe turn-back shot with inviting composition' },
+  { zh: '坐姿低平鏡位，腿部與手部清楚', en: 'low seated shot with clear legs and hands' },
+  { zh: '躺姿水平鏡位，身體線條延展', en: 'horizontal reclining shot with extended body line' },
+  { zh: '俯身前景鏡位，臉部靠近焦點', en: 'forward-lean foreground shot with face near focal plane' },
+  { zh: '慢推近人像鏡位，情緒逐步升溫', en: 'slow push-in portrait framing with rising emotion' },
+  { zh: '慢拉遠全景鏡位，姿勢完整揭示', en: 'slow pull-back wide shot revealing the full pose' },
+  { zh: '環繞四分之一鏡位，立體感更強', en: 'quarter-orbit shot creating stronger dimensionality' },
+  { zh: '雙人手部交會特寫，互動焦點明確', en: 'two-person hand-contact close-up as interaction focus' },
+  { zh: '髮絲前景鏡位，臉部柔化', en: 'hair-foreground shot softly framing the face' },
+  { zh: '腰臀線條鏡位，保持藝術遮擋', en: 'waist-and-hip line framing with artistic coverage' },
+  { zh: '鎖骨與肩線特寫，姿態精緻', en: 'collarbone-and-shoulder close-up with refined posture' },
+  { zh: '腳尖到臉部引導鏡位，視線流動', en: 'toe-to-face leading-line shot guiding the gaze' },
+  { zh: '雙人對視特寫，眼神互動優先', en: 'two-person eye-contact close-up prioritizing gaze interaction' },
+  { zh: '雙人半身貼近鏡位，距離張力明確', en: 'two-person close half-body shot with clear distance tension' },
+  { zh: '斜向全身鏡位，構圖更有速度感', en: 'diagonal full-body shot with dynamic pace' },
+  { zh: '中央留白鏡位，方便生成動態空間', en: 'center-negative-space shot allowing room for motion generation' }
+];const ART_STYLES = [
   { zh: '電影劇照風', en: 'cinematic still frame, dramatic composition, filmic color grading' },
   { zh: '高級雜誌寫真風', en: 'premium editorial photography, refined styling, glossy finish' },
   { zh: '精品時尚封面風', en: 'luxury fashion magazine cover, polished styling, premium composition' },
@@ -213,12 +241,56 @@ const RACE_OPTIONS = [
 ];
 
 const EMOTION_OPTIONS = [
-  ['自信微笑', 'confident smile'], ['害羞臉紅', 'shy blush'], ['挑逗眼神', 'teasing gaze'], ['沉醉表情', 'entranced expression'], ['冷靜凝視', 'calm stare'],
-  ['溫柔微笑', 'gentle smile'], ['咬唇表情', 'soft lip-biting expression'], ['慵懶眼神', 'languid eyes'], ['驚喜睜眼', 'pleasantly surprised eyes'], ['渴望神情', 'yearning expression'],
-  ['陶醉閉眼', 'blissful closed eyes'], ['俏皮眨眼', 'playful wink'], ['高傲抬眉', 'proud raised brow'], ['迷離眼神', 'dreamy unfocused gaze'], ['安定放鬆', 'relaxed composure'],
-  ['羞怯低頭', 'bashful lowered gaze'], ['熱烈注視', 'intense direct gaze'], ['若有所思', 'thoughtful mood'], ['甜美撒嬌', 'sweet affectionate expression'], ['克制忍耐', 'restrained longing'],
-  ['滿足微喘', 'satisfied breathless mood'], ['神祕淺笑', 'mysterious half-smile'], ['專注凝神', 'focused concentration'], ['柔軟依戀', 'soft attachment'], ['放肆大笑', 'unrestrained laugh'],
-  ['倔強抿唇', 'stubborn pressed lips'], ['期待眼神', 'expectant gaze'], ['迷人側笑', 'charming side smile'], ['平靜挑釁', 'calm provocation'], ['深情凝望', 'deep affectionate gaze']
+  ['自信微笑', 'confident smile'],
+  ['害羞臉紅', 'shy blush'],
+  ['挑逗眼神', 'teasing gaze'],
+  ['沉醉表情', 'entranced expression'],
+  ['冷靜凝視', 'calm stare'],
+  ['溫柔微笑', 'gentle smile'],
+  ['咬唇表情', 'soft lip-biting expression'],
+  ['慵懶眼神', 'languid eyes'],
+  ['驚喜睜眼', 'pleasantly surprised eyes'],
+  ['渴望神情', 'yearning expression'],
+  ['陶醉閉眼', 'blissful closed eyes'],
+  ['俏皮眨眼', 'playful wink'],
+  ['高傲抬眉', 'proud raised brow'],
+  ['迷離眼神', 'dreamy unfocused gaze'],
+  ['安定放鬆', 'relaxed composure'],
+  ['羞怯低頭', 'bashful lowered gaze'],
+  ['熱烈注視', 'intense direct gaze'],
+  ['若有所思', 'thoughtful mood'],
+  ['甜美撒嬌', 'sweet affectionate expression'],
+  ['克制忍耐', 'restrained longing'],
+  ['滿足微喘', 'satisfied breathless mood'],
+  ['神祕淺笑', 'mysterious half-smile'],
+  ['專注凝神', 'focused concentration'],
+  ['柔軟依戀', 'soft attachment'],
+  ['放肆大笑', 'unrestrained laugh'],
+  ['倔強抿唇', 'stubborn pressed lips'],
+  ['期待眼神', 'expectant gaze'],
+  ['迷人側笑', 'charming side smile'],
+  ['平靜挑釁', 'calm provocation'],
+  ['深情凝望', 'deep affectionate gaze'],
+  ['雀躍期待', 'sparkling anticipation'],
+  ['嫵媚挑眉', 'alluring raised eyebrow'],
+  ['壓抑喘息', 'restrained breathless expression'],
+  ['撒嬌委屈', 'affectionately pouty expression'],
+  ['危險微笑', 'dangerous subtle smile'],
+  ['沉穩支配感', 'calm dominant presence'],
+  ['被寵溺的放鬆', 'pampered relaxed expression'],
+  ['羞澀偷看', 'bashful side glance'],
+  ['熱戀黏膩感', 'clingy lovestruck mood'],
+  ['清醒誘惑', 'clear-headed temptation'],
+  ['微醺迷人', 'slightly tipsy charm'],
+  ['冷豔挑釁', 'cool glamorous provocation'],
+  ['柔弱求抱', 'soft longing for embrace'],
+  ['得意壞笑', 'smug mischievous grin'],
+  ['安靜臣服感', 'quiet yielding mood'],
+  ['主導邀請感', 'leading invitational expression'],
+  ['被注視的緊張', 'nervousness under attention'],
+  ['滿眼愛意', 'eyes full of affection'],
+  ['曖昧停頓', 'ambiguous pause'],
+  ['放鬆信任', 'relaxed trust']
 ].map(([zh, en]) => option(zh, en));
 
 const EXPRESSION_OPTIONS = EMOTION_OPTIONS;
@@ -332,6 +404,109 @@ const POSE_OPTIONS = [
   ['薄紗間探身姿勢，前景柔化輪廓', 'leaning through sheer fabric with softened foreground contour'], ['站姿抬手觸碰耳環或髮飾', 'standing with raised hand touching earring or hair ornament'], ['雙人慢舞般貼近，手扶肩背與腰側', 'two adults close like a slow dance, hands on shoulders, back, and waist'], ['跪姿直背，手掌停在大腿上', 'upright kneeling pose with palms resting on thighs'], ['坐姿單腿伸展，另一腿自然收折', 'seated one-leg extension with the other leg naturally folded']
 ].map(([zh, en]) => option(zh, en));
 
+const ACTION_OPTIONS = [
+  option('一起整理衣領', 'adjusting collars together', 'daily'),
+  option('並肩散步', 'walking side by side', 'daily'),
+  option('分享一杯飲料', 'sharing a drink', 'daily'),
+  option('輕扶肩膀', 'gently holding a shoulder', 'daily'),
+  option('互相整理頭髮', 'tidying each other’s hair', 'daily'),
+  option('低聲交談', 'speaking quietly together', 'daily'),
+  option('一起看向鏡頭', 'looking toward the camera together', 'daily'),
+  option('手掌輕觸', 'light palm touch', 'daily'),
+  option('交換微笑', 'exchanging smiles', 'daily'),
+  option('靠近耳語', 'leaning in to whisper', 'daily'),
+  option('遞上外套', 'offering a jacket', 'daily'),
+  option('一起坐下放鬆', 'sitting together in a relaxed way', 'daily'),
+  option('調整飾品', 'adjusting accessories', 'daily'),
+  option('整理裙襬或袖口', 'adjusting hemline or cuffs', 'daily'),
+  option('扶著對方起身', 'helping each other stand', 'daily'),
+  option('肩並肩靠近', 'standing shoulder to shoulder', 'daily'),
+  option('一起翻看相冊', 'looking through photos together', 'daily'),
+  option('同步深呼吸', 'breathing in sync', 'daily'),
+  option('輕碰額頭', 'gentle forehead touch', 'daily'),
+  option('互相整理領帶', 'adjusting each other’s tie', 'daily'),
+  option('一起慢舞', 'slow dancing together', 'daily'),
+  option('手牽手轉身', 'turning while holding hands', 'daily'),
+  option('輕拍手背', 'light pat on the back of the hand', 'daily'),
+  option('靠在肩上休息', 'resting on a shoulder', 'daily'),
+  option('一起整理布料', 'arranging fabric together', 'daily'),
+  option('互相遞眼神', 'exchanging meaningful glances', 'daily'),
+  option('坐姿聊天', 'chatting while seated', 'daily'),
+  option('站姿等候', 'standing in quiet anticipation', 'daily'),
+  option('同步回眸', 'turning back in sync', 'daily'),
+  option('輕扶手肘', 'gently holding an elbow', 'daily'),
+  option('拿起香水瓶', 'picking up a perfume bottle', 'daily'),
+  option('打開窗簾', 'opening curtains', 'daily'),
+  option('整理桌面小物', 'arranging small tabletop objects', 'daily'),
+  option('走近對方', 'walking closer to each other', 'daily'),
+  option('靠近鏡面整理儀容', 'checking styling near a mirror', 'daily'),
+  option('一起看夜景', 'looking at a night view together', 'daily'),
+  option('牽手入鏡', 'entering frame while holding hands', 'daily'),
+  option('交換外套', 'exchanging a jacket', 'daily'),
+  option('替對方扣扣子', 'buttoning clothing for the other person', 'daily'),
+  option('抬手整理耳環', 'raising a hand to adjust an earring', 'daily'),
+  option('輕拂髮絲', 'brushing hair aside', 'daily'),
+  option('雙人交錯站位', 'standing in staggered positions', 'daily'),
+  option('一起坐到沙發邊', 'sitting together at the edge of seating', 'daily'),
+  option('安靜對望', 'quiet mutual gaze', 'daily'),
+  option('拉近距離', 'closing the distance', 'daily'),
+  option('自然轉圈展示服裝', 'turning naturally to show styling', 'daily'),
+  option('互相示意靠近', 'gesturing for each other to come closer', 'daily'),
+  option('輕扶背部引導', 'gently guiding by the back', 'daily'),
+  option('在鏡頭前停步', 'pausing in front of the camera', 'daily'),
+  option('一起離開畫面', 'leaving the frame together', 'daily'),
+  option('指尖滑過鎖骨', 'fingertips tracing the collarbone', 'sensual'),
+  option('慢慢拉鬆肩帶', 'slowly loosening a shoulder strap', 'sensual'),
+  option('靠近耳邊吐息', 'breathing softly near the ear', 'sensual'),
+  option('眼神挑逗靠近', 'approaching with a teasing gaze', 'sensual'),
+  option('布料微微滑落', 'fabric slipping slightly', 'sensual'),
+  option('指尖勾住腰帶', 'fingertips hooking the waist belt', 'sensual'),
+  option('貼近低語', 'close intimate whispering', 'sensual'),
+  option('慢速撫過手臂', 'slowly caressing the arm', 'sensual'),
+  option('腰線輕微擺動', 'subtle hip-line sway', 'sensual'),
+  option('回眸咬唇', 'turning back with a lip bite', 'sensual'),
+  option('單手拉開外套', 'opening a jacket with one hand', 'sensual'),
+  option('輕扶對方腰側', 'gently holding the other person’s waist', 'sensual'),
+  option('掌心貼近背部', 'palm resting near the back', 'sensual'),
+  option('慢慢靠近親吻距離', 'slowly approaching kissing distance', 'sensual'),
+  option('髮絲滑過肩頭', 'hair sliding over the shoulder', 'sensual'),
+  option('指尖停在唇邊', 'fingertips pausing near the lips', 'sensual'),
+  option('扶住下巴對視', 'holding the chin for eye contact', 'sensual'),
+  option('沿著肩線慢移', 'slow movement along the shoulder line', 'sensual'),
+  option('貼近胸前但保持遮擋', 'moving close to the chest with coverage maintained', 'sensual'),
+  option('手掌滑向腰窩', 'hand gliding toward the lower back', 'sensual'),
+  option('雙人身體錯位貼近', 'two adults close with staggered body alignment', 'sensual'),
+  option('慢慢解開腰帶但不露骨', 'slowly loosening a belt without explicit reveal', 'sensual'),
+  option('拉近衣領聞香', 'drawing the collar closer with intimate scenting', 'sensual'),
+  option('手指繞過髮尾', 'fingers circling hair ends', 'sensual'),
+  option('輕咬手套邊緣', 'lightly biting the edge of a glove', 'sensual'),
+  option('坐姿向鏡頭前傾', 'seated forward lean toward the camera', 'sensual'),
+  option('膝蓋輕碰', 'knees touching lightly', 'sensual'),
+  option('肩帶滑到手臂', 'strap slipping to the upper arm', 'sensual'),
+  option('指尖描摹腿部線條', 'fingertips tracing the leg line', 'sensual'),
+  option('雙人額頭貼近喘息', 'two adults close forehead-to-forehead breathing', 'sensual'),
+  option('慢慢轉身展示背線', 'slowly turning to reveal the back line', 'sensual'),
+  option('靠牆貼近對望', 'close wall-side eye contact', 'sensual'),
+  option('半披外套遮擋身形', 'half-draped jacket preserving coverage', 'sensual'),
+  option('拉住對方手腕靠近', 'holding the wrist to draw closer', 'sensual'),
+  option('手掌覆在手背上', 'palm covering the back of the hand', 'sensual'),
+  option('雙人慢舞貼近', 'close slow-dance movement', 'sensual'),
+  option('撫過腰封邊緣', 'touching the edge of a waist cincher', 'sensual'),
+  option('抬腿整理鞋帶', 'raising a leg to adjust a shoe strap', 'sensual'),
+  option('俯身靠近耳語', 'leaning down for intimate whispering', 'sensual'),
+  option('把布料拉回肩上', 'pulling fabric back over the shoulder', 'sensual'),
+  option('指尖輕敲鎖骨', 'fingertips tapping the collarbone lightly', 'sensual'),
+  option('呼吸帶動胸口起伏', 'breathing with subtle chest rise', 'sensual'),
+  option('微張唇凝視', 'parted-lip gaze', 'sensual'),
+  option('掌心沿側腰停住', 'palm pausing along the side waist', 'sensual'),
+  option('雙人手指交纏', 'two adults interlacing fingers', 'sensual'),
+  option('一步步逼近鏡頭', 'stepping closer toward the camera', 'sensual'),
+  option('側身展示臀腰曲線', 'side turn emphasizing hip-waist curve', 'sensual'),
+  option('拉住領口遮擋', 'holding the neckline for coverage', 'sensual'),
+  option('輕碰唇角', 'light touch near the corner of the lips', 'sensual'),
+  option('貼近但保留安全距離', 'moving close while preserving a safe non-explicit distance', 'sensual')
+];
+
 const dailyScenePairs = [
   ['高樓公寓客廳', 'high-rise apartment living room'], ['晨光公寓臥室', 'morning apartment bedroom'], ['極簡白色攝影棚', 'minimal white photo studio'], ['現代簡約浴室', 'modern minimal bathroom'], ['精品試衣間', 'boutique fitting room'],
   ['奢華化妝台前', 'luxury vanity area'], ['摩登 loft 公寓', 'modern loft apartment'], ['城市夜景陽台', 'city-view balcony'], ['復古唱片房', 'vintage record room'], ['私人鋼琴房', 'private piano room'],
@@ -369,6 +544,7 @@ const CUSTOMIZATION_OPTIONS = {
   outfitIntegrity: OUTFIT_INTEGRITY_OPTIONS,
   bodyFeatures,
   counts: COUNT_OPTIONS,
+  actions: ACTION_OPTIONS,
   poses: POSE_OPTIONS,
   scenes: [
     ...dailyScenePairs.map(([zh, en]) => option(zh, en, 'daily')),
@@ -496,6 +672,7 @@ function rewritePrompt(input, options = {}) {
   const outfitIntegrity = getCustomizationOption('outfitIntegrity', options.outfitIntegrity);
   const count = getCustomizationOption('counts', options.count);
   const scene = getCustomizationOption('scenes', options.scene);
+  const action = getCustomizationOption('actions', options.action);
   const pose = getCustomizationOption('poses', options.pose);
 
   let rewritten = validation.prompt;
@@ -525,7 +702,8 @@ function rewritePrompt(input, options = {}) {
     `光感：${lighting.zh}`,
     `鏡位：${camera.zh}`,
     `畫風：${artStyle.zh}`,
-    `體位／姿勢：${pose.zh}`,
+    `動作：${action.zh}`,
+    `體位／互動：${pose.zh}`,
     `氛圍：${INTENSITY_WORDS[intensity]}`,
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
@@ -552,7 +730,8 @@ function rewritePrompt(input, options = {}) {
     `lighting: ${lighting.en}`,
     `camera angle: ${camera.en}`,
     `art style: ${artStyle.en}`,
-    `body pose/posture: ${pose.en}`,
+    `action: ${action.en}`,
+    `position/interaction: ${pose.en}`,
     `tone: ${DEFAULT_STYLE.tone}`,
     `intensity: ${INTENSITY_WORDS[intensity]}`,
     `quality: ${DEFAULT_STYLE.quality}`,
@@ -573,10 +752,174 @@ function rewritePrompt(input, options = {}) {
   };
 }
 
+const IMAGE_TO_VIDEO_TIER_PROMPTS = [
+  { score: 1, max: 1, zh: '安全生活動態，只有呼吸、眨眼與髮絲自然擺動', en: 'safe everyday motion with only breathing, blinking, and natural hair movement' },
+  { score: 2, max: 2, zh: '生活感慢推鏡，加入輕微姿勢調整與布料自然晃動', en: 'everyday slow push-in with subtle posture adjustment and natural fabric sway' },
+  { score: 3, max: 3, zh: '柔和魅力動態，強調眼神、微笑與肩頸細節', en: 'soft glamour motion emphasizing gaze, smile, shoulders, and neck details' },
+  { score: 4, max: 4, zh: '輕度曖昧運鏡，手部整理服裝、身體重心自然轉移', en: 'lightly intimate camera motion, hands adjusting outfit, natural weight shift' },
+  { score: 5, max: 5, zh: '性感但克制的動態，慢速靠近、髮絲與布料有節奏擺動', en: 'sensual but restrained motion, slow approach, rhythmic hair and fabric movement' },
+  { score: 6, max: 6, zh: '成人向魅力動態，眼神更直接、姿態更有張力但不露骨', en: 'adult-only glamour motion, more direct gaze, stronger posture tension, non-explicit' },
+  { score: 7, max: 7, zh: '高曖昧張力圖轉影，布料微滑、呼吸更明顯、保持藝術遮擋', en: 'high intimate-tension image-to-video, slight fabric slipping, more visible breathing, artistic coverage' },
+  { score: 8, max: 8, zh: '強烈成人向但安全的動態，貼近鏡頭與身體曲線張力，避免性行為', en: 'intense adult-only but safe motion, closer camera presence and body-line tension, avoid sexual acts' },
+  { score: 9, max: 9, zh: '高色情張力安全版，保留合意成人與遮擋，不新增露骨裸露', en: 'high sensual-tension safety version, consenting adults and coverage preserved, no new explicit nudity' },
+  { score: 10, max: 10, zh: '最高張力安全邊界，僅允許藝術遮擋、慢速情緒與非露骨成人氛圍', en: 'maximum-tension safety boundary, only artistic coverage, slow emotion, and non-explicit adult mood' }
+];
+
+const IMAGE_TO_VIDEO_UNSAFE_REVISIONS = [
+  { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, zh: '改成「所有角色皆為明確 18+ 成年人，成熟外觀與成人造型」。', en: 'Change it to clearly 18+ adult characters with mature styling and adult presentation.' },
+  { pattern: /強迫|迷姦|下藥|昏迷|睡著|無意識|rape|forced|drugged|unconscious/i, zh: '改成「合意成人互動、清醒、主動回應、可隨時停止」。', en: 'Change it to consenting adult interaction, awake, actively responsive, and able to stop at any time.' },
+  { pattern: /偷拍|偷窺|未同意|voyeur|hidden camera/i, zh: '改成「明確同意拍攝的成人寫真／電影鏡頭」。', en: 'Change it to an explicitly consented adult portrait or cinematic shot.' },
+  { pattern: /血|虐殺|肢解|重傷|blood|gore|dismember/i, zh: '移除血腥暴力，改成「戲劇化但無傷害的姿態與光影」。', en: 'Remove graphic violence and use dramatic but non-harmful posing and lighting instead.' }
+];
+
+function clampScore(value) {
+  return Math.min(10, Math.max(1, Math.round(value)));
+}
+
+function getImageToVideoTier(score) {
+  const normalizedScore = clampScore(score);
+  return IMAGE_TO_VIDEO_TIER_PROMPTS.find((tier) => tier.score === normalizedScore) || IMAGE_TO_VIDEO_TIER_PROMPTS.at(-1);
+}
+
+function getImageToVideoPromptChoices(score) {
+  const normalizedScore = clampScore(score);
+  const candidateScores = [normalizedScore - 1, normalizedScore, normalizedScore + 1]
+    .filter((candidate) => candidate >= 1 && candidate <= 10);
+
+  return candidateScores.map((candidate) => getImageToVideoTier(candidate));
+}
+
+function estimateExplicitnessScore({ skinToneRatio = 0, fileName = '', imageDescription = '', desiredMotion = '' } = {}) {
+  const normalizedText = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  let score = 1 + (Number(skinToneRatio) || 0) * 8;
+
+  const scoreRules = [
+    { pattern: /泳裝|比基尼|bikini|swimwear/i, points: 1 },
+    { pattern: /內衣|睡衣|蕾絲|lingerie|underwear|lace/i, points: 2 },
+    { pattern: /性感|挑逗|曖昧|sensual|sexy|seductive|intimate/i, points: 2 },
+    { pattern: /裸|裸體|全裸|nude|naked|topless/i, points: 3 },
+    { pattern: /做愛|性交|高潮|性行為|sex|orgasm|explicit/i, points: 4 }
+  ];
+
+  for (const { pattern, points } of scoreRules) {
+    if (pattern.test(normalizedText)) {
+      score += points;
+    }
+  }
+
+  return clampScore(score);
+}
+
+function buildImageToVideoRevision(input) {
+  const normalized = normalizeInput(input);
+  const matchedRevision = IMAGE_TO_VIDEO_UNSAFE_REVISIONS.find(({ pattern }) => pattern.test(normalized));
+
+  if (matchedRevision) {
+    return matchedRevision;
+  }
+
+  return {
+    zh: '降低露骨程度，改成合意成人、藝術構圖、慢速運鏡與非露骨的情緒張力。',
+    en: 'Reduce explicitness and rewrite it as consenting adults, artistic composition, slow camera movement, and non-explicit emotional tension.'
+  };
+}
+
+function rewriteImageMotionToEnglish(input) {
+  let rewritten = normalizeInput(input);
+
+  for (const { pattern, replacement } of PHRASE_RULES) {
+    rewritten = rewritten.replace(pattern, replacement);
+  }
+
+  if (!rewritten) {
+    return '';
+  }
+
+  if (containsCjk(rewritten)) {
+    return 'user-requested safe motion direction, interpreted only if it stays within adult consent and non-explicit safety boundaries';
+  }
+
+  return rewritten;
+}
+
+function createImageToVideoPrompt({
+  fileName = '',
+  imageDescription = '',
+  desiredMotion = '',
+  skinToneRatio = 0,
+  durationSeconds = 5,
+  motionStrength = 'medium'
+} = {}) {
+  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(combinedForSafety));
+
+  if (blocked) {
+    const revision = buildImageToVideoRevision(combinedForSafety);
+    return {
+      ok: false,
+      prompt: '',
+      englishPrompt: '',
+      chineseConfirmation: '',
+      reason: blocked.reason,
+      screened: false,
+      explicitnessScore: estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion }),
+      suggestedFix: revision
+    };
+  }
+
+  const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
+  const tier = getImageToVideoTier(explicitnessScore);
+  const promptChoices = getImageToVideoPromptChoices(explicitnessScore);
+  const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
+  const safeDuration = Math.min(12, Math.max(3, Number(durationSeconds) || 5));
+  const safeMotionStrength = ['subtle', 'medium', 'strong'].includes(motionStrength) ? motionStrength : 'medium';
+  const sourceNoteZh = normalizeInput(imageDescription) || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
+  const requestedMotionZh = normalizeInput(desiredMotion) || '未指定額外動態，依色情程度自動建議安全圖轉影動作';
+
+  const chinesePrompt = [
+    `圖轉影色情程度：${explicitnessScore}/10`,
+    `中文對照詞意：${tier.zh}`,
+    `圖片判定：${sourceNoteZh}`,
+    `用戶希望：${requestedMotionZh}`,
+    `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
+    '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
+  ];
+
+  const englishPrompt = [
+    'image-to-video prompt',
+    `adult-only explicitness rating: ${explicitnessScore}/10`,
+    tier.en,
+    'use the uploaded image as the visual reference, preserve identity-agnostic subject appearance, outfit, composition, and background',
+    `duration: ${safeDuration} seconds`,
+    `motion strength: ${safeMotionStrength}`,
+    'add natural micro-movements, breathing, hair motion, fabric motion, cinematic camera easing, no abrupt morphing',
+    'no new explicit nudity beyond the source image, no sexual-act animation, no coercion, no minors, no voyeur framing, no graphic violence',
+    DEFAULT_STYLE.safety
+  ];
+
+  if (requestedMotionEn) {
+    englishPrompt.push(`user requested safe motion: ${requestedMotionEn}`);
+  }
+
+  return {
+    ok: true,
+    prompt: englishPrompt.join(', '),
+    englishPrompt: englishPrompt.join(', '),
+    chineseConfirmation: chinesePrompt.join('，'),
+    reason: '',
+    screened: true,
+    explicitnessScore,
+    suggestedFix: null,
+    promptChoices
+  };
+}
+
 if (typeof module !== 'undefined') {
   module.exports = {
     rewritePrompt,
     validatePrompt,
+    createImageToVideoPrompt,
+    estimateExplicitnessScore,
     PHRASE_RULES,
     CHINESE_PHRASE_RULES,
     BLOCKED_PATTERNS,
@@ -588,7 +931,10 @@ if (typeof module !== 'undefined') {
     EXPRESSION_OPTIONS,
     TIME_POINTS,
     GENDER_OPTIONS,
+    ACTION_OPTIONS,
     CUSTOMIZATION_OPTIONS,
+    IMAGE_TO_VIDEO_TIER_PROMPTS,
+    getImageToVideoPromptChoices,
     checkElementBoundaries
   };
 }

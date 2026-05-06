@@ -1,4 +1,4 @@
-# SHowSexy
+# 好想瑟瑟 SHowSexy
 
 A static prototype for rewriting direct adult prompts into image-generation-oriented English prompts with Traditional Chinese confirmation text. The app preserves the user's high-level intent while adding adult-only consent guardrails and more visual language around mood, composition, pose, lighting, and texture.
 
@@ -8,12 +8,14 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 - Intensity selector with soft, medium, and strong output styles.
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues.
 - Browser-only implementation with no backend or data collection.
-- 50 lighting-direction presets, 20 camera-angle presets, and 50 art-style presets for richer visual direction.
+- 50 lighting-direction presets, 50 camera-angle/viewpoint presets, and 50 art-style presets for richer visual direction.
 - Gender selection plus 100 race presets, split into 50 daily and 50 rare options.
 - 100 outfit presets and 100 scene presets, each split into 50 daily and 50 rare options.
-- 30 emotion presets, 30 outfit-color presets, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, and 50 usable body pose/posture presets.
+- 50 emotion presets, 30 outfit-color presets, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, and 100 action presets split into 50 daily interactions and 50 sensual/flirty actions, plus 50 position/interaction presets.
 - Lighting presets avoid scene terms, and pose/outfit presets avoid leaking lighting or scene terms so prompt elements do not conflict.
 - Output shows Chinese confirmation text only for review; the copyable result area contains the English generation prompt only.
+- Image-to-video prompt suggestions: upload a reference image, estimate an adult-only explicitness score from 1-10 locally in the browser, and generate selectable score-aware Chinese meaning confirmations plus English copyable image-to-video prompts.
+- Optional user-directed image-to-video motion requests are safety-screened; rejected requests include Chinese/English revision advice for making the prompt pass guardrails.
 - Free-form custom conditions field that can be appended to the final prompt after the same safety validation.
 
 ## Run locally

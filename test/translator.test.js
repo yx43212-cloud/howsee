@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   rewritePrompt,
+  createImageToVideoPrompt,
+  estimateExplicitnessScore,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
@@ -51,7 +53,7 @@ test('rejects non-consensual content', () => {
 
 test('provides requested preset counts for visual controls', () => {
   assert.equal(LIGHTING_DESCRIPTIONS.length, 50);
-  assert.equal(CAMERA_ANGLES.length, 20);
+  assert.equal(CAMERA_ANGLES.length, 50);
   assert.equal(ART_STYLES.length, 50);
   assert.equal(TIME_POINTS.length, 20);
 });
@@ -61,7 +63,7 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(RACE_OPTIONS.length, 100);
   assert.equal(RACE_OPTIONS.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(RACE_OPTIONS.filter(({ rarity }) => rarity === 'rare').length, 50);
-  assert.equal(EMOTION_OPTIONS.length, 30);
+  assert.equal(EMOTION_OPTIONS.length, 50);
   assert.equal(EXPRESSION_OPTIONS, EMOTION_OPTIONS);
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 100);
@@ -73,6 +75,9 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'rare').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'daily').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'sensual').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 50);
 });
 
@@ -100,6 +105,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     outfitIntegrity: CUSTOMIZATION_OPTIONS.outfitIntegrity[3].zh,
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
+    action: CUSTOMIZATION_OPTIONS.actions[50].zh,
     pose: CUSTOMIZATION_OPTIONS.poses[10].zh
   });
 
@@ -122,6 +128,8 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
   assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
+  assert.match(result.chineseConfirmation, /動作：指尖滑過鎖骨/);
+  assert.match(result.englishPrompt, /action: fingertips tracing the collarbone/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
 });
 
@@ -161,4 +169,69 @@ test('rejects unsafe free-form custom conditions', () => {
 
   assert.equal(result.ok, false);
   assert.match(result.reason, /未成年人/);
+});
+
+
+test('estimates image-to-video explicitness from image signals and desired motion', () => {
+  assert.equal(estimateExplicitnessScore({ skinToneRatio: 0 }), 1);
+  assert.ok(estimateExplicitnessScore({ skinToneRatio: 0.55, desiredMotion: 'sensual lingerie slow push-in' }) >= 7);
+});
+
+test('creates safe image-to-video prompts with Chinese meaning confirmation and English copy output', () => {
+  const result = createImageToVideoPrompt({
+    fileName: 'adult-boudoir.png',
+    imageDescription: '成人女性、黑色連身裙、室內寫真',
+    desiredMotion: 'slow push-in, hair and fabric gently moving, confident gaze',
+    skinToneRatio: 0.35,
+    durationSeconds: 8,
+    motionStrength: 'subtle'
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.prompt, result.englishPrompt);
+  assert.match(result.chineseConfirmation, /圖轉影色情程度：\d+\/10/);
+  assert.match(result.chineseConfirmation, /中文對照詞意/);
+  assert.match(result.englishPrompt, /image-to-video prompt/);
+  assert.match(result.englishPrompt, /adult-only explicitness rating: \d+\/10/);
+  assert.match(result.englishPrompt, /duration: 8 seconds/);
+  assert.match(result.englishPrompt, /user requested safe motion: slow push-in/);
+  assert.ok(result.promptChoices.length >= 2);
+  assert.ok(result.promptChoices.every((choice) => choice.score >= 1 && choice.score <= 10));
+  assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|中文對照/);
+});
+
+test('rejects unsafe image-to-video wishes and returns revision advice', () => {
+  const result = createImageToVideoPrompt({
+    imageDescription: '成人角色',
+    desiredMotion: 'forced kiss while unconscious',
+    skinToneRatio: 0.2
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.screened, false);
+  assert.match(result.reason, /非合意/);
+  assert.match(result.suggestedFix.zh, /合意成人/);
+  assert.match(result.suggestedFix.en, /consenting adult/);
+  assert.ok(result.explicitnessScore >= 1 && result.explicitnessScore <= 10);
+});
+
+test('keeps image-to-video copy output English-only for Chinese desired motion', () => {
+  const result = createImageToVideoPrompt({
+    imageDescription: '成人模特兒',
+    desiredMotion: '親吻並撫摸頭髮',
+    skinToneRatio: 0.2
+  });
+
+  assert.equal(result.ok, true);
+  assert.doesNotMatch(result.englishPrompt, /[\u3400-\u9fff]/);
+  assert.match(result.chineseConfirmation, /親吻並撫摸頭髮/);
+  assert.match(result.englishPrompt, /user-requested safe motion direction/);
+});
+
+
+test('provides ten image-to-video selectable explicitness prompt states', () => {
+  const { IMAGE_TO_VIDEO_TIER_PROMPTS } = require('../src/translator');
+
+  assert.equal(IMAGE_TO_VIDEO_TIER_PROMPTS.length, 10);
+  assert.deepEqual(IMAGE_TO_VIDEO_TIER_PROMPTS.map(({ score }) => score), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 });
