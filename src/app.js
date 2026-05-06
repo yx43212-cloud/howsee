@@ -29,6 +29,10 @@ const textModeButton = document.querySelector('#textModeButton');
 const videoModeButton = document.querySelector('#videoModeButton');
 const textPromptPanel = document.querySelector('#textPromptPanel');
 const imageVideoPanel = document.querySelector('#imageVideoPanel');
+const beginnerPreview = document.querySelector('#beginnerPreview');
+const previewStage = document.querySelector('#previewStage');
+const previewSummary = document.querySelector('#previewSummary');
+const previewChips = document.querySelector('#previewChips');
 const textOutputArea = document.querySelector('#textOutputArea');
 const videoOutputArea = document.querySelector('#videoOutputArea');
 const textConfirmationPrompt = document.querySelector('#textConfirmationPrompt');
@@ -65,6 +69,7 @@ function setMode(mode) {
   videoModeButton.classList.toggle('active', !isTextMode);
   textPromptPanel.hidden = !isTextMode;
   imageVideoPanel.hidden = isTextMode;
+  beginnerPreview.hidden = !isTextMode;
   textOutputArea.hidden = !isTextMode;
   videoOutputArea.hidden = isTextMode;
 }
@@ -141,13 +146,20 @@ function updateCharacterCards() {
   });
 }
 
-function updateActionOptions() {
+function updateCountAwareOptions() {
   const previousAction = action.value;
+  const previousPose = pose.value;
   const actionOptions = getActionsForCount(count.value);
+  const poseOptions = getPosesForCount(count.value);
   populateSelect(action, actionOptions);
+  populateSelect(pose, poseOptions);
 
   if (actionOptions.some((option) => option.zh === previousAction)) {
     action.value = previousAction;
+  }
+
+  if (poseOptions.some((option) => option.zh === previousPose)) {
+    pose.value = previousPose;
   }
 }
 
@@ -175,6 +187,81 @@ function collectCharacterDetails() {
   return details;
 }
 
+function getSelectedLabel(element) {
+  return element?.value || 'AI判斷';
+}
+
+function addPreviewChip(fragment, label, value) {
+  const chip = document.createElement('span');
+  chip.className = 'preview-chip';
+  chip.textContent = `${label}: ${value || 'AI判斷'}`;
+  fragment.append(chip);
+}
+
+function getPreviewCountGroup() {
+  const selectedCount = getSelectedLabel(count);
+  if (/三人/.test(selectedCount)) {
+    return 'three';
+  }
+  if (/雙人|兩人/.test(selectedCount)) {
+    return 'two';
+  }
+  return 'single';
+}
+
+function renderPreviewSilhouettes(group) {
+  const total = group === 'three' ? 3 : group === 'two' ? 2 : 1;
+  previewStage.dataset.count = group;
+  previewStage.replaceChildren();
+
+  for (let index = 0; index < total; index += 1) {
+    const silhouette = document.createElement('span');
+    silhouette.className = `preview-silhouette character-${index + 1}`;
+    previewStage.append(silhouette);
+  }
+
+  if (group === 'single' && /手|POV|主觀|鏡頭/.test(getSelectedLabel(pose))) {
+    const hand = document.createElement('span');
+    hand.className = 'preview-hand';
+    previewStage.append(hand);
+  }
+}
+
+function updateBeginnerPreview() {
+  const group = getPreviewCountGroup();
+  renderPreviewSilhouettes(group);
+
+  const source = sourcePrompt.value.trim() || '尚未輸入原始描述';
+  const customText = customConditions.value.trim();
+  const multiDetails = group === 'single' ? '' : multiCharacterDetails.value.trim();
+  const characterDetails = group === 'single' ? [] : collectCharacterDetails();
+  const interactionHint = group === 'single' ? '單人：重點放在鏡頭、POV 或入鏡手互動。' : '多人：重點放在角色間距離、視線與互動。';
+
+  previewSummary.textContent = [
+    `大概畫面：${source}`,
+    `畫風 ${getSelectedLabel(artStyle)}，${getSelectedLabel(lighting)}，${getSelectedLabel(timePoint)}。`,
+    `角色：${getSelectedLabel(gender)}／${getSelectedLabel(race)}／${getSelectedLabel(emotion)}；服裝：${getSelectedLabel(outfit)}、${getSelectedLabel(outfitColor)}、${getSelectedLabel(outfitMaterial)}。`,
+    `動作與體位：${getSelectedLabel(action)}；${getSelectedLabel(pose)}。`,
+    interactionHint,
+    customText ? `你的客製化條件：${customText}` : '',
+    multiDetails ? `多人細節：${multiDetails}` : '',
+    characterDetails.length ? `角色分別設定：${characterDetails.join('；')}` : ''
+  ].filter(Boolean).join(' ');
+
+  const fragment = document.createDocumentFragment();
+  addPreviewChip(fragment, '人數', getSelectedLabel(count));
+  addPreviewChip(fragment, '畫風', getSelectedLabel(artStyle));
+  addPreviewChip(fragment, '鏡位', getSelectedLabel(camera));
+  addPreviewChip(fragment, '構圖', getSelectedLabel(composition));
+  addPreviewChip(fragment, '場景', getSelectedLabel(scene));
+  addPreviewChip(fragment, '動作', getSelectedLabel(action));
+  addPreviewChip(fragment, '體位', getSelectedLabel(pose));
+  if (customText) {
+    addPreviewChip(fragment, '客製化', customText);
+  }
+  previewChips.replaceChildren(fragment);
+}
+
 function setupCustomizationControls() {
   populateSelect(lighting, LIGHTING_DESCRIPTIONS);
   populateSelect(camera, CAMERA_ANGLES);
@@ -196,9 +283,8 @@ function setupCustomizationControls() {
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
   populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
   populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
-  populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
   setupCharacterControls();
-  updateActionOptions();
+  updateCountAwareOptions();
   updateCharacterCards();
 }
 
@@ -344,6 +430,7 @@ function applyImageVideoChoice(score) {
 }
 
 setupCustomizationControls();
+updateBeginnerPreview();
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
@@ -352,9 +439,28 @@ textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
 
 count.addEventListener('change', () => {
-  updateActionOptions();
+  updateCountAwareOptions();
   updateCharacterCards();
+  updateBeginnerPreview();
 });
+
+const previewInputs = [
+  sourcePrompt, intensity, lighting, camera, composition, artStyle, gender, race, emotion,
+  timePoint, ageBracket, occupation, bodyProportion, face, outfit, outfitColor,
+  outfitMaterial, bodyFeature, outfitIntegrity, multiCharacterDetails, scene, accessory,
+  action, pose, customConditions
+];
+
+for (const element of previewInputs) {
+  element.addEventListener('input', updateBeginnerPreview);
+  element.addEventListener('change', updateBeginnerPreview);
+}
+
+for (let index = 1; index <= 3; index += 1) {
+  for (const field of ['Gender', 'Occupation', 'Age', 'Body']) {
+    document.querySelector(`#character${index}${field}`).addEventListener('change', updateBeginnerPreview);
+  }
+}
 
 imageInput.addEventListener('change', async () => {
   const [file] = imageInput.files;
