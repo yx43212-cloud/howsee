@@ -4,6 +4,11 @@ const {
   rewritePrompt,
   createImageToVideoPrompt,
   estimateExplicitnessScore,
+  COMPOSITION_STRUCTURES,
+  OCCUPATION_OPTIONS,
+  BODY_PROPORTION_OPTIONS,
+  AGE_BRACKET_OPTIONS,
+  getActionsForCount,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
@@ -54,6 +59,7 @@ test('rejects non-consensual content', () => {
 test('provides requested preset counts for visual controls', () => {
   assert.equal(LIGHTING_DESCRIPTIONS.length, 50);
   assert.equal(CAMERA_ANGLES.length, 50);
+  assert.equal(COMPOSITION_STRUCTURES.length, 50);
   assert.equal(ART_STYLES.length, 50);
   assert.equal(TIME_POINTS.length, 20);
 });
@@ -69,7 +75,11 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'rare').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.outfitColors.length, 30);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfitColors.length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfitMaterials.length, 50);
+  assert.equal(OCCUPATION_OPTIONS.length, 50);
+  assert.equal(BODY_PROPORTION_OPTIONS.length, 50);
+  assert.equal(AGE_BRACKET_OPTIONS.at(-1).zh, '56-60 歲');
   assert.equal(CUSTOMIZATION_OPTIONS.bodyFeatures.length, 30);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitIntegrity.length, 10);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 100);
@@ -78,15 +88,18 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'daily').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.actions.filter(({ rarity }) => rarity === 'sensual').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 300);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 50);
 });
 
 test('keeps lighting, pose, and outfit preset domains from leaking conflicting scene or light terms', () => {
   assert.deepEqual(checkElementBoundaries(), {
     lightingHasSceneLeak: false,
+    lightingHasExpressionLeak: false,
+    cameraHasSceneOrActionLeak: false,
     poseHasLightingOrSceneLeak: false,
     outfitHasSceneLeak: false
   });
@@ -109,7 +122,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
-    action: CUSTOMIZATION_OPTIONS.actions[50].zh,
+    action: getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[0].zh,
     pose: CUSTOMIZATION_OPTIONS.poses[10].zh,
     multiCharacterDetails: 'A wears black styling, B wears white styling, A leads the interaction'
   });
@@ -137,8 +150,8 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /lighting: front soft light/);
   assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
   assert.match(result.englishPrompt, /multi-character custom details: A wears black styling/);
-  assert.match(result.chineseConfirmation, /動作：指尖滑過鎖骨/);
-  assert.match(result.englishPrompt, /action: fingertips tracing the collarbone/);
+  assert.match(result.chineseConfirmation, /動作：雙人對視靠近/);
+  assert.match(result.englishPrompt, /action: two adults move closer with eye contact/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
 });
 
@@ -198,6 +211,37 @@ test('rejects unsafe free-form custom conditions', () => {
   assert.match(result.reason, /未成年人/);
 });
 
+
+
+
+test('all customization selectors include AI judgment in the browser', () => {
+  const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
+
+  assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
+  assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
+  assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
+});
+
+test('key prompt element groups do not contain duplicate visible labels', () => {
+  const groups = [
+    LIGHTING_DESCRIPTIONS,
+    CAMERA_ANGLES,
+    COMPOSITION_STRUCTURES,
+    EMOTION_OPTIONS,
+    CUSTOMIZATION_OPTIONS.outfits,
+    CUSTOMIZATION_OPTIONS.outfitColors,
+    CUSTOMIZATION_OPTIONS.outfitMaterials,
+    CUSTOMIZATION_OPTIONS.accessories,
+    CUSTOMIZATION_OPTIONS.actions,
+    OCCUPATION_OPTIONS,
+    BODY_PROPORTION_OPTIONS
+  ];
+
+  for (const group of groups) {
+    const labels = group.map(({ zh }) => zh);
+    assert.equal(new Set(labels).size, labels.length);
+  }
+});
 
 test('estimates image-to-video explicitness from image signals and desired motion', () => {
   assert.equal(estimateExplicitnessScore({ skinToneRatio: 0 }), 1);

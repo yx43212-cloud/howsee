@@ -1,4 +1,4 @@
-# 好想瑟瑟 SHowSexy
+# 好色之圖HowSir
 
 A static prototype for rewriting direct adult prompts into image-generation-oriented English prompts with Traditional Chinese confirmation text. The app preserves the user's high-level intent while adding adult-only consent guardrails and more visual language around mood, composition, pose, lighting, and texture.
 
@@ -8,11 +8,11 @@ A static prototype for rewriting direct adult prompts into image-generation-orie
 - Intensity selector with soft, medium, and strong output styles.
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues.
 - Browser-only implementation with no backend or data collection.
-- 50 lighting-direction presets, 50 camera-angle/viewpoint presets, and 50 art-style presets for richer visual direction.
+- 50 lighting-direction presets, 50 pure camera/viewpoint presets, 50 composition-structure presets, and 50 art-style presets for richer visual direction.
 - Gender selection plus 100 race presets without visible category tags in the selector labels.
 - 100 outfit presets, 100 scene presets, and 100 accessory/prop presets without visible category tags in the selector labels.
-- 50 emotion presets, 30 outfit-color presets, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, 100 action presets, 50 position/interaction presets, and free-form multi-character detail customization when more than one character is selected.
-- Lighting presets avoid scene terms, and pose/outfit presets avoid leaking lighting or scene terms so prompt elements do not conflict.
+- 50 emotion presets, 50 outfit-color presets, 50 outfit-material presets, 50 occupation presets, 50 body-proportion presets, age brackets through 60, 30 body-feature presets, outfit-integrity controls, 30 face presets, 20 count/composition presets, 300 count-aware action presets for 1/2/3 characters, 50 position/interaction presets, and per-character customization when more than one character is selected.
+- Every selector includes an AI-decide option; camera/viewpoint presets avoid scenes/actions, lighting presets avoid expression terms, and source prompt text takes precedence over duplicate or conflicting presets.
 - Output shows Chinese confirmation text only for review; the copyable result area contains the English generation prompt only.
 - Image-to-video prompt suggestions: upload a reference image, estimate an adult-only explicitness score from 1-10 locally in the browser, and generate selectable score-aware Chinese meaning confirmations plus English copyable image-to-video prompts.
 - Optional user-directed image-to-video motion requests are safety-screened; rejected requests include Chinese/English revision advice for making the prompt pass guardrails.

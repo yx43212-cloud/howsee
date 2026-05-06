@@ -2,14 +2,19 @@ const sourcePrompt = document.querySelector('#sourcePrompt');
 const intensity = document.querySelector('#intensity');
 const lighting = document.querySelector('#lighting');
 const camera = document.querySelector('#camera');
+const composition = document.querySelector('#composition');
 const artStyle = document.querySelector('#artStyle');
 const gender = document.querySelector('#gender');
 const race = document.querySelector('#race');
 const emotion = document.querySelector('#emotion');
 const timePoint = document.querySelector('#timePoint');
+const ageBracket = document.querySelector('#ageBracket');
+const occupation = document.querySelector('#occupation');
+const bodyProportion = document.querySelector('#bodyProportion');
 const face = document.querySelector('#face');
 const outfit = document.querySelector('#outfit');
 const outfitColor = document.querySelector('#outfitColor');
+const outfitMaterial = document.querySelector('#outfitMaterial');
 const bodyFeature = document.querySelector('#bodyFeature');
 const outfitIntegrity = document.querySelector('#outfitIntegrity');
 const count = document.querySelector('#count');
@@ -20,11 +25,20 @@ const action = document.querySelector('#action');
 const pose = document.querySelector('#pose');
 const customConditions = document.querySelector('#customConditions');
 const rewriteButton = document.querySelector('#rewriteButton');
-const confirmationPrompt = document.querySelector('#confirmationPrompt');
-const resultPrompt = document.querySelector('#resultPrompt');
-const statusMessage = document.querySelector('#status');
-const copyButton = document.querySelector('#copyButton');
-const outputLabels = document.querySelectorAll('.output-label');
+const textModeButton = document.querySelector('#textModeButton');
+const videoModeButton = document.querySelector('#videoModeButton');
+const textPromptPanel = document.querySelector('#textPromptPanel');
+const imageVideoPanel = document.querySelector('#imageVideoPanel');
+const textOutputArea = document.querySelector('#textOutputArea');
+const videoOutputArea = document.querySelector('#videoOutputArea');
+const textConfirmationPrompt = document.querySelector('#textConfirmationPrompt');
+const textResultPrompt = document.querySelector('#textResultPrompt');
+const textStatus = document.querySelector('#textStatus');
+const copyTextButton = document.querySelector('#copyTextButton');
+const videoConfirmationPrompt = document.querySelector('#videoConfirmationPrompt');
+const videoResultPrompt = document.querySelector('#videoResultPrompt');
+const videoStatus = document.querySelector('#videoStatus');
+const copyVideoButton = document.querySelector('#copyVideoButton');
 const imageInput = document.querySelector('#imageInput');
 const imagePreview = document.querySelector('#imagePreview');
 const imageDescription = document.querySelector('#imageDescription');
@@ -35,26 +49,38 @@ const imageVideoButton = document.querySelector('#imageVideoButton');
 const imageVideoChoiceField = document.querySelector('#imageVideoChoiceField');
 const imageVideoPromptChoice = document.querySelector('#imageVideoPromptChoice');
 const imageVideoStatus = document.querySelector('#imageVideoStatus');
+const characterCards = Array.from(document.querySelectorAll('[data-character-card]'));
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
 
-function setStatus(message, state = 'idle') {
-  statusMessage.textContent = message;
-  statusMessage.dataset.state = state;
+function setStatus(element, message, state = 'idle') {
+  element.textContent = message;
+  element.dataset.state = state;
 }
 
-function setImageVideoStatus(message, state = 'idle') {
-  imageVideoStatus.textContent = message;
-  imageVideoStatus.dataset.state = state;
+function setMode(mode) {
+  const isTextMode = mode === 'text';
+  textModeButton.classList.toggle('active', isTextMode);
+  videoModeButton.classList.toggle('active', !isTextMode);
+  textPromptPanel.hidden = !isTextMode;
+  imageVideoPanel.hidden = isTextMode;
+  textOutputArea.hidden = !isTextMode;
+  videoOutputArea.hidden = isTextMode;
 }
 
-function setResultVisibility(isVisible) {
-  confirmationPrompt.hidden = !isVisible;
-  resultPrompt.hidden = !isVisible;
+function setOutputVisibility(kind, isVisible) {
+  const prefix = kind === 'video' ? 'video' : 'text';
+  const confirmation = prefix === 'video' ? videoConfirmationPrompt : textConfirmationPrompt;
+  const result = prefix === 'video' ? videoResultPrompt : textResultPrompt;
+  const copyButton = prefix === 'video' ? copyVideoButton : copyTextButton;
+  const labels = document.querySelectorAll(`.${prefix}-output-label`);
+
+  confirmation.hidden = !isVisible;
+  result.hidden = !isVisible;
   copyButton.hidden = !isVisible;
 
-  for (const label of outputLabels) {
+  for (const label of labels) {
     label.hidden = !isVisible;
   }
 }
@@ -63,8 +89,15 @@ function getOptionLabel(optionText) {
   return typeof optionText === 'string' ? optionText : optionText.zh;
 }
 
-function populateSelect(select, options) {
+function populateSelect(select, options, { includeAi = true } = {}) {
   const fragment = document.createDocumentFragment();
+
+  if (includeAi) {
+    const aiOption = document.createElement('option');
+    aiOption.value = 'AI判斷';
+    aiOption.textContent = 'AI判斷';
+    fragment.append(aiOption);
+  }
 
   for (const optionText of options) {
     const option = document.createElement('option');
@@ -74,9 +107,100 @@ function populateSelect(select, options) {
     fragment.append(option);
   }
 
-  select.append(fragment);
+  select.replaceChildren(fragment);
 }
 
+function getCountGroup() {
+  if (/三人/.test(count.value)) {
+    return 'three';
+  }
+
+  if (/雙人|兩人/.test(count.value)) {
+    return 'two';
+  }
+
+  return 'single';
+}
+
+function getVisibleCharacterCount() {
+  if (getCountGroup() === 'three') {
+    return 3;
+  }
+
+  if (getCountGroup() === 'two') {
+    return 2;
+  }
+
+  return 1;
+}
+
+function updateCharacterCards() {
+  const visibleCount = getVisibleCharacterCount();
+  characterCards.forEach((card, index) => {
+    card.hidden = index >= visibleCount;
+  });
+}
+
+function updateActionOptions() {
+  const previousAction = action.value;
+  const actionOptions = getActionsForCount(count.value);
+  populateSelect(action, actionOptions);
+
+  if (actionOptions.some((option) => option.zh === previousAction)) {
+    action.value = previousAction;
+  }
+}
+
+function setupCharacterControls() {
+  for (let index = 1; index <= 3; index += 1) {
+    populateSelect(document.querySelector(`#character${index}Gender`), CUSTOMIZATION_OPTIONS.genders);
+    populateSelect(document.querySelector(`#character${index}Occupation`), OCCUPATION_OPTIONS);
+    populateSelect(document.querySelector(`#character${index}Age`), AGE_BRACKET_OPTIONS);
+    populateSelect(document.querySelector(`#character${index}Body`), BODY_PROPORTION_OPTIONS);
+  }
+}
+
+function collectCharacterDetails() {
+  const visibleCount = getVisibleCharacterCount();
+  const details = [];
+
+  for (let index = 1; index <= visibleCount; index += 1) {
+    const selectedGender = document.querySelector(`#character${index}Gender`).value;
+    const selectedOccupation = document.querySelector(`#character${index}Occupation`).value;
+    const selectedAge = document.querySelector(`#character${index}Age`).value;
+    const selectedBody = document.querySelector(`#character${index}Body`).value;
+    details.push(`角色${index}: 性別 ${selectedGender}, 職業 ${selectedOccupation}, 年齡 ${selectedAge}, 身材比例 ${selectedBody}`);
+  }
+
+  return details;
+}
+
+function setupCustomizationControls() {
+  populateSelect(lighting, LIGHTING_DESCRIPTIONS);
+  populateSelect(camera, CAMERA_ANGLES);
+  populateSelect(composition, COMPOSITION_STRUCTURES);
+  populateSelect(artStyle, ART_STYLES);
+  populateSelect(gender, CUSTOMIZATION_OPTIONS.genders);
+  populateSelect(race, RACE_OPTIONS);
+  populateSelect(emotion, EMOTION_OPTIONS);
+  populateSelect(timePoint, TIME_POINTS);
+  populateSelect(ageBracket, AGE_BRACKET_OPTIONS);
+  populateSelect(occupation, OCCUPATION_OPTIONS);
+  populateSelect(bodyProportion, BODY_PROPORTION_OPTIONS);
+  populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
+  populateSelect(outfit, CUSTOMIZATION_OPTIONS.outfits);
+  populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
+  populateSelect(outfitMaterial, CUSTOMIZATION_OPTIONS.outfitMaterials);
+  populateSelect(bodyFeature, CUSTOMIZATION_OPTIONS.bodyFeatures);
+  populateSelect(outfitIntegrity, CUSTOMIZATION_OPTIONS.outfitIntegrity);
+  populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
+  populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
+  populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
+  populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
+  setupCharacterControls();
+  updateActionOptions();
+  updateCharacterCards();
+}
 
 function getSkinToneRatioFromImage(imageElement) {
   const canvas = document.createElement('canvas');
@@ -148,51 +272,43 @@ function loadImageAnalysis(file) {
   });
 }
 
-function renderPromptResult(result, successMessage) {
+function renderTextResult(result, successMessage) {
   if (!result.ok || !result.screened) {
-    confirmationPrompt.value = result.suggestedFix
-      ? `修正建議：${result.suggestedFix.zh}\nSuggested fix: ${result.suggestedFix.en}`
-      : '';
-    resultPrompt.value = '';
-    setResultVisibility(Boolean(result.suggestedFix));
-    resultPrompt.hidden = true;
-    copyButton.hidden = true;
-    if (outputLabels[1]) {
-      outputLabels[1].hidden = true;
-    }
-    setStatus(result.reason || '提示詞未通過安全篩選。', 'error');
+    textConfirmationPrompt.value = '';
+    textResultPrompt.value = '';
+    setOutputVisibility('text', false);
+    setStatus(textStatus, result.reason || '提示詞未通過安全篩選。', 'error');
     return;
   }
 
-  confirmationPrompt.value = result.chineseConfirmation;
-  resultPrompt.value = result.englishPrompt;
-  setResultVisibility(true);
-  setStatus(successMessage, 'success');
+  textConfirmationPrompt.value = result.chineseConfirmation;
+  textResultPrompt.value = result.englishPrompt;
+  setOutputVisibility('text', true);
+  setStatus(textStatus, successMessage, 'success');
 }
 
-function setupCustomizationControls() {
-  populateSelect(lighting, LIGHTING_DESCRIPTIONS);
-  populateSelect(camera, CAMERA_ANGLES);
-  populateSelect(artStyle, ART_STYLES);
-  populateSelect(gender, CUSTOMIZATION_OPTIONS.genders);
-  populateSelect(race, RACE_OPTIONS);
-  populateSelect(emotion, EMOTION_OPTIONS);
-  populateSelect(timePoint, TIME_POINTS);
-  populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
-  populateSelect(outfit, CUSTOMIZATION_OPTIONS.outfits);
-  populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
-  populateSelect(bodyFeature, CUSTOMIZATION_OPTIONS.bodyFeatures);
-  populateSelect(outfitIntegrity, CUSTOMIZATION_OPTIONS.outfitIntegrity);
-  populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
-  populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
-  populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
-  populateSelect(action, CUSTOMIZATION_OPTIONS.actions);
-  populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
+function renderVideoResult(result, successMessage) {
+  if (!result.ok || !result.screened) {
+    videoConfirmationPrompt.value = result.suggestedFix
+      ? `修正建議：${result.suggestedFix.zh}\nSuggested fix: ${result.suggestedFix.en}`
+      : '';
+    videoResultPrompt.value = '';
+    setOutputVisibility('video', Boolean(result.suggestedFix));
+    videoResultPrompt.hidden = true;
+    copyVideoButton.hidden = true;
+    const englishLabel = document.querySelector(".video-output-label[for='videoResultPrompt']");
+    if (englishLabel) {
+      englishLabel.hidden = true;
+    }
+    setStatus(videoStatus, result.reason || '圖轉影提示詞未通過安全篩選。', 'error');
+    return;
+  }
+
+  videoConfirmationPrompt.value = result.chineseConfirmation;
+  videoResultPrompt.value = result.englishPrompt;
+  setOutputVisibility('video', true);
+  setStatus(videoStatus, successMessage, 'success');
 }
-
-setupCustomizationControls();
-setResultVisibility(false);
-
 
 function setImageVideoChoiceVisibility(isVisible) {
   imageVideoChoiceField.hidden = !isVisible;
@@ -222,10 +338,23 @@ function applyImageVideoChoice(score) {
     return;
   }
 
-  confirmationPrompt.value = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
-  resultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
-  setResultVisibility(true);
+  videoConfirmationPrompt.value = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
+  videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
+  setOutputVisibility('video', true);
 }
+
+setupCustomizationControls();
+setMode('text');
+setOutputVisibility('text', false);
+setOutputVisibility('video', false);
+
+textModeButton.addEventListener('click', () => setMode('text'));
+videoModeButton.addEventListener('click', () => setMode('video'));
+
+count.addEventListener('change', () => {
+  updateActionOptions();
+  updateCharacterCards();
+});
 
 imageInput.addEventListener('change', async () => {
   const [file] = imageInput.files;
@@ -237,13 +366,13 @@ imageInput.addEventListener('change', async () => {
   if (!file) {
     imagePreview.hidden = true;
     imagePreview.removeAttribute('src');
-    setImageVideoStatus('尚未上傳圖片；圖片分析只在本機瀏覽器進行。');
+    setStatus(imageVideoStatus, '尚未上傳圖片；圖片分析只在本機瀏覽器進行。');
     return;
   }
 
   if (!file.type.startsWith('image/')) {
     imagePreview.hidden = true;
-    setImageVideoStatus('請上傳圖片檔案。', 'error');
+    setStatus(imageVideoStatus, '請上傳圖片檔案。', 'error');
     return;
   }
 
@@ -255,9 +384,9 @@ imageInput.addEventListener('change', async () => {
       imageDescription: imageDescription.value,
       desiredMotion: desiredMotion.value
     });
-    setImageVideoStatus(`已讀取圖片，初步色情程度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
+    setStatus(imageVideoStatus, `已讀取圖片，初步色情程度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
   } catch (error) {
-    setImageVideoStatus(error.message, 'error');
+    setStatus(imageVideoStatus, error.message, 'error');
   }
 });
 
@@ -266,18 +395,24 @@ rewriteButton.addEventListener('click', () => {
     intensity: intensity.value,
     lighting: lighting.value,
     camera: camera.value,
+    composition: composition.value,
     artStyle: artStyle.value,
     gender: gender.value,
     race: race.value,
     emotion: emotion.value,
     timePoint: timePoint.value,
+    ageBracket: ageBracket.value,
+    occupation: occupation.value,
+    bodyProportion: bodyProportion.value,
     face: face.value,
     outfit: outfit.value,
     outfitColor: outfitColor.value,
+    outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
     outfitIntegrity: outfitIntegrity.value,
     count: count.value,
     multiCharacterDetails: multiCharacterDetails.value,
+    characterDetails: collectCharacterDetails(),
     accessory: accessory.value,
     scene: scene.value,
     action: action.value,
@@ -285,12 +420,12 @@ rewriteButton.addEventListener('click', () => {
     customConditions: customConditions.value
   });
 
-  renderPromptResult(result, '已通過安全篩選：中文僅供確認，下方可複製區只包含英文提示詞。');
+  renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');
 });
 
 imageVideoButton.addEventListener('click', () => {
   if (!uploadedImageAnalysis) {
-    setImageVideoStatus('請先上傳圖片。', 'error');
+    setStatus(imageVideoStatus, '請先上傳圖片。', 'error');
     return;
   }
 
@@ -304,30 +439,40 @@ imageVideoButton.addEventListener('click', () => {
   });
 
   if (!result.ok) {
-    setImageVideoStatus(`未通過安全篩選，色情程度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
+    setStatus(imageVideoStatus, `未通過安全篩選，色情程度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
     lastImageVideoResult = null;
     setImageVideoChoiceVisibility(false);
-    renderPromptResult(result, result.reason);
+    renderVideoResult(result, result.reason);
     return;
   }
 
   lastImageVideoResult = result;
   renderImageVideoChoice(result);
-  renderPromptResult(result, `圖轉影提示詞已產生，AI 估計色情程度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
-  setImageVideoStatus('圖轉影提示詞已通過安全篩選。', 'success');
+  renderVideoResult(result, `圖轉影提示詞已產生，AI 估計色情程度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
+  setStatus(imageVideoStatus, '圖轉影提示詞已通過安全篩選。', 'success');
 });
 
 imageVideoPromptChoice.addEventListener('change', () => {
   applyImageVideoChoice(imageVideoPromptChoice.value);
-  setStatus(`已切換為 ${imageVideoPromptChoice.value}/10 圖轉影英文提示詞，可複製貼上。`, 'success');
+  setStatus(videoStatus, `已切換為 ${imageVideoPromptChoice.value}/10 圖轉影英文提示詞，可複製貼上。`, 'success');
 });
 
-copyButton.addEventListener('click', async () => {
-  if (!resultPrompt.value) {
-    setStatus('沒有可複製的英文提示詞。', 'error');
+copyTextButton.addEventListener('click', async () => {
+  if (!textResultPrompt.value) {
+    setStatus(textStatus, '沒有可複製的文生圖英文提示詞。', 'error');
     return;
   }
 
-  await navigator.clipboard.writeText(resultPrompt.value);
-  setStatus('已複製英文提示詞到剪貼簿。', 'success');
+  await navigator.clipboard.writeText(textResultPrompt.value);
+  setStatus(textStatus, '已複製文生圖英文提示詞到剪貼簿。', 'success');
+});
+
+copyVideoButton.addEventListener('click', async () => {
+  if (!videoResultPrompt.value) {
+    setStatus(videoStatus, '沒有可複製的圖轉影英文提示詞。', 'error');
+    return;
+  }
+
+  await navigator.clipboard.writeText(videoResultPrompt.value);
+  setStatus(videoStatus, '已複製圖轉影英文提示詞到剪貼簿。', 'success');
 });

@@ -3,18 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>好想瑟瑟 SHowSexy</title>
+    <title>好色之圖HowSir</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="hero">
         <p class="eyebrow">18+ consensual prompt atelier</p>
-        <h1>好想瑟瑟 SHowSexy</h1>
-        <p>中文僅供確認，通過安全篩選後，只有英文生成提示詞可複製；也支援上傳圖片產生圖轉影提示詞建議。</p>
+        <h1>好色之圖HowSir</h1>
+        <p>祝各位老司機安心上路</p>
       </section>
 
-      <section class="panel input-panel" aria-labelledby="input-title">
+      <nav class="mode-switch" aria-label="提示詞模式切換">
+        <button id="textModeButton" type="button" class="mode-button active">文生圖提示詞</button>
+        <button id="videoModeButton" type="button" class="mode-button">圖轉影提示詞</button>
+      </nav>
+
+      <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
         <div class="section-heading">
           <p class="section-kicker">Step 01</p>
           <h2 id="input-title">輸入提示詞</h2>
@@ -41,6 +46,11 @@
           <div class="field">
             <label for="camera">鏡位視角（50 種）</label>
             <select id="camera"></select>
+          </div>
+
+          <div class="field">
+            <label for="composition">構圖結構（50 種）</label>
+            <select id="composition"></select>
           </div>
 
           <div class="field">
@@ -73,6 +83,18 @@
             <select id="timePoint"></select>
           </div>
           <div class="field">
+            <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
+            <select id="ageBracket"></select>
+          </div>
+          <div class="field">
+            <label for="occupation">職業（50 種）</label>
+            <select id="occupation"></select>
+          </div>
+          <div class="field">
+            <label for="bodyProportion">身材比例（50 種）</label>
+            <select id="bodyProportion"></select>
+          </div>
+          <div class="field">
             <label for="face">臉蛋</label>
             <select id="face"></select>
           </div>
@@ -81,8 +103,12 @@
             <select id="outfit"></select>
           </div>
           <div class="field">
-            <label for="outfitColor">服裝配色（30 種）</label>
+            <label for="outfitColor">服裝顏色（50 種）</label>
             <select id="outfitColor"></select>
+          </div>
+          <div class="field">
+            <label for="outfitMaterial">服裝材質（50 種）</label>
+            <select id="outfitMaterial"></select>
           </div>
           <div class="field">
             <label for="bodyFeature">身上特徵（30 種）</label>
@@ -99,6 +125,29 @@
           <div class="field wide-field">
             <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
             <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
+          </div>
+          <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
+            <article class="character-card" data-character-card="1">
+              <h3>角色 1</h3>
+              <label for="character1Gender">性別</label><select id="character1Gender"></select>
+              <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
+              <label for="character1Age">年齡</label><select id="character1Age"></select>
+              <label for="character1Body">身材比例</label><select id="character1Body"></select>
+            </article>
+            <article class="character-card" data-character-card="2" hidden>
+              <h3>角色 2</h3>
+              <label for="character2Gender">性別</label><select id="character2Gender"></select>
+              <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
+              <label for="character2Age">年齡</label><select id="character2Age"></select>
+              <label for="character2Body">身材比例</label><select id="character2Body"></select>
+            </article>
+            <article class="character-card" data-character-card="3" hidden>
+              <h3>角色 3</h3>
+              <label for="character3Gender">性別</label><select id="character3Gender"></select>
+              <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
+              <label for="character3Age">年齡</label><select id="character3Age"></select>
+              <label for="character3Body">身材比例</label><select id="character3Body"></select>
+            </article>
           </div>
           <div class="field">
             <label for="scene">場景配置（100 種）</label>
@@ -125,7 +174,7 @@
       </section>
 
 
-      <section class="panel image-panel" aria-labelledby="image-title">
+      <section id="imageVideoPanel" class="panel image-panel" aria-labelledby="image-title" hidden>
         <div class="section-heading">
           <p class="section-kicker">Image to Video</p>
           <h2 id="image-title">圖轉影提示詞建議</h2>
@@ -173,16 +222,31 @@
       </section>
 
       <section class="panel output-panel" aria-live="polite">
-        <div class="section-heading">
-          <p class="section-kicker">Step 03</p>
-          <h2>中文確認＋英文可複製提示詞</h2>
+        <div id="textOutputArea" class="output-mode-area">
+          <div class="section-heading">
+            <p class="section-kicker">Text Output</p>
+            <h2>文生圖：中文對照＋英文可複製</h2>
+          </div>
+          <p id="textStatus" class="status">等待輸入，通過安全篩選後才會顯示文生圖結果。</p>
+          <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
+          <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
+          <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyTextButton" type="button" class="secondary-button" hidden>複製文生圖英文提示詞</button>
         </div>
-        <p id="status" class="status">等待輸入，通過安全篩選後才會顯示結果。</p>
-        <label for="confirmationPrompt" class="output-label" hidden>中文確認（不可複製區）</label>
-        <textarea id="confirmationPrompt" rows="8" readonly hidden></textarea>
-        <label for="resultPrompt" class="output-label" hidden>English generation prompt（可複製）</label>
-        <textarea id="resultPrompt" rows="12" readonly hidden></textarea>
-        <button id="copyButton" type="button" class="secondary-button" hidden>複製英文提示詞</button>
+
+        <div id="videoOutputArea" class="output-mode-area" hidden>
+          <div class="section-heading">
+            <p class="section-kicker">Video Output</p>
+            <h2>圖轉影：中文對照＋英文可複製</h2>
+          </div>
+          <p id="videoStatus" class="status">等待上傳圖片並產生圖轉影提示詞。</p>
+          <label for="videoConfirmationPrompt" class="video-output-label" hidden>中文圖轉影提示詞（對照用）</label>
+          <textarea id="videoConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="videoResultPrompt" class="video-output-label" hidden>English image-to-video prompt（可複製）</label>
+          <textarea id="videoResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyVideoButton" type="button" class="secondary-button" hidden>複製圖轉影英文提示詞</button>
+        </div>
       </section>
 
       <section class="guardrails">
