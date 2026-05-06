@@ -31,7 +31,7 @@
           <article class="entry-card soft-pink">
             <span class="entry-icon">⚡</span>
             <h2>快速生成</h2>
-            <p>菜鳥版：選風格 → 微調 → 產提示詞。步驟少、選項少，適合第一次使用。</p>
+            <p>基礎版：不用上傳圖片，選統整風格規劃 → 少量微調 → 產提示詞。</p>
             <button data-route="basic" type="button">進入菜鳥版</button>
           </article>
           <article class="entry-card soft-blue">
@@ -51,44 +51,34 @@
 
       <section id="basicPage" class="page generator-page" hidden>
         <div class="page-heading">
-          <p class="eyebrow">Basic customization</p>
-          <h1>快速生成｜菜鳥版</h1>
-          <p>用 4 個卡片步驟完成。只顯示大分類與常用選項，不會一開始把全部設定丟給你。</p>
+          <p class="eyebrow">Basic planning</p>
+          <h1>快速生成｜基礎版</h1>
+          <p>基礎版不用上傳圖片，也不用逐項客製光線、服裝、配件。只要選「統整風格規劃」與少量需求，PicPick 會自動整理成可用提示詞。</p>
         </div>
         <form id="basicForm" class="workflow" data-mode="basic">
-          <aside class="steps" aria-label="菜鳥版步驟">
-            <span class="active">1 上傳</span><span>2 選風格</span><span>3 微調</span><span>4 產提示詞</span>
+          <aside class="steps" aria-label="基礎版步驟">
+            <span class="active">1 主題</span><span>2 統整風格</span><span>3 簡單微調</span><span>4 產提示詞</span>
           </aside>
           <div class="form-stack">
             <section class="panel step-card">
-              <div class="section-title"><span>Step 01</span><h2>上傳照片與照片類型</h2></div>
-              <div class="upload-grid">
-                <label class="upload-drop">選擇照片<input id="basicImage" name="image" type="file" accept="image/*" /></label>
-                <div class="preview-box"><img id="basicPreview" alt="照片預覽" hidden /><span id="basicPreviewText">尚未上傳照片</span></div>
-              </div>
-              <div class="option-grid" data-field="photoTypeId" data-source="photo_types"></div>
-              <label class="field-label">年紀</label>
-              <select name="ageModeId" data-source="age_modes"></select>
-            </section>
-
-            <section class="panel step-card">
-              <div class="section-title"><span>Step 02</span><h2>選風格與常用條件</h2></div>
-              <div class="category-grid basic-style-grid" data-field="styleId" data-basic="styles"></div>
+              <div class="section-title"><span>Step 01</span><h2>先說你要做什麼</h2></div>
               <div class="two-col">
-                <label>光線<select name="lightId" data-basic-labels="lights"></select></label>
-                <label>地點<select name="locationId" data-basic-labels="locations"></select></label>
-                <label>服裝<select name="outfitId" data-basic-labels="outfits"></select></label>
-                <label>配件<select name="accessoryId" data-basic-labels="accessories"></select></label>
-                <label>配色<select name="paletteId" data-basic-labels="palettes"></select></label>
-                <label>氛圍<select name="moodId" data-basic-labels="moods"></select></label>
-                <label>框線<select name="frameId" data-source="frames" data-limit="6"></select></label>
-                <label>排版<select name="layoutId" data-basic-labels="layouts"></select></label>
-                <label>用途<select name="outputId" data-basic-labels="outputs"></select></label>
+                <label>照片 / 內容類型<select name="photoTypeId" data-source="photo_types"></select></label>
+                <label>輸出用途<select name="outputId" data-basic-labels="outputs"></select></label>
               </div>
+              <label>簡短需求<input name="text.note" type="text" placeholder="例如：幫咖啡新品做一張 IG 商品廣告、幫小孩照片變成兒童繪本風" /></label>
+              <p class="helper-copy">如果你沒有照片，也可以只描述想做的畫面；如果之後要套用照片，把生成結果貼到 AI 工具時再附圖即可。</p>
             </section>
 
             <section class="panel step-card">
-              <div class="section-title"><span>Step 03</span><h2>少量 BAR 微調</h2></div>
+              <div class="section-title"><span>Step 02</span><h2>選一個統整風格規劃</h2></div>
+              <p class="helper-copy">每個大方向都已建立 50 種可擴充風格，例如雜誌插頁、兒童塗鴉、美式漫畫、線上遊戲、寫實商攝。基礎版只需要選方向，不需要拆成光線、地點、服裝、配件。</p>
+              <div class="category-grid basic-plan-grid" data-field="basicPlanGroup" data-basic-plan-groups></div>
+              <label>細項風格<select name="basicPlanId" data-basic-plan-select></select></label>
+            </section>
+
+            <section class="panel step-card">
+              <div class="section-title"><span>Step 03</span><h2>簡單微調</h2></div>
               <div class="slider-grid" data-sliders="basic"></div>
               <label class="switch-row"><input name="includeText" type="checkbox" /> 要放文字嗎？</label>
               <div class="text-fields" data-text-panel hidden>
@@ -99,7 +89,7 @@
             </section>
 
             <section class="panel step-card action-card">
-              <div><h2>準備好了嗎？</h2><p>PicPick 會產出完整提示詞、精簡提示詞、負面提示詞與專屬風格碼。</p></div>
+              <div><h2>讓 PicPick 統整成提示詞</h2><p>基礎版會自動補齊畫風、構圖、配色、氛圍、用途與細節要求，輸出完整提示詞、精簡提示詞、負面提示詞與風格碼。</p></div>
               <button class="primary" type="submit">生成提示詞</button>
             </section>
           </div>

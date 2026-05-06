@@ -130,6 +130,25 @@ function populateBasicStyleGrid(grid) {
   grid.querySelector('.choice-card')?.click();
 }
 
+function populateBasicPlanSelect(category = '') {
+  const select = document.querySelector('[data-basic-plan-select]');
+  if (!select) return;
+  const plans = picpickData.basic_plans.filter((plan) => !category || plan.category === category);
+  select.replaceChildren(...plans.map(optionElement));
+}
+
+function populateBasicPlanGroups() {
+  document.querySelectorAll('[data-basic-plan-groups]').forEach((grid) => {
+    const buttons = picpickData.basic_style_groups.map((group) => {
+      const button = createChoiceButton(group, 'basicPlanGroup');
+      button.addEventListener('click', () => populateBasicPlanSelect(group.label));
+      return button;
+    });
+    grid.replaceChildren(...buttons);
+    buttons[0]?.click();
+  });
+}
+
 function createSlider(key, label) {
   const wrapper = document.createElement('label');
   wrapper.className = 'range-row';
@@ -180,6 +199,7 @@ function setupPreviews() {
     const input = document.querySelector(`#${inputId}`);
     const image = document.querySelector(`#${imageId}`);
     const text = document.querySelector(`#${textId}`);
+    if (!input || !image || !text) return;
     input.addEventListener('change', () => {
       const file = input.files?.[0];
       if (!file) return;
@@ -299,6 +319,7 @@ function init() {
   document.querySelectorAll('select[data-source], select[data-basic-labels]').forEach(populateSelect);
   document.querySelectorAll('.option-grid[data-source]').forEach(populateOptionGrid);
   document.querySelectorAll('.basic-style-grid').forEach(populateBasicStyleGrid);
+  populateBasicPlanGroups();
   setupSliders();
   setupFilters();
   setupTextToggles();

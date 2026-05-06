@@ -17,6 +17,34 @@
     '情緒氛圍類': ['療癒微光', '浪漫雨夜', '孤獨電影', '溫柔午後', '神秘暗調']
   };
 
+
+  const basicPlanGroups = {
+    '雜誌插頁': ['時尚人物專訪', '品牌故事跨頁', '生活風格專題', '商品細節插頁', '人物側寫版面'],
+    '兒童塗鴉': ['蠟筆童趣', '水彩童書', '彩色鉛筆', '貼紙拼貼', '手作剪貼'],
+    '美式漫畫': ['超級英雄封面', '復古網點漫畫', '動作分鏡', '街頭英雄', '幽默四格'],
+    '線上遊戲': ['RPG 角色立繪', '遊戲宣傳主視覺', '技能卡牌', '奇幻道具展示', '賽季活動圖'],
+    '寫實商攝': ['高級商品棚拍', '白底電商主圖', '精品質感廣告', '保養品柔光', '3C 科技產品'],
+    '日韓社群': ['韓系清透貼文', '日系文青封面', '小紅書質感圖', 'IG 極簡版面', '清新生活提案'],
+    '復古海報': ['港風電影海報', '昭和復古廣告', '老派旅遊海報', '復古唱片封面', '懷舊報紙拼貼'],
+    '奇幻變身': ['魔法學院肖像', '精靈森林', '星際旅人', '童話主角', '神話史詩'],
+    '品牌形象': ['創辦人形象', '團隊介紹', '課程招生', '個人品牌照', '官網 Banner'],
+    '極簡設計': ['留白海報', '黑白高級感', '簡約封面', '幾何排版', '乾淨產品卡']
+  };
+
+  const basicStyleGroups = Object.keys(basicPlanGroups);
+
+  const basicPlans = Object.entries(basicPlanGroups).flatMap(([group, labels]) => Array.from({ length: 50 }, (_, index) => {
+    const label = labels[index % labels.length];
+    const variant = Math.floor(index / labels.length) + 1;
+    const finalLabel = variant === 1 ? label : `${label} ${variant}`;
+    return {
+      id: `basic-plan-${group}-${String(index + 1).padStart(2, '0')}`,
+      label: finalLabel,
+      category: group,
+      prompt: `以「${group}」作為統整性視覺規劃，方向為「${finalLabel}」。請由 AI 自行統整畫風、光線、場景、配色、構圖、排版、用途與細節，不要要求使用者逐項指定元素；整體要清楚、可執行、適合快速生成。`
+    };
+  }));
+
   const makeOptions = (categories, perCategory, prefix) => categories.flatMap((category) => {
     const base = categoryItems[category] || [];
     return Array.from({ length: perCategory }, (_, index) => {
@@ -51,6 +79,8 @@
     person_modes: photoTypes,
     age_modes: ageModes,
     style_categories: styleCategories.map((label, index) => ({ id: `style-cat-${index + 1}`, label })),
+    basic_style_groups: basicStyleGroups.map((label, index) => ({ id: `basic-group-${index + 1}`, label, prompt: `${label}：新手只要選一個統整方向，PicPick 會自動規劃畫面。` })),
+    basic_plans: basicPlans,
     styles: makeOptions(styleCategories, 20, 'style'),
     lights: makeGrouped(lightCategories, 'light', '，光線合理、層次清楚'),
     locations: makeGrouped({ '攝影棚': ['白背景棚', '灰牆棚', '彩色紙棚', '自然光棚', '商攝棚'], '咖啡廳': ['木質咖啡廳', '韓系咖啡廳', '窗邊座位', '復古咖啡館', '夜間咖啡吧'], '街頭': ['城市街頭', '霓虹巷弄', '斑馬線', '老街', '雨後街景'], '商辦空間': ['高樓辦公室', '會議室', '共享空間', '玻璃大廳', '主管辦公室'], '百貨商場': ['精品櫥窗', '百貨中庭', '電扶梯旁', '香氛專櫃', '時尚走廊'], '家居空間': ['客廳', '臥室', '廚房', '陽台', '閱讀角'], '校園': ['圖書館', '教室', '校園步道', '操場', '社團教室'], '大自然': ['森林', '海邊', '草地', '山景', '花園'], '旅遊場景': ['機場', '飯店大廳', '歐洲小鎮', '海島度假', '夜市'], '特殊主題場景': ['未來城市', '魔法森林', '美術館', '音樂祭', '節慶市集'] }, 'location', '作為場景'),
@@ -341,6 +371,7 @@
 
   function assemblePrompt(state = {}) {
     const normalized = normalizeState(state);
+    const basicPlan = value(normalized, 'basicPlanId', 'basic_plans');
     const photo = value(normalized, 'photoTypeId', 'photo_types');
     const age = value(normalized, 'ageModeId', 'age_modes');
     const style = value(normalized, 'styleId', 'styles');
@@ -359,8 +390,9 @@
       ? '框線設定：不加入框線，保持畫面乾淨，不要產生多餘邊線或裝飾框。'
       : `框線設定：${frame.label}，${describeFrameSettings(normalized.tuning)}；這裡的框線是畫面內的設計線條，不是裁切外框。`;
     const textPart = buildTextPart(normalized);
-    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${agePart}。整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
-    const shortPrompt = `${photo.label}照片編輯，${style.label}、${light.label}、${location.label}、${outfit.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，${sliderGuidance('identity', normalized.tuning.identity, photo.label)}，${normalized.includeText ? '含指定文字且需準確排版' : '不加文字'}。`;
+    const briefPart = normalized.text?.note ? `使用者簡短需求：${normalized.text.note}。` : '';
+    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${agePart}。${normalized.mode === 'basic' ? `基礎版統整規劃：「${basicPlan.category}／${basicPlan.label}」，${basicPlan.prompt}。` : ''}整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${briefPart}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
+    const shortPrompt = `${photo.label}照片編輯，${normalized.mode === 'basic' ? `${basicPlan.category}／${basicPlan.label}、` : ''}${style.label}、${light.label}、${location.label}、${outfit.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，${sliderGuidance('identity', normalized.tuning.identity, photo.label)}，${normalized.includeText ? '含指定文字且需準確排版' : '不加文字'}。`;
     const negativePrompt = data.negative_prompt_rules.join('、') + '、過度磨皮、主體失真、文字位置錯亂、品牌資訊遺漏。';
     return { fullPrompt, shortPrompt, negativePrompt, styleCode: getStyleCode(normalized), state: normalized };
   }
@@ -368,6 +400,7 @@
   function normalizeState(state = {}) {
     return {
       mode: state.mode || 'basic',
+      basicPlanId: state.basicPlanId || data.basic_plans[0].id,
       photoTypeId: state.photoTypeId || data.photo_types[0].id,
       ageModeId: state.ageModeId || data.age_modes[0].id,
       styleId: state.styleId || data.styles[0].id,

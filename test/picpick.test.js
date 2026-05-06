@@ -7,6 +7,8 @@ test('provides PicPick expandable option structures and requested counts', () =>
   assert.equal(picpickData.age_modes.length, 18);
   assert.equal(picpickData.style_categories.length, 10);
   assert.equal(picpickData.styles.length, 200);
+  assert.equal(picpickData.basic_style_groups.length, 10);
+  assert.equal(picpickData.basic_plans.length, 500);
   assert.equal(picpickData.locations.length, 100);
   assert.equal(picpickData.outfits.length, 100);
   assert.equal(picpickData.accessories.length, 100);
@@ -60,4 +62,21 @@ test('uses product-aware preservation language and skips age edits for product p
   assert.match(result.fullPrompt, /嚴格保留原商品的外型、比例、Logo、材質紋理/);
   assert.doesNotMatch(result.fullPrompt, /人物保留度 \d+\/100|修飾強度 \d+\/100|寫實 \/ 插畫程度 \d+\/100/);
   assert.doesNotMatch(result.shortPrompt, /\d+\/100/);
+});
+
+
+test('basic mode uses integrated planning instead of requiring granular customization or uploads', () => {
+  const magazinePlan = picpickData.basic_plans.find(({ category }) => category === '雜誌插頁');
+  const result = assemblePrompt(normalizeState({
+    mode: 'basic',
+    basicPlanId: magazinePlan.id,
+    photoTypeId: picpickData.photo_types.find(({ label }) => label === '商品').id,
+    outputId: picpickData.outputs.find(({ label }) => label === '商品廣告').id,
+    text: { note: '咖啡新品 IG 商品廣告' }
+  }));
+
+  assert.match(result.fullPrompt, /基礎版統整規劃：「雜誌插頁/);
+  assert.match(result.fullPrompt, /不要要求使用者逐項指定元素/);
+  assert.match(result.fullPrompt, /使用者簡短需求：咖啡新品 IG 商品廣告/);
+  assert.match(result.shortPrompt, /商品照片編輯，雜誌插頁/);
 });
