@@ -18,7 +18,7 @@ test('provides PicPick expandable option structures and requested counts', () =>
   assert.equal(picpickData.outputs.length, 100);
 });
 
-test('assembles full, short, negative prompts and deterministic style code', () => {
+test('assembles full, short, negative prompts and deterministic style code without raw slider fractions', () => {
   const state = normalizeState({
     photoTypeId: picpickData.photo_types[1].id,
     ageModeId: picpickData.age_modes[7].id,
@@ -40,8 +40,24 @@ test('assembles full, short, negative prompts and deterministic style code', () 
 
   assert.match(result.fullPrompt, /照片類型 \/ 人物模式為「雙人」/);
   assert.match(result.fullPrompt, /加入文字：主標題「新品上市」、副標題「PicPick 風格測試」/);
+  assert.match(result.fullPrompt, /嚴格保留原照片人物 \/ 主體的五官/);
+  assert.doesNotMatch(result.fullPrompt, /\d+\/100/);
+  assert.doesNotMatch(result.shortPrompt, /\d+\/100/);
   assert.match(result.shortPrompt, /雙人照片編輯/);
   assert.match(result.negativePrompt, /五官變形/);
   assert.match(result.styleCode, /^PP-STYLE-\d{3}$/);
   assert.equal(result.styleCode, assemblePrompt(state).styleCode);
+});
+
+test('uses product-aware preservation language and skips age edits for product photos', () => {
+  const result = assemblePrompt(normalizeState({
+    photoTypeId: picpickData.photo_types.find(({ label }) => label === '商品').id,
+    outputId: picpickData.outputs.find(({ label }) => label === '商品廣告').id,
+    tuning: { identity: 100, retouch: 12, background: 24, realism: 100 }
+  }));
+
+  assert.match(result.fullPrompt, /此照片類型不套用人物年紀調整/);
+  assert.match(result.fullPrompt, /嚴格保留原商品的外型、比例、Logo、材質紋理/);
+  assert.doesNotMatch(result.fullPrompt, /人物保留度 \d+\/100|修飾強度 \d+\/100|寫實 \/ 插畫程度 \d+\/100/);
+  assert.doesNotMatch(result.shortPrompt, /\d+\/100/);
 });

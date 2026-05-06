@@ -130,15 +130,200 @@
     return `${prefix}-${String(Math.abs(hash) % 1000).padStart(3, '0')}`;
   }
 
-  function describeTuning(tuning = {}) {
+  function level(value) {
+    if (value >= 90) return '極高';
+    if (value >= 70) return '高';
+    if (value >= 45) return '中等';
+    if (value >= 25) return '低';
+    return '極低';
+  }
+
+  function identitySubjectGuidance(value, subjectLabel = '') {
+    const isProduct = subjectLabel === '商品';
+    const isPet = subjectLabel === '寵物';
+    const isSpace = subjectLabel === '風景 / 空間';
+    const bucket = value >= 90 ? 'veryHigh' : value >= 70 ? 'high' : value >= 45 ? 'medium' : value >= 25 ? 'low' : 'veryLow';
+    const subjectGuidance = {
+      product: {
+        veryHigh: '嚴格保留原商品的外型、比例、Logo、材質紋理與可辨識細節，不要改成不同商品',
+        high: '高度保留原商品辨識度，只優化光線、質感與展示方式',
+        medium: '保留商品主要特徵，同時允許適度商業化美化',
+        low: '可重新包裝商品視覺，但仍需看得出原商品核心特徵',
+        veryLow: '允許大幅重新詮釋商品造型'
+      },
+      pet: {
+        veryHigh: '嚴格保留寵物的品種、毛色、臉部特徵與可愛辨識度，不要換成不同動物',
+        high: '高度保留寵物特徵，只做自然風格化',
+        medium: '保留寵物主要特徵，同時允許適度風格化',
+        low: '可做明顯造型轉換，但仍保留寵物核心特徵',
+        veryLow: '允許大幅重新詮釋寵物外觀'
+      },
+      space: {
+        veryHigh: '嚴格保留原空間格局、主要物件、視角與場景辨識度，不要改成不同地點',
+        high: '高度保留原空間結構，只優化氛圍、光線與整理感',
+        medium: '保留主要空間特徵，同時允許適度風格化',
+        low: '可明顯改造空間風格，但保留基本構圖',
+        veryLow: '允許大幅重新詮釋場景'
+      }
+    };
+    if (isProduct) return subjectGuidance.product[bucket];
+    if (isPet) return subjectGuidance.pet[bucket];
+    if (isSpace) return subjectGuidance.space[bucket];
+    return null;
+  }
+
+  function sliderGuidance(key, value, subjectLabel = '') {
+    if (key === 'identity') {
+      const subjectGuidance = identitySubjectGuidance(value, subjectLabel);
+      if (subjectGuidance) return subjectGuidance;
+    }
+    const directions = {
+      identity: {
+        veryHigh: '嚴格保留原照片人物 / 主體的五官、輪廓、比例與辨識度，不要換臉或改成陌生人',
+        high: '高度保留原照片人物 / 主體，只做自然風格化',
+        medium: '保留主要辨識特徵，同時允許適度風格化',
+        low: '可做明顯造型轉換，但仍保留基本主體特徵',
+        veryLow: '允許大幅重新詮釋主體外觀'
+      },
+      retouch: {
+        veryHigh: '修飾感明顯，皮膚、輪廓與整體質感可精緻美化，但不能失真',
+        high: '修飾強度偏高，提升乾淨度與精緻度',
+        medium: '自然修飾，保留真實肌理',
+        low: '只做輕微修飾，避免磨皮感',
+        veryLow: '幾乎不修飾，保留原照片真實感'
+      },
+      background: {
+        veryHigh: '背景可以大幅重塑為全新場景，但主體邊緣要自然',
+        high: '背景可明顯替換或重新設計',
+        medium: '背景可適度整理與調性統一',
+        low: '大致保留原背景，只移除干擾物與微調氣氛',
+        veryLow: '盡量保留原背景，不要改變場景結構'
+      },
+      realism: {
+        veryHigh: '偏真實攝影質感，避免卡通化或過度插畫化',
+        high: '以寫實為主，加入少量風格化',
+        medium: '介於寫實與插畫之間，保留自然比例',
+        low: '偏插畫 / 設計感，但仍保留照片可辨識基礎',
+        veryLow: '明顯插畫化或圖像化呈現'
+      },
+      color: {
+        veryHigh: '色彩濃烈鮮明，適合強視覺吸引',
+        high: '色彩飽和且有記憶點',
+        medium: '色彩自然平衡',
+        low: '色彩柔和低飽和',
+        veryLow: '極低飽和、近似淡雅或黑白調性'
+      },
+      refinement: {
+        veryHigh: '整體完成度要像高級成品，細節精修到位',
+        high: '提高精緻度與商業完成感',
+        medium: '維持乾淨完整的成品質感',
+        low: '保留較自然鬆弛的照片感',
+        veryLow: '避免過度精修，維持原始自然'
+      },
+      cinematic: {
+        veryHigh: '強烈電影劇照感，具備敘事光影與鏡頭語言',
+        high: '加入明顯電影感調色與光影',
+        medium: '保留些微電影氛圍',
+        low: '電影感輕微，不要太戲劇化',
+        veryLow: '不要電影化，維持日常自然'
+      },
+      moodIntensity: {
+        veryHigh: '氛圍非常鮮明且有記憶點',
+        high: '氛圍感明顯',
+        medium: '氛圍自然適中',
+        low: '氛圍輕柔不搶主體',
+        veryLow: '降低情緒渲染，保持中性乾淨'
+      },
+      detail: {
+        veryHigh: '細節非常清晰，材質、髮絲、服裝與邊緣都要銳利乾淨',
+        high: '提升細節清晰度',
+        medium: '細節清楚但不過度銳化',
+        low: '細節柔和，避免銳化感',
+        veryLow: '保留柔焦與霧面質感'
+      },
+      creativity: {
+        veryHigh: '允許高度創意變形，但必須合理且美觀',
+        high: '可加入明顯創意元素',
+        medium: '適度創意，不影響辨識',
+        low: '創意變化少，偏穩定保守',
+        veryLow: '不要創意變形，忠於原照片'
+      },
+      compositionFreedom: {
+        veryHigh: '可自由重構構圖以符合用途',
+        high: '允許明顯調整構圖與留白',
+        medium: '構圖可適度優化',
+        low: '保留原構圖，只做微調',
+        veryLow: '不要改變原構圖'
+      },
+      textPresence: {
+        veryHigh: '文字是畫面主視覺之一，需要清楚醒目',
+        high: '文字存在感明顯且易讀',
+        medium: '文字與圖片平衡',
+        low: '文字低調輔助圖片',
+        veryLow: '文字極低調，避免干擾主體'
+      },
+      textFusion: {
+        veryHigh: '文字與照片深度融合，像完整設計稿',
+        high: '文字需自然融入版面',
+        medium: '文字與圖片保持平衡排版',
+        low: '文字獨立清楚，不需過度融合',
+        veryLow: '文字像簡單標註，避免複雜設計'
+      },
+      framePresence: {
+        veryHigh: '框線非常明顯，成為重要版面元素',
+        high: '框線存在感明確',
+        medium: '框線存在感適中',
+        low: '框線低調輔助構圖',
+        veryLow: '框線幾乎不可見或不使用'
+      }
+    };
+    const bucket = value >= 90 ? 'veryHigh' : value >= 70 ? 'high' : value >= 45 ? 'medium' : value >= 25 ? 'low' : 'veryLow';
+    return directions[key]?.[bucket] || `${level(value)}強度`;
+  }
+
+  function describeTuning(tuning = {}, subjectLabel = '') {
     const merged = { ...defaultTuning, ...tuning };
     return [
-      `人物保留度 ${merged.identity}/100`, `修飾強度 ${merged.retouch}/100`, `背景變化程度 ${merged.background}/100`,
-      `寫實 / 插畫程度 ${merged.realism}/100`, `色彩濃度 ${merged.color}/100`, `精緻程度 ${merged.refinement}/100`,
-      `電影感 ${merged.cinematic}/100`, `氛圍強度 ${merged.moodIntensity}/100`, `細節清晰度 ${merged.detail}/100`,
-      `創意變形程度 ${merged.creativity}/100`, `構圖自由度 ${merged.compositionFreedom}/100`, `文字存在感 ${merged.textPresence}/100`,
-      `圖文融合度 ${merged.textFusion}/100`, `框線存在感 ${merged.framePresence}/100`
+      sliderGuidance('identity', merged.identity, subjectLabel),
+      sliderGuidance('retouch', merged.retouch),
+      sliderGuidance('background', merged.background),
+      sliderGuidance('realism', merged.realism),
+      sliderGuidance('color', merged.color),
+      sliderGuidance('refinement', merged.refinement),
+      sliderGuidance('cinematic', merged.cinematic),
+      sliderGuidance('moodIntensity', merged.moodIntensity),
+      sliderGuidance('detail', merged.detail),
+      sliderGuidance('creativity', merged.creativity),
+      sliderGuidance('compositionFreedom', merged.compositionFreedom),
+      sliderGuidance('textPresence', merged.textPresence),
+      sliderGuidance('textFusion', merged.textFusion),
+      sliderGuidance('framePresence', merged.framePresence)
     ];
+  }
+
+  function frameValueDescription(key, value) {
+    const descriptions = {
+      frameWidth: ['極細線條', '細框線', '中等粗細框線', '偏粗框線', '粗框線'],
+      frameOpacity: ['幾乎透明', '低透明感', '半透明', '偏實色', '高實色感'],
+      frameRadius: ['直角', '輕微圓角', '中等圓角', '柔和大圓角', '膠囊式大圓角'],
+      frameDecoration: ['無裝飾', '低調裝飾', '適度裝飾', '明顯裝飾', '華麗裝飾'],
+      framePadding: ['極窄留白', '窄留白', '中等留白', '寬留白', '大量留白'],
+      frameShadow: ['無陰影', '淡陰影', '自然陰影', '明顯陰影', '強烈陰影']
+    };
+    const index = value >= 85 ? 4 : value >= 65 ? 3 : value >= 40 ? 2 : value >= 15 ? 1 : 0;
+    return descriptions[key][index];
+  }
+
+  function describeFrameSettings(tuning = {}) {
+    const merged = { ...defaultTuning, ...tuning };
+    return [
+      frameValueDescription('frameWidth', merged.frameWidth),
+      frameValueDescription('frameOpacity', merged.frameOpacity),
+      frameValueDescription('frameRadius', merged.frameRadius),
+      frameValueDescription('frameDecoration', merged.frameDecoration),
+      frameValueDescription('framePadding', merged.framePadding),
+      frameValueDescription('frameShadow', merged.frameShadow)
+    ].join('、');
   }
 
   function buildTextPart(state) {
@@ -147,7 +332,11 @@
     const pairs = [['主標題', text.title], ['副標題', text.subtitle], ['內文說明', text.body], ['重點標語', text.highlight], ['CTA 行動句', text.cta], ['名字 / 品牌名 / 活動名', text.name], ['日期 / 地點 / 價格 / 聯絡資訊', text.info], ['備註文字', text.note]].filter(([, v]) => v);
     const style = value(state, 'textStyleId', 'text_styles');
     const align = state.textAlign || '置中';
-    return `加入文字：${pairs.map(([k, v]) => `${k}「${v}」`).join('、') || '由 AI 依用途生成簡短文案'}。字體採${style.label}，${align}對齊，文字大小 ${state.tuning?.textSize || defaultTuning.textSize}/100、文字粗細 ${state.tuning?.textWeight || defaultTuning.textWeight}/100、字距 ${state.tuning?.letterSpacing || defaultTuning.letterSpacing}/100、行距 ${state.tuning?.lineHeight || defaultTuning.lineHeight}/100。`;
+    const textSize = level(state.tuning?.textSize || defaultTuning.textSize);
+    const textWeight = level(state.tuning?.textWeight || defaultTuning.textWeight);
+    const letterSpacing = level(state.tuning?.letterSpacing || defaultTuning.letterSpacing);
+    const lineHeight = level(state.tuning?.lineHeight || defaultTuning.lineHeight);
+    return `加入文字：${pairs.map(([k, v]) => `${k}「${v}」`).join('、') || '由 AI 依用途生成簡短文案'}。字體採${style.label}，${align}對齊；文字大小${textSize}、文字粗細${textWeight}、字距${letterSpacing}、行距${lineHeight}，請確保文字正確、清晰可讀、不要錯字。`;
   }
 
   function assemblePrompt(state = {}) {
@@ -164,11 +353,14 @@
     const frame = value(normalized, 'frameId', 'frames');
     const layout = value(normalized, 'layoutId', 'layouts');
     const output = value(normalized, 'outputId', 'outputs');
-    const tuning = describeTuning(normalized.tuning);
-    const frameDetail = `框線設定：${frame.label}，框線粗細 ${normalized.tuning.frameWidth}/100、透明度 ${normalized.tuning.frameOpacity}/100、圓角 ${normalized.tuning.frameRadius}/100、裝飾感 ${normalized.tuning.frameDecoration}/100、留白寬度 ${normalized.tuning.framePadding}/100、陰影強度 ${normalized.tuning.frameShadow}/100。`;
+    const agePart = ['商品', '寵物', '風景 / 空間'].includes(photo.label) ? '此照片類型不套用人物年紀調整' : age.prompt;
+    const tuning = describeTuning(normalized.tuning, photo.label);
+    const frameDetail = frame.label === '無框線'
+      ? '框線設定：不加入框線，保持畫面乾淨，不要產生多餘邊線或裝飾框。'
+      : `框線設定：${frame.label}，${describeFrameSettings(normalized.tuning)}；這裡的框線是畫面內的設計線條，不是裁切外框。`;
     const textPart = buildTextPart(normalized);
-    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${age.prompt}。整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
-    const shortPrompt = `${photo.label}照片編輯，${style.label}、${light.label}、${location.label}、${outfit.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，人物保留度 ${normalized.tuning.identity}/100，${normalized.includeText ? '含指定文字' : '不加文字'}。`;
+    const fullPrompt = `請根據我上傳的照片進行 AI 照片編輯。照片類型 / 人物模式為「${photo.label}」，${photo.prompt}；${agePart}。整體畫風使用「${style.label}」：${style.prompt}。光線使用「${light.label}」：${light.prompt}。地點 / 場景為「${location.label}」，${location.prompt}。服裝設定為「${outfit.label}」，${outfit.prompt}；配件設定為「${accessory.label}」，${accessory.prompt}。配色採「${palette.label}」，請安排主色、輔色、點綴色、背景色與文字建議色的協調。氛圍為「${mood.label}」，保持自然、乾淨、有設計感。排版使用「${layout.label}」，輸出用途為「${output.label}」。${frameDetail}${textPart}細節要求：${tuning.join('、')}。請保留主體辨識度、避免過度修圖，讓結果可直接用於 ${output.label}。`;
+    const shortPrompt = `${photo.label}照片編輯，${style.label}、${light.label}、${location.label}、${outfit.label}、${palette.label}、${mood.label}，${layout.label}，用途：${output.label}，${sliderGuidance('identity', normalized.tuning.identity, photo.label)}，${normalized.includeText ? '含指定文字且需準確排版' : '不加文字'}。`;
     const negativePrompt = data.negative_prompt_rules.join('、') + '、過度磨皮、主體失真、文字位置錯亂、品牌資訊遺漏。';
     return { fullPrompt, shortPrompt, negativePrompt, styleCode: getStyleCode(normalized), state: normalized };
   }
