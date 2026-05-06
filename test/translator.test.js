@@ -9,6 +9,7 @@ const {
   BODY_PROPORTION_OPTIONS,
   AGE_BRACKET_OPTIONS,
   getActionsForCount,
+  getPosesForCount,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
@@ -62,6 +63,8 @@ test('provides requested preset counts for visual controls', () => {
   assert.equal(COMPOSITION_STRUCTURES.length, 50);
   assert.equal(ART_STYLES.length, 50);
   assert.equal(TIME_POINTS.length, 20);
+  assert.ok(TIME_POINTS.every(({ en }) => /light|color|texture/.test(en)));
+  assert.ok(TIME_POINTS.every(({ zh }) => /光|色|質感/.test(zh)));
 });
 
 test('provides requested gender, race, emotion, outfit, scene, and body customization counts', () => {
@@ -69,12 +72,15 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(RACE_OPTIONS.length, 100);
   assert.equal(RACE_OPTIONS.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(RACE_OPTIONS.filter(({ rarity }) => rarity === 'rare').length, 50);
+  assert.ok(RACE_OPTIONS.slice(50).every(({ en }) => /adult/.test(en)));
   assert.equal(EMOTION_OPTIONS.length, 50);
   assert.equal(EXPRESSION_OPTIONS, EMOTION_OPTIONS);
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'rare').length, 50);
+  assert.match(CUSTOMIZATION_OPTIONS.outfits[0].en, /shirt|trousers|dress|jacket|cardigan|jeans|knit|blouse|sweater|suit|casual|linen|denim|sleepwear/);
+  assert.match(CUSTOMIZATION_OPTIONS.outfits[50].en, /lace|satin|sheer|corset|bodysuit|garter|latex|seduction|cutout|mesh/);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitColors.length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitMaterials.length, 50);
   assert.equal(OCCUPATION_OPTIONS.length, 50);
@@ -92,7 +98,10 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
   assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
   assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 300);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
 });
 
 test('keeps lighting, pose, and outfit preset domains from leaking conflicting scene or light terms', () => {
@@ -123,7 +132,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
     action: getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[0].zh,
-    pose: CUSTOMIZATION_OPTIONS.poses[10].zh,
+    pose: getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[10].zh,
     multiCharacterDetails: 'A wears black styling, B wears white styling, A leads the interaction'
   });
 
@@ -132,7 +141,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /種族：精靈族/);
   assert.match(result.chineseConfirmation, /情緒：咬唇表情/);
   assert.match(result.chineseConfirmation, /身上特徵：豐滿胸型/);
-  assert.match(result.chineseConfirmation, /服裝：皮革束腰/);
+  assert.match(result.chineseConfirmation, /服裝：蕾絲深V連身衣/);
   assert.match(result.chineseConfirmation, /服裝配色：酒紅/);
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
   assert.match(result.chineseConfirmation, /場景：金色宮殿內室/);
@@ -143,7 +152,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
   assert.match(result.englishPrompt, /body feature: full bust/);
-  assert.match(result.englishPrompt, /outfit: leather corset/);
+  assert.match(result.englishPrompt, /outfit: lace deep-V bodysuit/);
   assert.match(result.englishPrompt, /outfit color palette: wine red/);
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
   assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
@@ -233,6 +242,7 @@ test('key prompt element groups do not contain duplicate visible labels', () => 
     CUSTOMIZATION_OPTIONS.outfitMaterials,
     CUSTOMIZATION_OPTIONS.accessories,
     CUSTOMIZATION_OPTIONS.actions,
+    CUSTOMIZATION_OPTIONS.poses,
     OCCUPATION_OPTIONS,
     BODY_PROPORTION_OPTIONS
   ];

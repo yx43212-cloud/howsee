@@ -141,13 +141,20 @@ function updateCharacterCards() {
   });
 }
 
-function updateActionOptions() {
+function updateCountAwareOptions() {
   const previousAction = action.value;
+  const previousPose = pose.value;
   const actionOptions = getActionsForCount(count.value);
+  const poseOptions = getPosesForCount(count.value);
   populateSelect(action, actionOptions);
+  populateSelect(pose, poseOptions);
 
   if (actionOptions.some((option) => option.zh === previousAction)) {
     action.value = previousAction;
+  }
+
+  if (poseOptions.some((option) => option.zh === previousPose)) {
+    pose.value = previousPose;
   }
 }
 
@@ -196,9 +203,8 @@ function setupCustomizationControls() {
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
   populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
   populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
-  populateSelect(pose, CUSTOMIZATION_OPTIONS.poses);
   setupCharacterControls();
-  updateActionOptions();
+  updateCountAwareOptions();
   updateCharacterCards();
 }
 
@@ -352,7 +358,7 @@ textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
 
 count.addEventListener('change', () => {
-  updateActionOptions();
+  updateCountAwareOptions();
   updateCharacterCards();
 });
 
