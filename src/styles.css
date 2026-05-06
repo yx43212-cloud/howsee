@@ -264,9 +264,19 @@ button:active {
   color: var(--success);
 }
 
+.output-label {
+  margin-top: 16px;
+}
+
+#confirmationPrompt {
+  min-height: 220px;
+  color: rgba(245, 239, 255, 0.82);
+}
+
 #resultPrompt {
   min-height: 360px;
 }
+
 
 .guardrails ul {
   display: grid;

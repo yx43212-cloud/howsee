@@ -3,17 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>好想瑟瑟 Prompt Rewriter</title>
+    <title>SHowSexy</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="hero">
         <p class="eyebrow">18+ consensual prompt atelier</p>
-        <h1>好想瑟瑟 Prompt Rewriter</h1>
-        <p>
-          將直白成人提示詞轉成影像生成器更容易理解的情慾氛圍描述，介面與確認結果全部先用中文呈現；最後才輸出英文生成提示詞。光感改為純粹的打光方向，並加入 50 種種族與 50 種中文畫風。
-        </p>
+        <h1>SHowSexy</h1>
+        <p>中文僅供確認，通過安全篩選後，只有英文生成提示詞可複製。</p>
       </section>
 
       <section class="panel input-panel" aria-labelledby="input-title">
@@ -36,7 +34,7 @@
           </div>
 
           <div class="field">
-            <label for="lighting">光感描述（20 種）</label>
+            <label for="lighting">光感描述（50 種）</label>
             <select id="lighting"></select>
           </div>
 
@@ -54,17 +52,21 @@
         <div class="section-heading compact">
           <p class="section-kicker">Step 02</p>
           <h2>角色客製化安排</h2>
-          <p>種族 50 種、表情 50 種、時間點 20 種；臉蛋、服裝 100 種、人數、場景 100 種與體位／姿勢共 300 種可選安排。全程中文確認，最後才產生英文提示詞。</p>
+          <p>新增性別挑選；種族、服裝、場景各 100 種，皆拆成 50 日常／50 稀少；另有 30 種情緒、30 種服裝配色、30 種身上特徵與服裝完整度。中文只供確認，複製區只輸出英文提示詞。</p>
         </div>
 
         <div class="custom-grid">
           <div class="field">
-            <label for="race">種族（50 種）</label>
+            <label for="gender">性別</label>
+            <select id="gender"></select>
+          </div>
+          <div class="field">
+            <label for="race">種族（100 種：50 日常／50 稀少）</label>
             <select id="race"></select>
           </div>
           <div class="field">
-            <label for="expression">表情（50 種）</label>
-            <select id="expression"></select>
+            <label for="emotion">情緒（30 種）</label>
+            <select id="emotion"></select>
           </div>
           <div class="field">
             <label for="timePoint">時間點（20 種）</label>
@@ -75,15 +77,27 @@
             <select id="face"></select>
           </div>
           <div class="field">
-            <label for="outfit">服裝穿搭（100 種）</label>
+            <label for="outfit">服裝穿搭（100 種：50 日常／50 稀少）</label>
             <select id="outfit"></select>
+          </div>
+          <div class="field">
+            <label for="outfitColor">服裝配色（30 種）</label>
+            <select id="outfitColor"></select>
+          </div>
+          <div class="field">
+            <label for="bodyFeature">身上特徵（30 種）</label>
+            <select id="bodyFeature"></select>
+          </div>
+          <div class="field">
+            <label for="outfitIntegrity">服裝完整度</label>
+            <select id="outfitIntegrity"></select>
           </div>
           <div class="field">
             <label for="count">人數</label>
             <select id="count"></select>
           </div>
           <div class="field">
-            <label for="scene">場景配置（100 種）</label>
+            <label for="scene">場景配置（100 種：50 日常／50 稀少）</label>
             <select id="scene"></select>
           </div>
           <div class="field wide-field">
@@ -101,11 +115,14 @@
       <section class="panel output-panel" aria-live="polite">
         <div class="section-heading">
           <p class="section-kicker">Step 03</p>
-          <h2>中文確認＋英文提示詞</h2>
+          <h2>中文確認＋英文可複製提示詞</h2>
         </div>
-        <p id="status" class="status">等待輸入。</p>
-        <textarea id="resultPrompt" rows="12" readonly></textarea>
-        <button id="copyButton" type="button" class="secondary-button">複製結果</button>
+        <p id="status" class="status">等待輸入，通過安全篩選後才會顯示結果。</p>
+        <label for="confirmationPrompt" class="output-label" hidden>中文確認（不可複製區）</label>
+        <textarea id="confirmationPrompt" rows="8" readonly hidden></textarea>
+        <label for="resultPrompt" class="output-label" hidden>English generation prompt（可複製）</label>
+        <textarea id="resultPrompt" rows="12" readonly hidden></textarea>
+        <button id="copyButton" type="button" class="secondary-button" hidden>複製英文提示詞</button>
       </section>
 
       <section class="guardrails">
