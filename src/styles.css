@@ -489,3 +489,71 @@ button:active {
 #autoVideoPrompt {
   min-height: 220px;
 }
+
+.auth-panel,
+.saved-panel,
+[data-app-page-panel='generator'] {
+  grid-column: 1 / -1;
+}
+
+.auth-actions,
+.save-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.confirm-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 0;
+}
+
+.confirm-row input {
+  width: auto;
+}
+
+.app-page-tabs {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.app-page-button.active {
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+}
+
+.saved-list {
+  display: grid;
+  gap: 16px;
+}
+
+.saved-item {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.saved-item[data-active='true'] {
+  outline: 2px solid var(--gold);
+}
+
+.saved-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.saved-images img {
+  width: 100%;
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.upload-button {
+  text-align: center;
+}

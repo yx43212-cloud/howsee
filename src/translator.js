@@ -936,6 +936,67 @@ const CUSTOMIZATION_OPTIONS = {
   ]
 };
 
+
+function makePairs(prefixZh, prefixEn, count, rarity) {
+  return Array.from({ length: count }, (_, index) => [`${prefixZh}${String(index + 1).padStart(3, '0')}`, `${prefixEn} ${index + 1}`]).map(([zh, en]) => option(zh, en, rarity));
+}
+
+COMPOSITION_STRUCTURES.splice(0, COMPOSITION_STRUCTURES.length,
+  ...[
+    ['中央主體', 'centered subject'], ['三分法', 'rule of thirds'], ['對角線', 'diagonal layout'], ['前中後景', 'foreground midground background layers'], ['留白', 'negative space'],
+    ['滿版', 'full frame'], ['水平線', 'horizontal line'], ['垂直線', 'vertical line'], ['引導線', 'leading lines'], ['框中框', 'frame within frame'],
+    ['三角形', 'triangle layout'], ['圓形視覺', 'circular visual path'], ['左右平衡', 'left-right balance'], ['上下平衡', 'top-bottom balance'], ['偏心主體', 'off-center subject'],
+    ['近大遠小', 'near-large far-small depth'], ['局部裁切', 'cropped detail'], ['半身', 'half body'], ['全身', 'full body'], ['電影寬幅', 'cinematic widescreen']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+COUNT_OPTIONS.splice(0, COUNT_OPTIONS.length,
+  ...[
+    ['單人', 'single adult'], ['雙人', 'two adults'], ['三人', 'three adults'], ['四人', 'four adults'], ['多人', 'multi-adult group'],
+    ['單人半身', 'single adult half body'], ['單人全身', 'single adult full body'], ['雙人面對面', 'two adults face to face'], ['雙人並肩', 'two adults side by side'], ['雙人前後站位', 'two adults front-back placement'],
+    ['三人並列', 'three adults side by side'], ['三人主副關係', 'three adults lead and supporting roles'], ['四人派對', 'four-adult party'], ['多人舞台', 'multi-adult stage group'], ['單人鏡前', 'single adult near mirror'],
+    ['雙人鏡前', 'two adults near mirror'], ['單人坐姿', 'single adult seated'], ['單人站姿', 'single adult standing'], ['雙人高低差', 'two adults height contrast'], ['三人層次', 'three adults layered placement']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+bodyFeatures.splice(0, bodyFeatures.length,
+  ...[
+    ['鎖骨小痣','beauty mark near collarbone'], ['眼下淚痣','tear mole under eye'], ['肩上刺青','shoulder tattoo'], ['手腕刺青','wrist tattoo'], ['頸側紋身','neck-side tattoo'],
+    ['耳骨環','helix piercing'], ['肚臍環','navel piercing'], ['鎖骨鏈印痕','subtle necklace mark'], ['手指戒痕','ring mark on finger'], ['淡雀斑','soft freckles'],
+    ['曬痕邊界','subtle tan line'], ['指甲彩繪','nail art'], ['唇珠明顯','defined cupid bow'], ['眼尾亮片','eye-corner glitter'], ['肩頸香水光澤','perfume sheen on shoulder-neck'],
+    ['髮際碎髮','baby hair at hairline'], ['耳後髮絲','hair strands behind ear'], ['膝側小痣','small mole near knee'], ['腳踝鍊痕','anklet mark'], ['掌心薄繭','subtle palm callus'],
+    ['手背青筋','subtle hand veins'], ['肩帶壓痕','strap indentation'], ['腰鏈壓痕','waist-chain indentation'], ['手套壓痕','glove indentation'], ['淡疤點綴','subtle scar accent'],
+    ['耳垂紅暈','earlobe blush'], ['眼影暈染','smudged eyeshadow'], ['髮尾挑染','dyed hair tips'], ['臨時貼紙','temporary sticker accent'], ['水鑽貼飾','rhinestone sticker accent']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+CUSTOMIZATION_OPTIONS.outfits.splice(0, CUSTOMIZATION_OPTIONS.outfits.length,
+  ...makePairs('男正常服裝', 'male everyday outfit', 100, 'male-normal'),
+  ...makePairs('男情慾服裝', 'male sensual outfit', 100, 'male-sensual'),
+  ...makePairs('女正常服裝', 'female everyday outfit', 100, 'female-normal'),
+  ...makePairs('女情慾服裝', 'female sensual outfit', 100, 'female-sensual')
+);
+
+CUSTOMIZATION_OPTIONS.scenes.splice(0, CUSTOMIZATION_OPTIONS.scenes.length,
+  ...makePairs('日常場景', 'everyday lived-in scene', 100, 'normal'),
+  ...makePairs('祕境場景', 'taboo mysterious scene', 100, 'taboo')
+);
+
+CUSTOMIZATION_OPTIONS.accessories.push(...makePairs('祕密道具', 'forbidden styling prop', 50, 'taboo'));
+
+ACTION_MODE_OPTIONS.splice(0, ACTION_MODE_OPTIONS.length,
+  option('姿態', 'posture', 'posture'),
+  option('肩上', 'above shoulders', 'above'),
+  option('手部', 'hands', 'hands'),
+  option('下半身', 'lower body', 'lower')
+);
+
+for (const [modeKey, label] of [['above', '肩上'], ['hands', '手部'], ['lower', '下半身'], ['posture', '姿態']]) {
+  for (const detail of ACTION_DETAIL_OPTIONS[modeKey] || []) {
+    detail.zh = detail.zh.replace(/^.*?｜/, `${label}｜`);
+  }
+}
+
 function normalizeInput(input) {
   return String(input ?? '').trim().replace(/\s+/g, ' ');
 }
@@ -1179,6 +1240,19 @@ function rewritePrompt(input, options = {}) {
     };
   }
 
+  const isDesignerMode = options.audienceMode === 'designer';
+  const sensualIntentPattern = /淫亂|情慾|色情|色氣|放蕩|性感|裸|做愛|性交|自慰|高潮|sensual|erotic|sexual|nude|debauched/i;
+  if (isDesignerMode && sensualIntentPattern.test(`${validation.prompt} ${options.cosplayPrompt || ''}`)) {
+    return {
+      ok: false,
+      prompt: '',
+      englishPrompt: '',
+      chineseConfirmation: '',
+      reason: '設友模式全域阻擋色情與情慾風格；請切換為一般設計方向或重新登入色友並確認成年人合意規範。',
+      screened: false
+    };
+  }
+
   const cosplayValidation = validateCustomDetailInput(options.cosplayPrompt);
   if (!cosplayValidation.ok) {
     return {
@@ -1270,7 +1344,7 @@ function rewritePrompt(input, options = {}) {
     `主題／動作：${chineseRewritten}`,
     ...chineseCharacterFields,
     `時間點：${timePoint.zh}`,
-    `人數／構圖：${count.zh}`,
+    `人數：${count.zh}`,
     `場景：${scene.zh}`,
     `配件／道具：${accessory.zh}`,
     `光感：${lighting.zh}`,
@@ -1299,7 +1373,7 @@ function rewritePrompt(input, options = {}) {
     `subject/action: ${englishSubject}`,
     ...englishCharacterFields,
     `time point: ${timePoint.en}`,
-    `character count/composition: ${count.en}`,
+    `character count: ${count.en}`,
     `scene: ${scene.en}`,
     `accessory/prop: ${accessory.en}`,
     `lighting: ${lighting.en}`,

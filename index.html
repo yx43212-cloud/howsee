@@ -3,17 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>好色之圖HowSir</title>
+    <title>好設之圖NIAI</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="hero">
-        <p class="eyebrow">18+ consensual prompt atelier</p>
-        <h1>好色之圖HowSir</h1>
-        <p>祝各位老司機安心上路</p>
+        <p class="eyebrow">NIAI prompt atelier</p>
+        <h1>好設之圖NIAI</h1>
+        <p>設計你愛的提示詞，把想像都變現實</p>
       </section>
 
+      <section class="panel auth-panel" aria-labelledby="auth-title">
+        <div class="section-heading compact">
+          <p class="section-kicker">Login</p>
+          <h2 id="auth-title">選擇功能身份</h2>
+          <p>用 Gmail 綁定本機儲存紀錄；設友全域阻擋色情情慾，色友會顯示情慾分頁與再次確認。</p>
+        </div>
+        <label for="gmailInput">Gmail</label>
+        <input id="gmailInput" type="email" placeholder="yourname@gmail.com" autocomplete="email" />
+        <div class="auth-actions">
+          <button id="designerLoginButton" type="button" class="secondary-button">登入設友</button>
+          <button id="sensualLoginButton" type="button" class="secondary-button">登入色友</button>
+        </div>
+        <label class="confirm-row"><input id="sensualConfirm" type="checkbox" /> 我確認以成年人合意創作使用色友模式</label>
+        <p id="authStatus" class="status">尚未登入；預設以設友規範阻擋情慾方向。</p>
+      </section>
+
+      <nav class="app-page-tabs" aria-label="功能頁面切換">
+        <button class="app-page-button active" type="button" data-app-page="generator">提示詞生成</button>
+        <button class="app-page-button" type="button" data-app-page="library">儲存紀錄</button>
+      </nav>
+
+      <section id="generatorPage" data-app-page-panel="generator">
       <nav class="mode-switch" aria-label="提示詞模式切換">
         <button id="textModeButton" type="button" class="mode-button active">文生圖提示詞</button>
         <button id="videoModeButton" type="button" class="mode-button">圖轉影提示詞</button>
@@ -43,6 +65,7 @@
           <button class="text-step-button active" type="button" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
           <button class="text-step-button" type="button" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
           <button class="text-step-button" type="button" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
+          <button id="sensualStepButton" class="text-step-button sensual-only" type="button" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>4 情慾方向</button>
         </nav>
 
         <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
@@ -52,16 +75,6 @@
             <p>先決定整張圖的強度、光、鏡位、構圖和畫風；不確定的選項保持 AI 判斷即可。</p>
           </div>
           <div class="control-grid">
-            <div class="field">
-              <label for="intensity">情慾強度</label>
-              <select id="intensity">
-                <option value="soft">柔和</option>
-                <option value="medium" selected>中等</option>
-                <option value="strong">強烈</option>
-              </select>
-              <p class="field-help">只影響整體氛圍，不會突破安全規則。</p>
-            </div>
-
             <div class="field">
               <label for="lighting">光感描述（50 種）</label>
               <select id="lighting"></select>
@@ -73,7 +86,7 @@
             </div>
 
             <div class="field">
-              <label for="composition">構圖結構（50 種）</label>
+              <label for="composition">構圖結構（20 種）</label>
               <select id="composition"></select>
             </div>
 
@@ -125,7 +138,7 @@
               <select id="face"></select>
             </div>
             <div class="field">
-              <label for="outfit">服裝穿搭（前50日常／後50情趣）</label>
+              <label for="outfit">服裝穿搭（男200／女200）</label>
               <select id="outfit"></select>
             </div>
             <div class="field">
@@ -206,11 +219,11 @@
           </div>
           <div class="custom-grid">
             <div class="field">
-              <label for="scene">場景配置（100 種）</label>
+              <label for="scene">場景配置（100 日常／100 祕境）</label>
               <select id="scene"></select>
             </div>
             <div class="field">
-              <label for="accessory">配件與道具（100 種）</label>
+              <label for="accessory">配件與道具（150 種）</label>
               <select id="accessory"></select>
             </div>
             <div class="field">
@@ -222,6 +235,25 @@
               <label for="actionDetail">動作或姿態細項（每類 50：25 正常／25 情慾）</label>
               <select id="actionDetail"></select>
               <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="sensualStepPanel" class="text-step-panel sensual-only" data-text-step-panel="sensual" aria-labelledby="sensual-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 05</p>
+            <h2 id="sensual-step-title">情慾方向</h2>
+            <p>僅色友模式顯示；設友模式會全域阻擋色情情慾風格。</p>
+          </div>
+          <div class="control-grid">
+            <div class="field">
+              <label for="intensity">情慾強度</label>
+              <select id="intensity">
+                <option value="soft">柔和</option>
+                <option value="medium" selected>中等</option>
+                <option value="strong">強烈</option>
+              </select>
+              <p class="field-help">柔和、強烈會套用不同鏡頭距離、肢體語言與張力。</p>
             </div>
           </div>
         </section>
@@ -315,6 +347,22 @@
           <textarea id="videoResultPrompt" rows="12" readonly hidden></textarea>
           <button id="copyVideoButton" type="button" class="secondary-button" hidden>複製圖轉影英文提示詞</button>
         </div>
+      </section>
+
+      </section>
+
+      <section id="libraryPage" class="panel saved-panel" data-app-page-panel="library" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Library</p>
+          <h2>已儲存提示詞</h2>
+          <p>提示詞與壓縮成果圖只存於本機瀏覽器，成果圖降畫質保存且不提供下載連結。</p>
+        </div>
+        <div class="save-actions">
+          <button id="savePromptButton" type="button" class="secondary-button">儲存目前提示詞</button>
+          <label for="resultImageInput" class="secondary-button upload-button">上傳成果到選取紀錄</label>
+          <input id="resultImageInput" type="file" accept="image/*" hidden />
+        </div>
+        <div id="savedPromptList" class="saved-list"></div>
       </section>
 
       <section class="guardrails">

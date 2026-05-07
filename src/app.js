@@ -52,11 +52,24 @@ const imageVideoChoiceField = document.querySelector('#imageVideoChoiceField');
 const imageVideoPromptChoice = document.querySelector('#imageVideoPromptChoice');
 const imageVideoStatus = document.querySelector('#imageVideoStatus');
 const characterCards = Array.from(document.querySelectorAll('[data-character-card]'));
+const appPageButtons = Array.from(document.querySelectorAll('[data-app-page]'));
+const appPagePanels = Array.from(document.querySelectorAll('[data-app-page-panel]'));
+const gmailInput = document.querySelector('#gmailInput');
+const designerLoginButton = document.querySelector('#designerLoginButton');
+const sensualLoginButton = document.querySelector('#sensualLoginButton');
+const sensualConfirm = document.querySelector('#sensualConfirm');
+const authStatus = document.querySelector('#authStatus');
+const savePromptButton = document.querySelector('#savePromptButton');
+const resultImageInput = document.querySelector('#resultImageInput');
+const savedPromptList = document.querySelector('#savedPromptList');
+const sensualOnlyElements = Array.from(document.querySelectorAll('.sensual-only'));
 const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
 const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
+let activeAudienceMode = localStorage.getItem('niaiAudienceMode') || 'designer';
+let activeSavedPromptId = null;
 
 function setStatus(element, message, state = 'idle') {
   element.textContent = message;
@@ -64,6 +77,9 @@ function setStatus(element, message, state = 'idle') {
 }
 
 function setTextStep(stepName) {
+  if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
+    stepName = 'visual';
+  }
   for (const button of textStepButtons) {
     const isActive = button.dataset.textStep === stepName;
     button.classList.toggle('active', isActive);
@@ -73,6 +89,144 @@ function setTextStep(stepName) {
   for (const panel of textStepPanels) {
     panel.hidden = panel.dataset.textStepPanel !== stepName;
   }
+}
+
+
+function setAppPage(pageName) {
+  for (const button of appPageButtons) {
+    button.classList.toggle('active', button.dataset.appPage === pageName);
+  }
+  for (const panel of appPagePanels) {
+    panel.hidden = panel.dataset.appPagePanel !== pageName;
+  }
+}
+
+function updateAudienceMode(mode, gmail) {
+  activeAudienceMode = mode;
+  localStorage.setItem('niaiAudienceMode', mode);
+  if (gmail) {
+    localStorage.setItem('niaiGmail', gmail);
+  }
+  for (const element of sensualOnlyElements) {
+    element.hidden = mode !== 'sensual';
+  }
+  if (mode !== 'sensual' && document.querySelector('[data-text-step-panel="sensual"]')?.hidden === false) {
+    setTextStep('visual');
+  }
+  authStatus.textContent = mode === 'sensual'
+    ? `已用 ${gmail || 'Gmail'} 登入色友；情慾分頁與成人合意規範已啟用。`
+    : `已用 ${gmail || 'Gmail'} 登入設友；色情與情慾風格全域阻擋。`;
+  authStatus.dataset.state = 'success';
+}
+
+function getSavedPrompts() {
+  try {
+    return JSON.parse(localStorage.getItem('niaiSavedPrompts') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function setSavedPrompts(items) {
+  localStorage.setItem('niaiSavedPrompts', JSON.stringify(items));
+}
+
+function renderSavedPrompts() {
+  const items = getSavedPrompts();
+  savedPromptList.replaceChildren();
+  if (!items.length) {
+    const empty = document.createElement('p');
+    empty.className = 'status';
+    empty.textContent = '尚未儲存提示詞。';
+    savedPromptList.append(empty);
+    return;
+  }
+  for (const item of items) {
+    const article = document.createElement('article');
+    article.className = 'saved-item';
+    article.dataset.active = String(item.id === activeSavedPromptId);
+    const title = document.createElement('h3');
+    title.textContent = item.cosplay || '未命名提示詞';
+    const meta = document.createElement('p');
+    meta.className = 'status';
+    meta.textContent = `${item.gmail || 'local'}｜${item.mode === 'sensual' ? '色友' : '設友'}｜${new Date(item.createdAt).toLocaleString()}`;
+    const prompt = document.createElement('textarea');
+    prompt.rows = 4;
+    prompt.readOnly = true;
+    prompt.value = item.englishPrompt;
+    const choose = document.createElement('button');
+    choose.type = 'button';
+    choose.className = 'secondary-button';
+    choose.textContent = '選取此串';
+    choose.addEventListener('click', () => {
+      activeSavedPromptId = item.id;
+      renderSavedPrompts();
+    });
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'secondary-button';
+    remove.textContent = '刪除';
+    remove.addEventListener('click', () => {
+      setSavedPrompts(getSavedPrompts().filter((candidate) => candidate.id !== item.id));
+      if (activeSavedPromptId === item.id) activeSavedPromptId = null;
+      renderSavedPrompts();
+    });
+    const images = document.createElement('div');
+    images.className = 'saved-images';
+    for (const image of item.images || []) {
+      const img = document.createElement('img');
+      img.src = image.dataUrl;
+      img.alt = '壓縮儲存的成果圖，僅供對照不可下載';
+      images.append(img);
+    }
+    article.append(title, meta, prompt, choose, remove, images);
+    savedPromptList.append(article);
+  }
+}
+
+function saveCurrentPrompt() {
+  if (!textResultPrompt.value) {
+    setStatus(textStatus, '目前沒有可儲存的英文提示詞。', 'error');
+    return;
+  }
+  const item = {
+    id: `prompt-${Date.now()}`,
+    gmail: localStorage.getItem('niaiGmail') || gmailInput.value.trim(),
+    mode: activeAudienceMode,
+    cosplay: cosplayPrompt.value.trim(),
+    chineseConfirmation: textConfirmationPrompt.value,
+    englishPrompt: textResultPrompt.value,
+    autoVideoZh: autoVideoConfirmation.value,
+    autoVideoPrompt: autoVideoPrompt.value,
+    createdAt: new Date().toISOString(),
+    images: []
+  };
+  const items = [item, ...getSavedPrompts()];
+  setSavedPrompts(items);
+  activeSavedPromptId = item.id;
+  renderSavedPrompts();
+  setAppPage('library');
+}
+
+function compressResultImage(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.addEventListener('load', () => {
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(480 / image.naturalWidth, 480 / image.naturalHeight, 1);
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+      canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(objectUrl);
+      resolve(canvas.toDataURL('image/jpeg', 0.48));
+    }, { once: true });
+    image.addEventListener('error', () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('無法讀取成果圖。'));
+    }, { once: true });
+    image.src = objectUrl;
+  });
 }
 
 function setMode(mode) {
@@ -446,6 +600,8 @@ setTextStep('visual');
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
+updateAudienceMode(activeAudienceMode, localStorage.getItem('niaiGmail') || '');
+renderSavedPrompts();
 
 textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
@@ -453,6 +609,48 @@ videoModeButton.addEventListener('click', () => setMode('video'));
 for (const button of textStepButtons) {
   button.addEventListener('click', () => setTextStep(button.dataset.textStep));
 }
+
+for (const button of appPageButtons) {
+  button.addEventListener('click', () => setAppPage(button.dataset.appPage));
+}
+
+designerLoginButton.addEventListener('click', () => {
+  const gmail = gmailInput.value.trim();
+  if (!/@gmail\.com$/i.test(gmail)) {
+    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    return;
+  }
+  updateAudienceMode('designer', gmail);
+});
+
+sensualLoginButton.addEventListener('click', () => {
+  const gmail = gmailInput.value.trim();
+  if (!/@gmail\.com$/i.test(gmail)) {
+    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    return;
+  }
+  if (!sensualConfirm.checked) {
+    setStatus(authStatus, '登入色友前請再次確認成年人合意規範。', 'error');
+    return;
+  }
+  updateAudienceMode('sensual', gmail);
+});
+
+savePromptButton.addEventListener('click', saveCurrentPrompt);
+
+resultImageInput.addEventListener('change', async () => {
+  const [file] = resultImageInput.files;
+  if (!file || !activeSavedPromptId) return;
+  const dataUrl = await compressResultImage(file);
+  const items = getSavedPrompts();
+  const item = items.find((candidate) => candidate.id === activeSavedPromptId);
+  if (item) {
+    item.images = [...(item.images || []), { dataUrl, createdAt: new Date().toISOString() }];
+    setSavedPrompts(items);
+    renderSavedPrompts();
+  }
+  resultImageInput.value = '';
+});
 
 count.addEventListener('change', () => {
   updateCharacterCards();
@@ -500,6 +698,7 @@ imageInput.addEventListener('change', async () => {
 
 rewriteButton.addEventListener('click', () => {
   const result = rewritePrompt(getTextRewriteSource(), {
+    audienceMode: activeAudienceMode,
     intensity: intensity.value,
     lighting: lighting.value,
     camera: camera.value,

@@ -57,6 +57,17 @@ test('intensity selection changes applied prompt guidance, not only the dropdown
   assert.notEqual(soft.englishPrompt, strong.englishPrompt);
 });
 
+
+test('designer mode blocks erotic direction while sensual mode allows it after login choice', () => {
+  const designer = rewritePrompt('淫亂的迪士尼公主', { audienceMode: 'designer' });
+  const sensual = rewritePrompt('淫亂的迪士尼公主', { audienceMode: 'sensual' });
+
+  assert.equal(designer.ok, false);
+  assert.match(designer.reason, /設友模式全域阻擋/);
+  assert.equal(sensual.ok, true);
+  assert.match(sensual.englishPrompt, /debauched adult Disney-inspired princess archetype/);
+});
+
 test('rejects underage content', () => {
   const result = rewritePrompt('學生 脫衣服');
 
@@ -75,7 +86,7 @@ test('rejects non-consensual content', () => {
 test('provides requested preset counts for visual controls', () => {
   assert.equal(LIGHTING_DESCRIPTIONS.length, 50);
   assert.equal(CAMERA_ANGLES.length, 50);
-  assert.equal(COMPOSITION_STRUCTURES.length, 50);
+  assert.equal(COMPOSITION_STRUCTURES.length, 20);
   assert.equal(ART_STYLES.length, 100);
   assert.equal(TIME_POINTS.length, 20);
   assert.ok(TIME_POINTS.every(({ en }) => /light|color|texture/.test(en)));
@@ -91,11 +102,12 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(EMOTION_OPTIONS.length, 50);
   assert.equal(EXPRESSION_OPTIONS, EMOTION_OPTIONS);
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
-  assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'daily').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'rare').length, 50);
-  assert.match(CUSTOMIZATION_OPTIONS.outfits[0].en, /shirt|trousers|dress|jacket|cardigan|jeans|knit|blouse|sweater|suit|casual|linen|denim|sleepwear/);
-  assert.match(CUSTOMIZATION_OPTIONS.outfits[50].en, /lace|satin|sheer|corset|bodysuit|garter|latex|seduction|cutout|mesh/);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 400);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-normal').length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-sensual').length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'female-normal').length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'female-sensual').length, 100);
+  assert.doesNotMatch(CUSTOMIZATION_OPTIONS.outfits.map(({ zh }) => zh).join(' '), /黑|白|紅|金|銀|藍|綠|紫/);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitColors.length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitMaterials.length, 50);
   assert.equal(OCCUPATION_OPTIONS.length, 50);
@@ -103,17 +115,19 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(AGE_BRACKET_OPTIONS.at(-1).zh, '56-60 歲');
   assert.equal(CUSTOMIZATION_OPTIONS.bodyFeatures.length, 30);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitIntegrity.length, 10);
-  assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'daily').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'rare').length, 50);
-  assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 200);
+  assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'normal').length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'taboo').length, 100);
+  assert.doesNotMatch(CUSTOMIZATION_OPTIONS.scenes.map(({ zh, en }) => `${zh} ${en}`).join(' '), /光|燈|light|lighting/i);
+  assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 150);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
+  assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'taboo').length, 50);
   assert.deepEqual(ACTION_MODE_OPTIONS.map(({ zh }) => zh), [
-    '肩膀以上（舌頭／眼神／嘴唇）',
-    '手部動作（揉捏／擁抱／搓揉）',
-    '下半身（張開／攤躺）',
-    '不同姿態（躺著／坐著）'
+    '姿態',
+    '肩上',
+    '手部',
+    '下半身'
   ]);
   assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 200);
   for (const mode of ACTION_MODE_OPTIONS) {
@@ -161,8 +175,8 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
-    actionMode: ACTION_MODE_OPTIONS[1].zh,
-    actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[1].zh)[25].zh,
+    actionMode: ACTION_MODE_OPTIONS[2].zh,
+    actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[2].zh)[25].zh,
     cosplayPrompt: 'vampire queen with pearl accessories'
   });
 
@@ -170,26 +184,26 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /性別：男性成人/);
   assert.match(result.chineseConfirmation, /種族：精靈族/);
   assert.match(result.chineseConfirmation, /情緒：咬唇表情/);
-  assert.match(result.chineseConfirmation, /身上特徵：豐滿胸型/);
-  assert.match(result.chineseConfirmation, /服裝：蕾絲深V連身衣/);
+  assert.match(result.chineseConfirmation, /身上特徵：鎖骨小痣/);
+  assert.match(result.chineseConfirmation, /服裝：男正常服裝051/);
   assert.match(result.chineseConfirmation, /服裝配色：酒紅/);
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
-  assert.match(result.chineseConfirmation, /場景：金色宮殿內室/);
+  assert.match(result.chineseConfirmation, /場景：日常場景051/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
   assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
-  assert.match(result.englishPrompt, /body feature: full bust/);
-  assert.match(result.englishPrompt, /outfit: lace deep-V bodysuit/);
+  assert.match(result.englishPrompt, /body feature: beauty mark near collarbone/);
+  assert.match(result.englishPrompt, /outfit: male everyday outfit 51/);
   assert.match(result.englishPrompt, /outfit color palette: wine red/);
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
-  assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
+  assert.match(result.englishPrompt, /scene: everyday lived-in scene 51/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
   assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
   assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen with pearl accessories/);
-  assert.match(result.chineseConfirmation, /動作／姿態類型：手部動作/);
+  assert.match(result.chineseConfirmation, /動作／姿態類型：手部/);
   assert.match(result.chineseConfirmation, /動作／姿態細項：.*情慾/);
   assert.match(result.englishPrompt, /action\/posture detail: kneading fabric over chest/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
@@ -294,6 +308,11 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
+  assert.match(indexSource, /data-text-step="sensual"/);
+  assert.match(indexSource, /登入設友/);
+  assert.match(indexSource, /登入色友/);
+  assert.match(indexSource, /savePromptButton/);
+  assert.match(indexSource, /resultImageInput/);
   assert.match(indexSource, /data-text-step-panel="visual"/);
   assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
   assert.match(indexSource, /data-text-step-panel="scene"[^>]*hidden/);
@@ -322,6 +341,9 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(appSource, /autoVideoChoice/);
   assert.match(appSource, /autoVideoConfirmation/);
   assert.match(appSource, /中文說明：/);
+  assert.match(appSource, /localStorage/);
+  assert.match(appSource, /compressResultImage/);
+  assert.match(appSource, /activeAudienceMode/);
   assert.match(appSource, /character\$\{index\}Race/);
   assert.match(appSource, /character\$\{index\}OutfitIntegrity/);
 
