@@ -33,6 +33,9 @@ const autoVideoConfirmation = document.querySelector('#autoVideoConfirmation');
 const autoVideoPrompt = document.querySelector('#autoVideoPrompt');
 const copyAutoVideoButton = document.querySelector('#copyAutoVideoButton');
 const rewriteButton = document.querySelector('#rewriteButton');
+const wizardPrevButton = document.querySelector('#wizardPrevButton');
+const wizardNextButton = document.querySelector('#wizardNextButton');
+const wizardProgress = document.querySelector('#wizardProgress');
 const textModeButton = document.querySelector('#textModeButton');
 const videoModeButton = document.querySelector('#videoModeButton');
 const textPromptPanel = document.querySelector('#textPromptPanel');
@@ -82,25 +85,81 @@ let lastImageVideoResult = null;
 let activeAudienceMode = localStorage.getItem('niaiAudienceMode') || 'designer';
 let activeSavedPromptId = null;
 
+let currentWizardIndex = 0;
+
+const WIZARD_PAGES = [
+  { step: 'visual', title: '基本畫面 1：光與鏡位', controls: ['lighting', 'camera'] },
+  { step: 'visual', title: '基本畫面 2：構圖與畫風', controls: ['composition', 'artStyle'] },
+  { step: 'character', title: '角色 1：人物基本', controls: ['gender', 'race', 'emotion'] },
+  { step: 'character', title: '角色 2：時間年齡職業', controls: ['timePoint', 'ageBracket', 'occupation'] },
+  { step: 'character', title: '角色 3：身形臉蛋人數', controls: ['bodyProportion', 'face', 'count'] },
+  { step: 'character', title: '角色 4：服裝外觀', controls: ['outfit', 'outfitColor', 'outfitMaterial'] },
+  { step: 'character', title: '角色 5：細節補充', controls: ['bodyFeature', 'outfitIntegrity'] },
+  { step: 'character', title: '角色 6：多人細節', controls: ['characterControls'] },
+  { step: 'scene', title: '場景 1：地點道具', controls: ['scene', 'accessory'] },
+  { step: 'scene', title: '場景 2：動作姿態', controls: ['actionMode', 'actionDetail'] },
+  { step: 'sensual', title: '色友 1：氛圍服裝地點', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
+  { step: 'sensual', title: '色友 2：道具與動作', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
+];
+
+const WIZARD_CONTROL_IDS = Array.from(new Set(WIZARD_PAGES.flatMap((page) => page.controls)));
+
 function setStatus(element, message, state = 'idle') {
   element.textContent = message;
   element.dataset.state = state;
+}
+
+function getAvailableWizardPages() {
+  return WIZARD_PAGES.map((page) => {
+    const controls = page.controls.filter((id) => {
+      if (page.step === 'sensual' && activeAudienceMode !== 'sensual') return false;
+      if (id === 'outfitIntegrity' && activeAudienceMode !== 'sensual') return false;
+      return true;
+    });
+    return { ...page, controls };
+  }).filter((page) => page.controls.length > 0);
+}
+
+function renderWizardPage() {
+  const pages = getAvailableWizardPages();
+  currentWizardIndex = Math.min(Math.max(currentWizardIndex, 0), pages.length - 1);
+  const page = pages[currentWizardIndex] || pages[0];
+  if (!page) return;
+
+  for (const button of textStepButtons) {
+    const isActive = button.dataset.textStep === page.step;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
+  }
+
+  for (const panel of textStepPanels) {
+    panel.hidden = panel.dataset.textStepPanel !== page.step;
+  }
+
+  for (const id of WIZARD_CONTROL_IDS) {
+    setFieldVisibilityByControlId(id, page.controls.includes(id));
+  }
+
+  updateAdultOnlyControls();
+  wizardProgress.textContent = `${page.title}｜${currentWizardIndex + 1}/${pages.length}｜本步 ${page.controls.length} 項`;
+  wizardPrevButton.disabled = currentWizardIndex === 0;
+  wizardNextButton.disabled = currentWizardIndex === pages.length - 1;
+}
+
+function setWizardIndex(index) {
+  currentWizardIndex = index;
+  renderWizardPage();
 }
 
 function setTextStep(stepName) {
   if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
     stepName = 'visual';
   }
-  for (const button of textStepButtons) {
-    const isActive = button.dataset.textStep === stepName;
-    button.classList.toggle('active', isActive);
-    button.setAttribute('aria-selected', String(isActive));
-  }
-
-  for (const panel of textStepPanels) {
-    panel.hidden = panel.dataset.textStepPanel !== stepName;
-  }
+  const pages = getAvailableWizardPages();
+  const targetIndex = pages.findIndex((page) => page.step === stepName);
+  setWizardIndex(targetIndex >= 0 ? targetIndex : 0);
 }
+
 
 
 
@@ -121,41 +180,32 @@ function setFieldVisibilityByControlId(id, isVisible) {
 }
 
 function setCharacterSubstep(stepName) {
+  const targetMap = { basics: 2, outfit: 5, multi: 7 };
   setSubstep(characterSubstepButtons, stepName, 'characterSubstep');
-  const groups = {
-    basics: ['gender', 'race', 'emotion', 'timePoint', 'ageBracket', 'occupation', 'bodyProportion', 'face', 'count'],
-    outfit: ['outfit', 'outfitColor', 'outfitMaterial', 'bodyFeature', 'outfitIntegrity'],
-    multi: ['characterControls']
-  };
-  const allIds = Object.values(groups).flat();
-
-  for (const id of allIds) {
-    setFieldVisibilityByControlId(id, groups[stepName]?.includes(id));
-  }
-
-  updateAdultOnlyControls();
+  setTextStep('character');
+  const pages = getAvailableWizardPages();
+  const titleNeedle = targetMap[stepName] === 5 ? '服裝外觀' : targetMap[stepName] === 7 ? '多人細節' : '人物基本';
+  const index = pages.findIndex((page) => page.step === 'character' && page.title.includes(titleNeedle));
+  if (index >= 0) setWizardIndex(index);
 }
+
 
 function setSceneSubstep(stepName) {
   setSubstep(sceneSubstepButtons, stepName, 'sceneSubstep');
-  const groups = {
-    place: ['scene', 'accessory'],
-    motion: ['actionMode', 'actionDetail']
-  };
-  const allIds = Object.values(groups).flat();
-
-  for (const id of allIds) {
-    setFieldVisibilityByControlId(id, groups[stepName]?.includes(id));
-  }
+  const pages = getAvailableWizardPages();
+  const titleNeedle = stepName === 'motion' ? '動作姿態' : '地點道具';
+  const index = pages.findIndex((page) => page.step === 'scene' && page.title.includes(titleNeedle));
+  if (index >= 0) setWizardIndex(index);
 }
+
 
 function updateAdultOnlyControls() {
   const showAdultOnly = activeAudienceMode === 'sensual';
-  for (const element of adultOnlyControls) {
-    element.hidden = !showAdultOnly;
-  }
 
   if (!showAdultOnly) {
+    for (const element of adultOnlyControls) {
+      element.hidden = true;
+    }
     if (outfitIntegrity) outfitIntegrity.value = 'AI判斷';
     for (let index = 1; index <= 3; index += 1) {
       const characterIntegrity = document.querySelector(`#character${index}OutfitIntegrity`);
@@ -189,9 +239,7 @@ function updateAudienceMode(mode, gmail) {
     ? `已用 ${gmail || 'Gmail'} 登入色友；獨立成人向專區與合意規範已啟用。`
     : `已用 ${gmail || 'Gmail'} 登入設友；目前只顯示一般設計素材。`;
   setupCustomizationControls();
-  setCharacterSubstep(document.querySelector('[data-character-substep].active')?.dataset.characterSubstep || 'basics');
-  setSceneSubstep(document.querySelector('[data-scene-substep].active')?.dataset.sceneSubstep || 'place');
-  updateAdultOnlyControls();
+  renderWizardPage();
   authStatus.dataset.state = 'success';
 }
 
@@ -804,9 +852,7 @@ function applyImageVideoChoice(score) {
 }
 
 setupCustomizationControls();
-setCharacterSubstep('basics');
-setSceneSubstep('place');
-setTextStep('visual');
+setWizardIndex(0);
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
@@ -831,6 +877,9 @@ for (const button of sceneSubstepButtons) {
 for (const button of appPageButtons) {
   button.addEventListener('click', () => setAppPage(button.dataset.appPage));
 }
+
+wizardPrevButton.addEventListener('click', () => setWizardIndex(currentWizardIndex - 1));
+wizardNextButton.addEventListener('click', () => setWizardIndex(currentWizardIndex + 1));
 
 function getCurrentGmail() {
   return gmailInput.value.trim() || localStorage.getItem('niaiGmail') || '';

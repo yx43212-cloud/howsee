@@ -1502,6 +1502,42 @@ const GENERAL_IMAGE_TO_VIDEO_PROMPTS = [
   { score: 5, zh: '電影循環：短距離平順運鏡，適合循環短片', en: 'smooth short cinematic camera move suitable for a looping clip' }
 ];
 
+
+function getGeneralImageToVideoPromptChoices({ fileName = '', imageDescription = '', desiredMotion = '' } = {}) {
+  const source = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  const choices = [];
+  const add = (choice) => {
+    if (!choices.some((candidate) => candidate.zh === choice.zh)) {
+      choices.push({ ...choice, score: choices.length + 1 });
+    }
+  };
+
+  if (/商品|產品|瓶|包裝|珠寶|飾品|product|package|bottle|jewelry|accessory/i.test(source)) {
+    add({ zh: '產品展示：慢速環繞商品，讓邊緣高光順著材質滑過', en: 'product showcase with a slow orbit around the item and highlights gliding along the material edges' });
+    add({ zh: '品牌細節：鏡頭輕推近標誌、材質與關鍵配件', en: 'brand-detail push-in toward the logo, material texture, and key accessory details' });
+  }
+
+  if (/人像|人物|角色|模特|臉|眼神|portrait|person|character|model|face|gaze/i.test(source)) {
+    add({ zh: '人物反應：自然眨眼、視線移動與小幅轉頭', en: 'portrait reaction with natural blinking, eye movement, and a slight head turn' });
+    add({ zh: '造型細節：髮絲、衣料與配件依原圖風格輕微晃動', en: 'styling detail motion with hair, clothing, and accessories subtly moving in the source-image style' });
+  }
+
+  if (/室內|房間|建築|空間|背景|街景|風景|interior|room|architecture|space|background|street|landscape/i.test(source)) {
+    add({ zh: '空間景深：背景前後景產生輕微視差與景深漂移', en: 'spatial depth motion with subtle foreground-background parallax and depth-of-field drift' });
+    add({ zh: '環境光影：依原圖場景讓光影、反射或空氣感慢慢流動', en: 'environmental light motion with scene-matched shadows, reflections, or atmosphere slowly drifting' });
+  }
+
+  if (/食物|飲料|甜點|咖啡|food|drink|dessert|coffee/i.test(source)) {
+    add({ zh: '食物質感：蒸氣、液面或表面光澤自然微動', en: 'food texture motion with natural steam, liquid surface, or glossy highlights moving subtly' });
+  }
+
+  add({ zh: '自然微動：依圖片主體加入眨眼、呼吸、髮絲或物件細節微動', en: 'natural micro-motion based on the image subject, adding blinking, breathing, hair movement, or small object detail motion' });
+  add({ zh: '慢速推鏡：鏡頭慢慢靠近主體，同時保持原圖構圖', en: 'slow camera push-in toward the subject while preserving the original composition' });
+  add({ zh: '電影循環：短距離平順運鏡，適合做循環短片', en: 'smooth short cinematic camera move suitable for a looping clip' });
+
+  return choices.slice(0, 5).map((choice, index) => ({ ...choice, score: index + 1 }));
+}
+
 const IMAGE_TO_VIDEO_UNSAFE_REVISIONS = [
   { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, zh: '改成「所有角色皆為明確 18+ 成年人，成熟外觀與成人造型」。', en: 'Change it to clearly 18+ adult characters with mature styling and adult presentation.' },
   { pattern: /強迫|迷姦|下藥|昏迷|睡著|無意識|rape|forced|drugged|unconscious/i, zh: '改成「合意成人互動、清醒、主動回應、可隨時停止」。', en: 'Change it to consenting adult interaction, awake, actively responsive, and able to stop at any time.' },
@@ -1622,7 +1658,7 @@ function createImageToVideoPrompt({
 
   const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
   const isDesignerMode = audienceMode === 'designer';
-  const promptChoices = isDesignerMode ? GENERAL_IMAGE_TO_VIDEO_PROMPTS : getImageToVideoPromptChoices(explicitnessScore);
+  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription, desiredMotion }) : getImageToVideoPromptChoices(explicitnessScore);
   const tier = isDesignerMode ? promptChoices[0] : getImageToVideoTier(explicitnessScore);
   const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
   const dialogueToCameraEn = rewriteDialogueToEnglish(dialogueToCamera, 'dialogue to camera');

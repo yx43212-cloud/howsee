@@ -287,6 +287,12 @@
           </div>
         </section>
 
+        <div class="wizard-actions" aria-label="設定步驟導覽">
+          <button id="wizardPrevButton" type="button" class="secondary-button">上一步</button>
+          <p id="wizardProgress" class="status">步驟 1</p>
+          <button id="wizardNextButton" type="button" class="secondary-button">下一步</button>
+        </div>
+
         <button id="rewriteButton" type="button">轉譯提示詞</button>
       </section>
 
@@ -299,7 +305,7 @@
         </div>
 
         <div class="image-upload-grid">
-          <div class="field wide-field">
+          <div class="field wide-field upload-field">
             <label for="imageInput">上傳參考圖片</label>
             <input id="imageInput" type="file" accept="image/*" />
           </div>

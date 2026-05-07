@@ -321,6 +321,9 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-character-substep="multi"/);
   assert.match(indexSource, /data-scene-substep="place"/);
   assert.match(indexSource, /data-scene-substep="motion"/);
+  assert.match(indexSource, /wizardPrevButton/);
+  assert.match(indexSource, /wizardNextButton/);
+  assert.match(indexSource, /wizardProgress/);
   assert.match(indexSource, /色友專區/);
   assert.match(indexSource, /sensualOutfit/);
   assert.match(indexSource, /sensualScene/);
@@ -338,6 +341,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
   assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
   assert.match(appSource, /function setTextStep/);
+  assert.match(appSource, /WIZARD_PAGES/);
+  assert.match(appSource, /function renderWizardPage/);
   assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfits\)/);
   assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
   assert.match(appSource, /function setCharacterSubstep/);
@@ -350,6 +355,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(styleSource, /\.text-step-tabs/);
   assert.match(styleSource, /overflow-x: auto/);
   assert.match(styleSource, /flex: 0 0 min\(46vw, 168px\)/);
+  assert.match(styleSource, /\.wizard-actions/);
+  assert.match(styleSource, /file-selector-button/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {
@@ -454,6 +461,7 @@ test('designer image-to-video prompts avoid adult framing and include dialogue',
   assert.equal(result.audienceMode, 'designer');
   assert.equal(result.promptChoices.length, 5);
   assert.match(result.chineseConfirmation, /圖轉影一般建議/);
+  assert.match(result.chineseConfirmation, /產品展示|品牌細節/);
   assert.match(result.chineseConfirmation, /跟鏡頭說：Welcome to our studio/);
   assert.match(result.englishPrompt, /motion suggestion:/);
   assert.match(result.englishPrompt, /dialogue to camera: Welcome to our studio/);

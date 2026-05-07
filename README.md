@@ -5,7 +5,7 @@
 ## Features
 
 - Rule-based prompt rewriting with Traditional Chinese review text and English copy output.
-- Lower-pressure multi-page UX: Gmail-bound local login splits 設友/色友 modes, allows in-page mode switching without reload, keeps Cosplay as the only main prompt input, and further splits character and scene/action controls into smaller substeps.
+- Lower-pressure multi-page UX: Gmail-bound local login splits 設友/色友 modes, allows in-page mode switching without reload, keeps Cosplay as the only main prompt input, and uses previous/next wizard pages so each step exposes only 2-3 controls, and further splits character and scene/action controls into smaller substeps.
 - Independent 色友-only adult-atmosphere selector with soft, medium, and strong output styles that now inject distinct applied guidance for camera distance, body language, and tension.
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues; 設友 mode only shows general design presets, filters adult-oriented materials and outfit-integrity controls, while 色友 reveals a separate adult-oriented area after confirmation.
 - Browser-only implementation with no backend or data collection.
@@ -16,7 +16,7 @@
 - Every selector includes an AI-decide option; camera/viewpoint presets avoid scenes/actions, lighting presets avoid expression terms, and Cosplay input takes precedence over duplicate or conflicting presets.
 - Cosplay field consolidates custom character direction into one place, accepts Chinese or English role/style notes, translates supported Chinese Cosplay phrases and modifiers into English prompt text instead of collapsing them to one noun, and keeps Chinese confirmation text only for review.
 - Text-to-image generation automatically creates 5 AI-judged image-to-video variants with Chinese explanation text for review and separate copyable English prompts; the Dialogue area supports camera-facing and character-to-character lines that update video prompts automatically; users can save titled prompt threads with Chinese/English pairs, delete saved prompts, and attach compressed non-downloadable result images locally for comparison.
-- Optional user-directed image-to-video motion requests are safety-screened; 設友 image-to-video output stays general-audience and proposes 3-5 image-based motions, while 色友 keeps adult-only guardrails and rejected requests include Chinese/English revision advice.
+- Optional user-directed image-to-video motion requests are safety-screened; 設友 image-to-video output stays general-audience and proposes 3-5 motions inferred from the uploaded image description/file context, while 色友 keeps adult-only guardrails and rejected requests include Chinese/English revision advice.
 
 ## Run locally
 
