@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>好色之圖HowSir</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">18+ consensual prompt atelier</p>
+        <h1>好色之圖HowSir</h1>
+        <p>祝各位老司機安心上路</p>
+      </section>
+
+      <nav class="mode-switch" aria-label="提示詞模式切換">
+        <button id="textModeButton" type="button" class="mode-button active">文生圖提示詞</button>
+        <button id="videoModeButton" type="button" class="mode-button">圖轉影提示詞</button>
+      </nav>
+
+      <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <p class="section-kicker">Step 01</p>
+          <h2 id="input-title">Cosplay</h2>
+          <p>只要輸入角色、人設或作品風格即可，中文也可以；英文可複製提示詞會自動轉成安全的英文描述。</p>
+        </div>
+
+        <label for="cosplayPrompt">Cosplay（主要輸入：角色／人設／作品風格）</label>
+        <textarea id="cosplayPrompt" rows="4" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
+        <p class="field-help">這是唯一的自由輸入欄位；不要填未成年、偷拍、強迫或血腥內容。不想細調時，填完這欄就能直接轉譯。</p>
+
+        <div class="quick-guide" aria-label="操作提示">
+          <p class="section-kicker">Easy Flow</p>
+          <ol>
+            <li><strong>先填 Cosplay：</strong>中文角色、人設或作品風格都可以。</li>
+            <li><strong>用分頁慢慢補設定：</strong>基本畫面、角色設定、場景動作分開處理，每個下拉都可維持 AI 判斷。</li>
+            <li><strong>產生後直接複製：</strong>右側會出英文文生圖提示詞，並自動附 5 種可選圖轉影提示詞。</li>
+          </ol>
+        </div>
+
+        <nav class="text-step-tabs" aria-label="文生圖設定分頁">
+          <button class="text-step-button active" type="button" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
+          <button class="text-step-button" type="button" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
+          <button class="text-step-button" type="button" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
+        </nav>
+
+        <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 02</p>
+            <h2 id="visual-step-title">基本畫面</h2>
+            <p>先決定整張圖的強度、光、鏡位、構圖和畫風；不確定的選項保持 AI 判斷即可。</p>
+          </div>
+          <div class="control-grid">
+            <div class="field">
+              <label for="intensity">情慾強度</label>
+              <select id="intensity">
+                <option value="soft">柔和</option>
+                <option value="medium" selected>中等</option>
+                <option value="strong">強烈</option>
+              </select>
+              <p class="field-help">只影響整體氛圍，不會突破安全規則。</p>
+            </div>
+
+            <div class="field">
+              <label for="lighting">光感描述（50 種）</label>
+              <select id="lighting"></select>
+            </div>
+
+            <div class="field">
+              <label for="camera">鏡位視角（50 種）</label>
+              <select id="camera"></select>
+            </div>
+
+            <div class="field">
+              <label for="composition">構圖結構（50 種）</label>
+              <select id="composition"></select>
+            </div>
+
+            <div class="field">
+              <label for="artStyle">畫風（100 種）</label>
+              <select id="artStyle"></select>
+            </div>
+          </div>
+        </section>
+
+        <section id="characterStepPanel" class="text-step-panel" data-text-step-panel="character" aria-labelledby="character-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 03</p>
+            <h2 id="character-step-title">角色設定</h2>
+            <p>角色細節分頁只處理人物與穿搭。Cosplay 已移到最上方作為唯一自由輸入欄位；多人時才需要看下方角色卡；角色卡只輸出你實際選的項目，避免和最上方 Cosplay 重複。</p>
+          </div>
+          <div class="custom-grid">
+            <div class="field">
+              <label for="gender">性別</label>
+              <select id="gender"></select>
+            </div>
+            <div class="field">
+              <label for="race">種族（100 種，後 50 非自然）</label>
+              <select id="race"></select>
+            </div>
+            <div class="field">
+              <label for="emotion">情緒（50 種）</label>
+              <select id="emotion"></select>
+            </div>
+            <div class="field">
+              <label for="timePoint">時間點／光色質感（20 種）</label>
+              <select id="timePoint"></select>
+            </div>
+            <div class="field">
+              <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
+              <select id="ageBracket"></select>
+              <p class="field-help">只提供成年級距，避免未成年內容。</p>
+            </div>
+            <div class="field">
+              <label for="occupation">職業（50 種）</label>
+              <select id="occupation"></select>
+            </div>
+            <div class="field">
+              <label for="bodyProportion">身材比例（50 種）</label>
+              <select id="bodyProportion"></select>
+            </div>
+            <div class="field">
+              <label for="face">臉蛋</label>
+              <select id="face"></select>
+            </div>
+            <div class="field">
+              <label for="outfit">服裝穿搭（前50日常／後50情趣）</label>
+              <select id="outfit"></select>
+            </div>
+            <div class="field">
+              <label for="outfitColor">服裝顏色（50 種）</label>
+              <select id="outfitColor"></select>
+            </div>
+            <div class="field">
+              <label for="outfitMaterial">服裝材質（50 種）</label>
+              <select id="outfitMaterial"></select>
+            </div>
+            <div class="field">
+              <label for="bodyFeature">身上特徵（30 種）</label>
+              <select id="bodyFeature"></select>
+            </div>
+            <div class="field">
+              <label for="outfitIntegrity">服裝完整度</label>
+              <select id="outfitIntegrity"></select>
+            </div>
+            <div class="field">
+              <label for="count">人數</label>
+              <select id="count"></select>
+            </div>
+            <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
+              <article class="character-card" data-character-card="1">
+                <h3>角色 1</h3>
+                <label for="character1Gender">性別</label><select id="character1Gender"></select>
+                <label for="character1Race">種族</label><select id="character1Race"></select>
+                <label for="character1Emotion">情緒</label><select id="character1Emotion"></select>
+                <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
+                <label for="character1Age">年齡</label><select id="character1Age"></select>
+                <label for="character1Body">身材比例</label><select id="character1Body"></select>
+                <label for="character1Face">臉蛋</label><select id="character1Face"></select>
+                <label for="character1Outfit">服裝</label><select id="character1Outfit"></select>
+                <label for="character1OutfitColor">服裝顏色</label><select id="character1OutfitColor"></select>
+                <label for="character1OutfitMaterial">服裝材質</label><select id="character1OutfitMaterial"></select>
+                <label for="character1BodyFeature">身上特徵</label><select id="character1BodyFeature"></select>
+                <label for="character1OutfitIntegrity">服裝完整度</label><select id="character1OutfitIntegrity"></select>
+              </article>
+              <article class="character-card" data-character-card="2" hidden>
+                <h3>角色 2</h3>
+                <label for="character2Gender">性別</label><select id="character2Gender"></select>
+                <label for="character2Race">種族</label><select id="character2Race"></select>
+                <label for="character2Emotion">情緒</label><select id="character2Emotion"></select>
+                <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
+                <label for="character2Age">年齡</label><select id="character2Age"></select>
+                <label for="character2Body">身材比例</label><select id="character2Body"></select>
+                <label for="character2Face">臉蛋</label><select id="character2Face"></select>
+                <label for="character2Outfit">服裝</label><select id="character2Outfit"></select>
+                <label for="character2OutfitColor">服裝顏色</label><select id="character2OutfitColor"></select>
+                <label for="character2OutfitMaterial">服裝材質</label><select id="character2OutfitMaterial"></select>
+                <label for="character2BodyFeature">身上特徵</label><select id="character2BodyFeature"></select>
+                <label for="character2OutfitIntegrity">服裝完整度</label><select id="character2OutfitIntegrity"></select>
+              </article>
+              <article class="character-card" data-character-card="3" hidden>
+                <h3>角色 3</h3>
+                <label for="character3Gender">性別</label><select id="character3Gender"></select>
+                <label for="character3Race">種族</label><select id="character3Race"></select>
+                <label for="character3Emotion">情緒</label><select id="character3Emotion"></select>
+                <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
+                <label for="character3Age">年齡</label><select id="character3Age"></select>
+                <label for="character3Body">身材比例</label><select id="character3Body"></select>
+                <label for="character3Face">臉蛋</label><select id="character3Face"></select>
+                <label for="character3Outfit">服裝</label><select id="character3Outfit"></select>
+                <label for="character3OutfitColor">服裝顏色</label><select id="character3OutfitColor"></select>
+                <label for="character3OutfitMaterial">服裝材質</label><select id="character3OutfitMaterial"></select>
+                <label for="character3BodyFeature">身上特徵</label><select id="character3BodyFeature"></select>
+                <label for="character3OutfitIntegrity">服裝完整度</label><select id="character3OutfitIntegrity"></select>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="sceneStepPanel" class="text-step-panel" data-text-step-panel="scene" aria-labelledby="scene-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 04</p>
+            <h2 id="scene-step-title">場景與動作</h2>
+            <p>最後再選場景、道具和動作／姿態。動作跟姿態是二擇一：先選類型，再選該類 50 個細項。</p>
+          </div>
+          <div class="custom-grid">
+            <div class="field">
+              <label for="scene">場景配置（100 種）</label>
+              <select id="scene"></select>
+            </div>
+            <div class="field">
+              <label for="accessory">配件與道具（100 種）</label>
+              <select id="accessory"></select>
+            </div>
+            <div class="field">
+              <label for="actionMode">動作／姿態類型（4 類）</label>
+              <select id="actionMode"></select>
+              <p class="field-help">肩膀以上、手部動作、下半身屬於動作；不同姿態屬於姿態。</p>
+            </div>
+            <div class="field wide-field">
+              <label for="actionDetail">動作或姿態細項（每類 50：25 正常／25 情慾）</label>
+              <select id="actionDetail"></select>
+              <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
+            </div>
+          </div>
+        </section>
+
+        <button id="rewriteButton" type="button">轉譯提示詞</button>
+      </section>
+
+
+      <section id="imageVideoPanel" class="panel image-panel" aria-labelledby="image-title" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Image to Video</p>
+          <h2 id="image-title">圖轉影提示詞建議</h2>
+          <p>上傳圖片後，瀏覽器會在本機估算色情程度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
+        </div>
+
+        <div class="image-upload-grid">
+          <div class="field wide-field">
+            <label for="imageInput">上傳參考圖片</label>
+            <input id="imageInput" type="file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label for="videoDuration">影片秒數</label>
+            <select id="videoDuration">
+              <option value="3">3 秒</option>
+              <option value="5" selected>5 秒</option>
+              <option value="8">8 秒</option>
+              <option value="12">12 秒</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="motionStrength">動態強度</label>
+            <select id="motionStrength">
+              <option value="subtle">細微</option>
+              <option value="medium" selected>中等</option>
+              <option value="strong">較強</option>
+            </select>
+          </div>
+        </div>
+        <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
+        <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
+
+        <label for="desiredMotion">希望圖轉影怎麼動（選填）</label>
+        <textarea id="desiredMotion" rows="4" placeholder="例如：slow push-in, hair and fabric gently moving, confident gaze to camera"></textarea>
+
+        <button id="imageVideoButton" type="button">產生圖轉影提示詞</button>
+        <div class="field" id="imageVideoChoiceField" hidden>
+          <label for="imageVideoPromptChoice">圖轉影色情程度提示詞（可挑選）</label>
+          <select id="imageVideoPromptChoice"></select>
+        </div>
+        <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
+      </section>
+
+      <section class="panel output-panel" aria-live="polite">
+        <div id="textOutputArea" class="output-mode-area">
+          <div class="section-heading">
+            <p class="section-kicker">Text Output</p>
+            <h2>文生圖：中文對照＋英文可複製</h2>
+          </div>
+          <p id="textStatus" class="status">填寫 Cosplay 後可直接轉譯；其他分頁都可保持 AI 判斷。</p>
+          <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
+          <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
+          <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyTextButton" type="button" class="secondary-button" hidden>複製文生圖英文提示詞</button>
+
+          <div id="autoVideoPanel" class="auto-video-panel" data-autovideo-count="5" hidden>
+            <div class="section-heading compact">
+              <p class="section-kicker">Auto Video</p>
+              <h2>AI 判定圖轉影提示詞（5 種）</h2>
+              <p>文生圖提示詞產生後自動建立 5 種 AI 判定版本；下拉自選一種後，可直接複製英文圖轉影提示詞。</p>
+            </div>
+            <label for="autoVideoChoice">選擇圖轉影版本</label>
+            <select id="autoVideoChoice"></select>
+            <label for="autoVideoConfirmation" class="text-output-label">中文圖轉影說明（對照用）</label>
+            <textarea id="autoVideoConfirmation" rows="5" readonly></textarea>
+            <label for="autoVideoPrompt" class="text-output-label">English image-to-video prompt（可複製）</label>
+            <textarea id="autoVideoPrompt" rows="8" readonly></textarea>
+            <button id="copyAutoVideoButton" type="button" class="secondary-button">複製自動圖轉影英文提示詞</button>
+          </div>
+        </div>
+
+        <div id="videoOutputArea" class="output-mode-area" hidden>
+          <div class="section-heading">
+            <p class="section-kicker">Video Output</p>
+            <h2>圖轉影：中文對照＋英文可複製</h2>
+          </div>
+          <p id="videoStatus" class="status">等待上傳圖片並產生圖轉影提示詞。</p>
+          <label for="videoConfirmationPrompt" class="video-output-label" hidden>中文圖轉影提示詞（對照用）</label>
+          <textarea id="videoConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="videoResultPrompt" class="video-output-label" hidden>English image-to-video prompt（可複製）</label>
+          <textarea id="videoResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyVideoButton" type="button" class="secondary-button" hidden>複製圖轉影英文提示詞</button>
+        </div>
+      </section>
+
+      <section class="guardrails">
+        <div class="section-heading">
+          <p class="section-kicker">Safety</p>
+          <h2>安全邊界</h2>
+        </div>
+        <ul>
+          <li>只允許明確成年且合意的角色與情境。</li>
+          <li>拒絕未成年、非合意、偷拍、血腥暴力等內容。</li>
+          <li>輸出以氛圍、構圖、姿態、光影與情緒描述為主。</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="src/translator.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
