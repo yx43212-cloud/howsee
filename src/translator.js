@@ -8,7 +8,7 @@ const BLOCKED_PATTERNS = [
   { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, reason: '內容疑似涉及未成年人。' },
   { pattern: /強迫|迷姦|下藥|昏迷|睡著|無意識|rape|forced|drugged|unconscious/i, reason: '內容疑似涉及非合意或無法同意情境。' },
   { pattern: /偷拍|偷窺|未同意|voyeur|hidden camera/i, reason: '內容疑似涉及未同意拍攝或偷窺。' },
-  { pattern: /血|虐殺|肢解|重傷|blood|gore|dismember/i, reason: '內容疑似涉及血腥暴力。' }
+  { pattern: /血(?!鬼)|虐殺|肢解|重傷|blood|gore|dismember/i, reason: '內容疑似涉及血腥暴力。' }
 ];
 
 const PHRASE_RULES = [
@@ -38,6 +38,21 @@ const INTENSITY_WORDS = {
   soft: 'soft sensuality, artistic restraint, suggestive negative space',
   medium: 'clear erotic tension, closer body language, richer visual detail',
   strong: 'intense adult-only sensual mood, direct body language and expression, within consent and safety boundaries'
+};
+
+const INTENSITY_PROFILES = {
+  soft: {
+    zh: '柔和：保留距離感、表情含蓄、布料與遮擋完整，鏡頭動作慢且不壓迫',
+    en: 'soft intensity profile: restrained distance, subtle expression, intact styling and tasteful coverage, slow non-pressuring camera language'
+  },
+  medium: {
+    zh: '中等：成人曖昧張力明確，肢體語言更靠近，細節更豐富但仍保持安全遮擋',
+    en: 'medium intensity profile: clear adult sensual tension, closer body language, richer detail, still safety-compliant with tasteful coverage'
+  },
+  strong: {
+    zh: '強烈：眼神與姿態更直接，鏡頭距離更近，情慾張力更高但仍維持合意與非露骨邊界',
+    en: 'strong intensity profile: more direct gaze and posture, closer framing, heightened adult erotic tension while staying consensual and non-explicit'
+  }
 };
 
 const LIGHTING_DESCRIPTIONS = [
@@ -794,636 +809,6 @@ const COUNT_OPTIONS = [
   ['雙人主體與模糊背景成人', 'two adult leads with blurred adult background figures'], ['單人坐姿構圖', 'single adult seated composition'], ['單人站姿構圖', 'single adult standing composition'], ['雙人高低差構圖', 'two adults with height-level contrast'], ['三人層次錯位構圖', 'three adults staggered layered composition']
 ].map(([zh, en]) => option(zh, en));
 
-const SINGLE_POSE_OPTIONS = [
-  option('單人直視鏡頭挑逗站姿', 'single adult teasing standing pose directly addressing camera', 'single'),
-  option('單人POV伸手邀請', 'single adult POV reaching-hand invitation', 'single'),
-  option('單人貼近鏡頭半身前傾', 'single adult half-body forward lean close to camera', 'single'),
-  option('單人低角度俯視鏡頭', 'single adult looking down toward a low viewpoint', 'single'),
-  option('單人高角度仰望鏡頭', 'single adult looking up toward a high viewpoint', 'single'),
-  option('單人手掌按在鏡頭前景', 'single adult palm placed in the camera foreground', 'single'),
-  option('單人指尖勾向鏡頭', 'single adult curling fingertips toward camera', 'single'),
-  option('單人膝跪面向POV', 'single adult kneeling toward a POV viewpoint', 'single'),
-  option('單人側躺對鏡頭伸手', 'single adult side-reclining and reaching toward camera', 'single'),
-  option('單人坐姿雙腿交疊面鏡', 'single adult seated with crossed legs facing camera', 'single'),
-  option('單人趴姿回頭看鏡頭', 'single adult prone glance back toward camera', 'single'),
-  option('單人背對鏡頭肩後回望', 'single adult back-facing over-shoulder glance toward camera', 'single'),
-  option('單人貼近畫面邊緣探身', 'single adult leaning into the frame edge', 'single'),
-  option('單人前景手入鏡托下巴', 'single adult with an entering hand in foreground lifting the chin', 'single'),
-  option('單人前景手入鏡撥髮', 'single adult with an entering hand in foreground brushing hair', 'single'),
-  option('單人前景手入鏡扶腰', 'single adult with an entering hand in foreground at the waist', 'single'),
-  option('單人前景手入鏡拉住緞帶', 'single adult with an entering hand in foreground holding a ribbon', 'single'),
-  option('單人前景手入鏡遞上酒杯', 'single adult with an entering hand in foreground offering a glass', 'single'),
-  option('單人前景手入鏡輕碰肩線', 'single adult with an entering hand in foreground near the shoulder line', 'single'),
-  option('單人前景手入鏡勾住手指', 'single adult with an entering hand in foreground hooking fingers', 'single'),
-  option('單人主觀視角坐到畫面前', 'single adult seated close in subjective POV framing', 'single'),
-  option('單人主觀視角扶住鏡頭外手', 'single adult holding an off-camera hand in subjective POV', 'single'),
-  option('單人主觀視角靠近耳邊', 'single adult leaning toward the side of a subjective POV', 'single'),
-  option('單人主觀視角拉近領口', 'single adult drawing the neckline closer in subjective POV', 'single'),
-  option('單人主觀視角指尖抵住畫面', 'single adult fingertip pressed toward the subjective POV frame', 'single'),
-  option('單人直視鏡頭挑逗站姿（近距離版）', 'single adult teasing standing pose directly addressing camera in close-distance framing', 'single'),
-  option('單人POV伸手邀請（近距離版）', 'single adult POV reaching-hand invitation in close-distance framing', 'single'),
-  option('單人貼近鏡頭半身前傾（近距離版）', 'single adult half-body forward lean close to camera in close-distance framing', 'single'),
-  option('單人低角度俯視鏡頭（近距離版）', 'single adult looking down toward a low viewpoint in close-distance framing', 'single'),
-  option('單人高角度仰望鏡頭（近距離版）', 'single adult looking up toward a high viewpoint in close-distance framing', 'single'),
-  option('單人手掌按在鏡頭前景（近距離版）', 'single adult palm placed in the camera foreground in close-distance framing', 'single'),
-  option('單人指尖勾向鏡頭（近距離版）', 'single adult curling fingertips toward camera in close-distance framing', 'single'),
-  option('單人膝跪面向POV（近距離版）', 'single adult kneeling toward a POV viewpoint in close-distance framing', 'single'),
-  option('單人側躺對鏡頭伸手（近距離版）', 'single adult side-reclining and reaching toward camera in close-distance framing', 'single'),
-  option('單人坐姿雙腿交疊面鏡（近距離版）', 'single adult seated with crossed legs facing camera in close-distance framing', 'single'),
-  option('單人趴姿回頭看鏡頭（近距離版）', 'single adult prone glance back toward camera in close-distance framing', 'single'),
-  option('單人背對鏡頭肩後回望（近距離版）', 'single adult back-facing over-shoulder glance toward camera in close-distance framing', 'single'),
-  option('單人貼近畫面邊緣探身（近距離版）', 'single adult leaning into the frame edge in close-distance framing', 'single'),
-  option('單人前景手入鏡托下巴（近距離版）', 'single adult with an entering hand in foreground lifting the chin in close-distance framing', 'single'),
-  option('單人前景手入鏡撥髮（近距離版）', 'single adult with an entering hand in foreground brushing hair in close-distance framing', 'single'),
-  option('單人前景手入鏡扶腰（近距離版）', 'single adult with an entering hand in foreground at the waist in close-distance framing', 'single'),
-  option('單人前景手入鏡拉住緞帶（近距離版）', 'single adult with an entering hand in foreground holding a ribbon in close-distance framing', 'single'),
-  option('單人前景手入鏡遞上酒杯（近距離版）', 'single adult with an entering hand in foreground offering a glass in close-distance framing', 'single'),
-  option('單人前景手入鏡輕碰肩線（近距離版）', 'single adult with an entering hand in foreground near the shoulder line in close-distance framing', 'single'),
-  option('單人前景手入鏡勾住手指（近距離版）', 'single adult with an entering hand in foreground hooking fingers in close-distance framing', 'single'),
-  option('單人主觀視角坐到畫面前（近距離版）', 'single adult seated close in subjective POV framing in close-distance framing', 'single'),
-  option('單人主觀視角扶住鏡頭外手（近距離版）', 'single adult holding an off-camera hand in subjective POV in close-distance framing', 'single'),
-  option('單人主觀視角靠近耳邊（近距離版）', 'single adult leaning toward the side of a subjective POV in close-distance framing', 'single'),
-  option('單人主觀視角拉近領口（近距離版）', 'single adult drawing the neckline closer in subjective POV in close-distance framing', 'single'),
-  option('單人主觀視角指尖抵住畫面（近距離版）', 'single adult fingertip pressed toward the subjective POV frame in close-distance framing', 'single'),
-  option('單人直視鏡頭挑逗站姿（低視角版）', 'single adult teasing standing pose directly addressing camera from a low viewpoint', 'single'),
-  option('單人POV伸手邀請（低視角版）', 'single adult POV reaching-hand invitation from a low viewpoint', 'single'),
-  option('單人貼近鏡頭半身前傾（低視角版）', 'single adult half-body forward lean close to camera from a low viewpoint', 'single'),
-  option('單人低角度俯視鏡頭（低視角版）', 'single adult looking down toward a low viewpoint from a low viewpoint', 'single'),
-  option('單人高角度仰望鏡頭（低視角版）', 'single adult looking up toward a high viewpoint from a low viewpoint', 'single'),
-  option('單人手掌按在鏡頭前景（低視角版）', 'single adult palm placed in the camera foreground from a low viewpoint', 'single'),
-  option('單人指尖勾向鏡頭（低視角版）', 'single adult curling fingertips toward camera from a low viewpoint', 'single'),
-  option('單人膝跪面向POV（低視角版）', 'single adult kneeling toward a POV viewpoint from a low viewpoint', 'single'),
-  option('單人側躺對鏡頭伸手（低視角版）', 'single adult side-reclining and reaching toward camera from a low viewpoint', 'single'),
-  option('單人坐姿雙腿交疊面鏡（低視角版）', 'single adult seated with crossed legs facing camera from a low viewpoint', 'single'),
-  option('單人趴姿回頭看鏡頭（低視角版）', 'single adult prone glance back toward camera from a low viewpoint', 'single'),
-  option('單人背對鏡頭肩後回望（低視角版）', 'single adult back-facing over-shoulder glance toward camera from a low viewpoint', 'single'),
-  option('單人貼近畫面邊緣探身（低視角版）', 'single adult leaning into the frame edge from a low viewpoint', 'single'),
-  option('單人前景手入鏡托下巴（低視角版）', 'single adult with an entering hand in foreground lifting the chin from a low viewpoint', 'single'),
-  option('單人前景手入鏡撥髮（低視角版）', 'single adult with an entering hand in foreground brushing hair from a low viewpoint', 'single'),
-  option('單人前景手入鏡扶腰（低視角版）', 'single adult with an entering hand in foreground at the waist from a low viewpoint', 'single'),
-  option('單人前景手入鏡拉住緞帶（低視角版）', 'single adult with an entering hand in foreground holding a ribbon from a low viewpoint', 'single'),
-  option('單人前景手入鏡遞上酒杯（低視角版）', 'single adult with an entering hand in foreground offering a glass from a low viewpoint', 'single'),
-  option('單人前景手入鏡輕碰肩線（低視角版）', 'single adult with an entering hand in foreground near the shoulder line from a low viewpoint', 'single'),
-  option('單人前景手入鏡勾住手指（低視角版）', 'single adult with an entering hand in foreground hooking fingers from a low viewpoint', 'single'),
-  option('單人主觀視角坐到畫面前（低視角版）', 'single adult seated close in subjective POV framing from a low viewpoint', 'single'),
-  option('單人主觀視角扶住鏡頭外手（低視角版）', 'single adult holding an off-camera hand in subjective POV from a low viewpoint', 'single'),
-  option('單人主觀視角靠近耳邊（低視角版）', 'single adult leaning toward the side of a subjective POV from a low viewpoint', 'single'),
-  option('單人主觀視角拉近領口（低視角版）', 'single adult drawing the neckline closer in subjective POV from a low viewpoint', 'single'),
-  option('單人主觀視角指尖抵住畫面（低視角版）', 'single adult fingertip pressed toward the subjective POV frame from a low viewpoint', 'single'),
-  option('單人直視鏡頭挑逗站姿（手部前景版）', 'single adult teasing standing pose directly addressing camera with hands emphasized in the foreground', 'single'),
-  option('單人POV伸手邀請（手部前景版）', 'single adult POV reaching-hand invitation with hands emphasized in the foreground', 'single'),
-  option('單人貼近鏡頭半身前傾（手部前景版）', 'single adult half-body forward lean close to camera with hands emphasized in the foreground', 'single'),
-  option('單人低角度俯視鏡頭（手部前景版）', 'single adult looking down toward a low viewpoint with hands emphasized in the foreground', 'single'),
-  option('單人高角度仰望鏡頭（手部前景版）', 'single adult looking up toward a high viewpoint with hands emphasized in the foreground', 'single'),
-  option('單人手掌按在鏡頭前景（手部前景版）', 'single adult palm placed in the camera foreground with hands emphasized in the foreground', 'single'),
-  option('單人指尖勾向鏡頭（手部前景版）', 'single adult curling fingertips toward camera with hands emphasized in the foreground', 'single'),
-  option('單人膝跪面向POV（手部前景版）', 'single adult kneeling toward a POV viewpoint with hands emphasized in the foreground', 'single'),
-  option('單人側躺對鏡頭伸手（手部前景版）', 'single adult side-reclining and reaching toward camera with hands emphasized in the foreground', 'single'),
-  option('單人坐姿雙腿交疊面鏡（手部前景版）', 'single adult seated with crossed legs facing camera with hands emphasized in the foreground', 'single'),
-  option('單人趴姿回頭看鏡頭（手部前景版）', 'single adult prone glance back toward camera with hands emphasized in the foreground', 'single'),
-  option('單人背對鏡頭肩後回望（手部前景版）', 'single adult back-facing over-shoulder glance toward camera with hands emphasized in the foreground', 'single'),
-  option('單人貼近畫面邊緣探身（手部前景版）', 'single adult leaning into the frame edge with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡托下巴（手部前景版）', 'single adult with an entering hand in foreground lifting the chin with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡撥髮（手部前景版）', 'single adult with an entering hand in foreground brushing hair with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡扶腰（手部前景版）', 'single adult with an entering hand in foreground at the waist with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡拉住緞帶（手部前景版）', 'single adult with an entering hand in foreground holding a ribbon with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡遞上酒杯（手部前景版）', 'single adult with an entering hand in foreground offering a glass with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡輕碰肩線（手部前景版）', 'single adult with an entering hand in foreground near the shoulder line with hands emphasized in the foreground', 'single'),
-  option('單人前景手入鏡勾住手指（手部前景版）', 'single adult with an entering hand in foreground hooking fingers with hands emphasized in the foreground', 'single'),
-  option('單人主觀視角坐到畫面前（手部前景版）', 'single adult seated close in subjective POV framing with hands emphasized in the foreground', 'single'),
-  option('單人主觀視角扶住鏡頭外手（手部前景版）', 'single adult holding an off-camera hand in subjective POV with hands emphasized in the foreground', 'single'),
-  option('單人主觀視角靠近耳邊（手部前景版）', 'single adult leaning toward the side of a subjective POV with hands emphasized in the foreground', 'single'),
-  option('單人主觀視角拉近領口（手部前景版）', 'single adult drawing the neckline closer in subjective POV with hands emphasized in the foreground', 'single'),
-  option('單人主觀視角指尖抵住畫面（手部前景版）', 'single adult fingertip pressed toward the subjective POV frame with hands emphasized in the foreground', 'single')
-];
-
-const TWO_POSE_OPTIONS = [
-  option('雙人面對面靠近體位', 'two adults face each other in a close pose', 'two'),
-  option('雙人一前一後貼近體位', 'two adults arrange front-and-back in a close pose', 'two'),
-  option('雙人側身交疊體位', 'two adults overlap side silhouettes', 'two'),
-  option('雙人坐姿相擁體位', 'two adults sit in an embracing pose', 'two'),
-  option('雙人高低層次體位', 'two adults form high-low body levels', 'two'),
-  option('雙人一人跪坐一人站立', 'two adults with one kneeling and one standing', 'two'),
-  option('雙人一人倚靠另一人肩線', 'two adults with one leaning against the other’s shoulder line', 'two'),
-  option('雙人手臂環腰體位', 'two adults with arms around the waist', 'two'),
-  option('雙人背靠背體位', 'two adults back-to-back', 'two'),
-  option('雙人額頭相抵體位', 'two adults forehead-to-forehead', 'two'),
-  option('雙人一人坐腿側一人俯身', 'two adults with one seated by the legs and one leaning over', 'two'),
-  option('雙人交錯跪姿體位', 'two adults in staggered kneeling poses', 'two'),
-  option('雙人鏡頭前牽手體位', 'two adults holding hands toward camera', 'two'),
-  option('雙人一人從後方扶腰', 'two adults with one supporting the waist from behind', 'two'),
-  option('雙人一人托起下巴', 'two adults with one lifting the chin', 'two'),
-  option('雙人肩頸貼近體位', 'two adults with close shoulder-neck lines', 'two'),
-  option('雙人一人半躺一人靠近', 'two adults with one half-reclining and one nearby', 'two'),
-  option('雙人雙手交疊體位', 'two adults with overlapping hands', 'two'),
-  option('雙人前後視線交錯', 'two adults with staggered front-back gazes', 'two'),
-  option('雙人對角線貼近體位', 'two adults close on a diagonal composition', 'two'),
-  option('雙人一人坐一人跨步靠近', 'two adults with one seated and one stepping close', 'two'),
-  option('雙人彼此拉住衣料邊緣', 'two adults holding each other’s fabric edge', 'two'),
-  option('雙人一人低頭靠近耳側', 'two adults with one lowering toward the ear side', 'two'),
-  option('雙人一人扶住手腕', 'two adults with one holding a wrist', 'two'),
-  option('雙人緞帶連結體位', 'two adults linked by a satin ribbon', 'two'),
-  option('雙人面對面靠近體位（慢速版）', 'two adults face each other in a close pose with slow pacing', 'two'),
-  option('雙人一前一後貼近體位（慢速版）', 'two adults arrange front-and-back in a close pose with slow pacing', 'two'),
-  option('雙人側身交疊體位（慢速版）', 'two adults overlap side silhouettes with slow pacing', 'two'),
-  option('雙人坐姿相擁體位（慢速版）', 'two adults sit in an embracing pose with slow pacing', 'two'),
-  option('雙人高低層次體位（慢速版）', 'two adults form high-low body levels with slow pacing', 'two'),
-  option('雙人一人跪坐一人站立（慢速版）', 'two adults with one kneeling and one standing with slow pacing', 'two'),
-  option('雙人一人倚靠另一人肩線（慢速版）', 'two adults with one leaning against the other’s shoulder line with slow pacing', 'two'),
-  option('雙人手臂環腰體位（慢速版）', 'two adults with arms around the waist with slow pacing', 'two'),
-  option('雙人背靠背體位（慢速版）', 'two adults back-to-back with slow pacing', 'two'),
-  option('雙人額頭相抵體位（慢速版）', 'two adults forehead-to-forehead with slow pacing', 'two'),
-  option('雙人一人坐腿側一人俯身（慢速版）', 'two adults with one seated by the legs and one leaning over with slow pacing', 'two'),
-  option('雙人交錯跪姿體位（慢速版）', 'two adults in staggered kneeling poses with slow pacing', 'two'),
-  option('雙人鏡頭前牽手體位（慢速版）', 'two adults holding hands toward camera with slow pacing', 'two'),
-  option('雙人一人從後方扶腰（慢速版）', 'two adults with one supporting the waist from behind with slow pacing', 'two'),
-  option('雙人一人托起下巴（慢速版）', 'two adults with one lifting the chin with slow pacing', 'two'),
-  option('雙人肩頸貼近體位（慢速版）', 'two adults with close shoulder-neck lines with slow pacing', 'two'),
-  option('雙人一人半躺一人靠近（慢速版）', 'two adults with one half-reclining and one nearby with slow pacing', 'two'),
-  option('雙人雙手交疊體位（慢速版）', 'two adults with overlapping hands with slow pacing', 'two'),
-  option('雙人前後視線交錯（慢速版）', 'two adults with staggered front-back gazes with slow pacing', 'two'),
-  option('雙人對角線貼近體位（慢速版）', 'two adults close on a diagonal composition with slow pacing', 'two'),
-  option('雙人一人坐一人跨步靠近（慢速版）', 'two adults with one seated and one stepping close with slow pacing', 'two'),
-  option('雙人彼此拉住衣料邊緣（慢速版）', 'two adults holding each other’s fabric edge with slow pacing', 'two'),
-  option('雙人一人低頭靠近耳側（慢速版）', 'two adults with one lowering toward the ear side with slow pacing', 'two'),
-  option('雙人一人扶住手腕（慢速版）', 'two adults with one holding a wrist with slow pacing', 'two'),
-  option('雙人緞帶連結體位（慢速版）', 'two adults linked by a satin ribbon with slow pacing', 'two'),
-  option('雙人面對面靠近體位（鏡頭近版）', 'two adults face each other in a close pose close to camera', 'two'),
-  option('雙人一前一後貼近體位（鏡頭近版）', 'two adults arrange front-and-back in a close pose close to camera', 'two'),
-  option('雙人側身交疊體位（鏡頭近版）', 'two adults overlap side silhouettes close to camera', 'two'),
-  option('雙人坐姿相擁體位（鏡頭近版）', 'two adults sit in an embracing pose close to camera', 'two'),
-  option('雙人高低層次體位（鏡頭近版）', 'two adults form high-low body levels close to camera', 'two'),
-  option('雙人一人跪坐一人站立（鏡頭近版）', 'two adults with one kneeling and one standing close to camera', 'two'),
-  option('雙人一人倚靠另一人肩線（鏡頭近版）', 'two adults with one leaning against the other’s shoulder line close to camera', 'two'),
-  option('雙人手臂環腰體位（鏡頭近版）', 'two adults with arms around the waist close to camera', 'two'),
-  option('雙人背靠背體位（鏡頭近版）', 'two adults back-to-back close to camera', 'two'),
-  option('雙人額頭相抵體位（鏡頭近版）', 'two adults forehead-to-forehead close to camera', 'two'),
-  option('雙人一人坐腿側一人俯身（鏡頭近版）', 'two adults with one seated by the legs and one leaning over close to camera', 'two'),
-  option('雙人交錯跪姿體位（鏡頭近版）', 'two adults in staggered kneeling poses close to camera', 'two'),
-  option('雙人鏡頭前牽手體位（鏡頭近版）', 'two adults holding hands toward camera close to camera', 'two'),
-  option('雙人一人從後方扶腰（鏡頭近版）', 'two adults with one supporting the waist from behind close to camera', 'two'),
-  option('雙人一人托起下巴（鏡頭近版）', 'two adults with one lifting the chin close to camera', 'two'),
-  option('雙人肩頸貼近體位（鏡頭近版）', 'two adults with close shoulder-neck lines close to camera', 'two'),
-  option('雙人一人半躺一人靠近（鏡頭近版）', 'two adults with one half-reclining and one nearby close to camera', 'two'),
-  option('雙人雙手交疊體位（鏡頭近版）', 'two adults with overlapping hands close to camera', 'two'),
-  option('雙人前後視線交錯（鏡頭近版）', 'two adults with staggered front-back gazes close to camera', 'two'),
-  option('雙人對角線貼近體位（鏡頭近版）', 'two adults close on a diagonal composition close to camera', 'two'),
-  option('雙人一人坐一人跨步靠近（鏡頭近版）', 'two adults with one seated and one stepping close close to camera', 'two'),
-  option('雙人彼此拉住衣料邊緣（鏡頭近版）', 'two adults holding each other’s fabric edge close to camera', 'two'),
-  option('雙人一人低頭靠近耳側（鏡頭近版）', 'two adults with one lowering toward the ear side close to camera', 'two'),
-  option('雙人一人扶住手腕（鏡頭近版）', 'two adults with one holding a wrist close to camera', 'two'),
-  option('雙人緞帶連結體位（鏡頭近版）', 'two adults linked by a satin ribbon close to camera', 'two'),
-  option('雙人面對面靠近體位（更親密版）', 'two adults face each other in a close pose with a more intimate adult-only arrangement', 'two'),
-  option('雙人一前一後貼近體位（更親密版）', 'two adults arrange front-and-back in a close pose with a more intimate adult-only arrangement', 'two'),
-  option('雙人側身交疊體位（更親密版）', 'two adults overlap side silhouettes with a more intimate adult-only arrangement', 'two'),
-  option('雙人坐姿相擁體位（更親密版）', 'two adults sit in an embracing pose with a more intimate adult-only arrangement', 'two'),
-  option('雙人高低層次體位（更親密版）', 'two adults form high-low body levels with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人跪坐一人站立（更親密版）', 'two adults with one kneeling and one standing with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人倚靠另一人肩線（更親密版）', 'two adults with one leaning against the other’s shoulder line with a more intimate adult-only arrangement', 'two'),
-  option('雙人手臂環腰體位（更親密版）', 'two adults with arms around the waist with a more intimate adult-only arrangement', 'two'),
-  option('雙人背靠背體位（更親密版）', 'two adults back-to-back with a more intimate adult-only arrangement', 'two'),
-  option('雙人額頭相抵體位（更親密版）', 'two adults forehead-to-forehead with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人坐腿側一人俯身（更親密版）', 'two adults with one seated by the legs and one leaning over with a more intimate adult-only arrangement', 'two'),
-  option('雙人交錯跪姿體位（更親密版）', 'two adults in staggered kneeling poses with a more intimate adult-only arrangement', 'two'),
-  option('雙人鏡頭前牽手體位（更親密版）', 'two adults holding hands toward camera with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人從後方扶腰（更親密版）', 'two adults with one supporting the waist from behind with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人托起下巴（更親密版）', 'two adults with one lifting the chin with a more intimate adult-only arrangement', 'two'),
-  option('雙人肩頸貼近體位（更親密版）', 'two adults with close shoulder-neck lines with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人半躺一人靠近（更親密版）', 'two adults with one half-reclining and one nearby with a more intimate adult-only arrangement', 'two'),
-  option('雙人雙手交疊體位（更親密版）', 'two adults with overlapping hands with a more intimate adult-only arrangement', 'two'),
-  option('雙人前後視線交錯（更親密版）', 'two adults with staggered front-back gazes with a more intimate adult-only arrangement', 'two'),
-  option('雙人對角線貼近體位（更親密版）', 'two adults close on a diagonal composition with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人坐一人跨步靠近（更親密版）', 'two adults with one seated and one stepping close with a more intimate adult-only arrangement', 'two'),
-  option('雙人彼此拉住衣料邊緣（更親密版）', 'two adults holding each other’s fabric edge with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人低頭靠近耳側（更親密版）', 'two adults with one lowering toward the ear side with a more intimate adult-only arrangement', 'two'),
-  option('雙人一人扶住手腕（更親密版）', 'two adults with one holding a wrist with a more intimate adult-only arrangement', 'two'),
-  option('雙人緞帶連結體位（更親密版）', 'two adults linked by a satin ribbon with a more intimate adult-only arrangement', 'two')
-];
-
-const THREE_POSE_OPTIONS = [
-  option('三人面對面靠近體位', 'three adults face each other in a close pose', 'three'),
-  option('三人一前一後貼近體位', 'three adults arrange front-and-back in a close pose', 'three'),
-  option('三人側身交疊體位', 'three adults overlap side silhouettes', 'three'),
-  option('三人坐姿相擁體位', 'three adults sit in an embracing pose', 'three'),
-  option('三人高低層次體位', 'three adults form high-low body levels', 'three'),
-  option('三人一人跪坐一人站立', 'three adults with one kneeling and one standing', 'three'),
-  option('三人一人倚靠另一人肩線', 'three adults with one leaning against the other’s shoulder line', 'three'),
-  option('三人手臂環腰體位', 'three adults with arms around the waist', 'three'),
-  option('三人背靠背體位', 'three adults back-to-back', 'three'),
-  option('三人額頭相抵體位', 'three adults forehead-to-forehead', 'three'),
-  option('三人一人坐腿側一人俯身', 'three adults with one seated by the legs and one leaning over', 'three'),
-  option('三人交錯跪姿體位', 'three adults in staggered kneeling poses', 'three'),
-  option('三人鏡頭前牽手體位', 'three adults holding hands toward camera', 'three'),
-  option('三人一人從後方扶腰', 'three adults with one supporting the waist from behind', 'three'),
-  option('三人一人托起下巴', 'three adults with one lifting the chin', 'three'),
-  option('三人肩頸貼近體位', 'three adults with close shoulder-neck lines', 'three'),
-  option('三人一人半躺一人靠近', 'three adults with one half-reclining and one nearby', 'three'),
-  option('三人雙手交疊體位', 'three adults with overlapping hands', 'three'),
-  option('三人前後視線交錯', 'three adults with staggered front-back gazes', 'three'),
-  option('三人對角線貼近體位', 'three adults close on a diagonal composition', 'three'),
-  option('三人一人坐一人跨步靠近', 'three adults with one seated and one stepping close', 'three'),
-  option('三人彼此拉住衣料邊緣', 'three adults holding each other’s fabric edge', 'three'),
-  option('三人一人低頭靠近耳側', 'three adults with one lowering toward the ear side', 'three'),
-  option('三人一人扶住手腕', 'three adults with one holding a wrist', 'three'),
-  option('三人緞帶連結體位', 'three adults linked by a satin ribbon', 'three'),
-  option('三人面對面靠近體位（層次版）', 'three adults face each other in a close pose with layered spacing', 'three'),
-  option('三人一前一後貼近體位（層次版）', 'three adults arrange front-and-back in a close pose with layered spacing', 'three'),
-  option('三人側身交疊體位（層次版）', 'three adults overlap side silhouettes with layered spacing', 'three'),
-  option('三人坐姿相擁體位（層次版）', 'three adults sit in an embracing pose with layered spacing', 'three'),
-  option('三人高低層次體位（層次版）', 'three adults form high-low body levels with layered spacing', 'three'),
-  option('三人一人跪坐一人站立（層次版）', 'three adults with one kneeling and one standing with layered spacing', 'three'),
-  option('三人一人倚靠另一人肩線（層次版）', 'three adults with one leaning against the other’s shoulder line with layered spacing', 'three'),
-  option('三人手臂環腰體位（層次版）', 'three adults with arms around the waist with layered spacing', 'three'),
-  option('三人背靠背體位（層次版）', 'three adults back-to-back with layered spacing', 'three'),
-  option('三人額頭相抵體位（層次版）', 'three adults forehead-to-forehead with layered spacing', 'three'),
-  option('三人一人坐腿側一人俯身（層次版）', 'three adults with one seated by the legs and one leaning over with layered spacing', 'three'),
-  option('三人交錯跪姿體位（層次版）', 'three adults in staggered kneeling poses with layered spacing', 'three'),
-  option('三人鏡頭前牽手體位（層次版）', 'three adults holding hands toward camera with layered spacing', 'three'),
-  option('三人一人從後方扶腰（層次版）', 'three adults with one supporting the waist from behind with layered spacing', 'three'),
-  option('三人一人托起下巴（層次版）', 'three adults with one lifting the chin with layered spacing', 'three'),
-  option('三人肩頸貼近體位（層次版）', 'three adults with close shoulder-neck lines with layered spacing', 'three'),
-  option('三人一人半躺一人靠近（層次版）', 'three adults with one half-reclining and one nearby with layered spacing', 'three'),
-  option('三人雙手交疊體位（層次版）', 'three adults with overlapping hands with layered spacing', 'three'),
-  option('三人前後視線交錯（層次版）', 'three adults with staggered front-back gazes with layered spacing', 'three'),
-  option('三人對角線貼近體位（層次版）', 'three adults close on a diagonal composition with layered spacing', 'three'),
-  option('三人一人坐一人跨步靠近（層次版）', 'three adults with one seated and one stepping close with layered spacing', 'three'),
-  option('三人彼此拉住衣料邊緣（層次版）', 'three adults holding each other’s fabric edge with layered spacing', 'three'),
-  option('三人一人低頭靠近耳側（層次版）', 'three adults with one lowering toward the ear side with layered spacing', 'three'),
-  option('三人一人扶住手腕（層次版）', 'three adults with one holding a wrist with layered spacing', 'three'),
-  option('三人緞帶連結體位（層次版）', 'three adults linked by a satin ribbon with layered spacing', 'three'),
-  option('三人面對面靠近體位（鏡頭近版）', 'three adults face each other in a close pose close to camera', 'three'),
-  option('三人一前一後貼近體位（鏡頭近版）', 'three adults arrange front-and-back in a close pose close to camera', 'three'),
-  option('三人側身交疊體位（鏡頭近版）', 'three adults overlap side silhouettes close to camera', 'three'),
-  option('三人坐姿相擁體位（鏡頭近版）', 'three adults sit in an embracing pose close to camera', 'three'),
-  option('三人高低層次體位（鏡頭近版）', 'three adults form high-low body levels close to camera', 'three'),
-  option('三人一人跪坐一人站立（鏡頭近版）', 'three adults with one kneeling and one standing close to camera', 'three'),
-  option('三人一人倚靠另一人肩線（鏡頭近版）', 'three adults with one leaning against the other’s shoulder line close to camera', 'three'),
-  option('三人手臂環腰體位（鏡頭近版）', 'three adults with arms around the waist close to camera', 'three'),
-  option('三人背靠背體位（鏡頭近版）', 'three adults back-to-back close to camera', 'three'),
-  option('三人額頭相抵體位（鏡頭近版）', 'three adults forehead-to-forehead close to camera', 'three'),
-  option('三人一人坐腿側一人俯身（鏡頭近版）', 'three adults with one seated by the legs and one leaning over close to camera', 'three'),
-  option('三人交錯跪姿體位（鏡頭近版）', 'three adults in staggered kneeling poses close to camera', 'three'),
-  option('三人鏡頭前牽手體位（鏡頭近版）', 'three adults holding hands toward camera close to camera', 'three'),
-  option('三人一人從後方扶腰（鏡頭近版）', 'three adults with one supporting the waist from behind close to camera', 'three'),
-  option('三人一人托起下巴（鏡頭近版）', 'three adults with one lifting the chin close to camera', 'three'),
-  option('三人肩頸貼近體位（鏡頭近版）', 'three adults with close shoulder-neck lines close to camera', 'three'),
-  option('三人一人半躺一人靠近（鏡頭近版）', 'three adults with one half-reclining and one nearby close to camera', 'three'),
-  option('三人雙手交疊體位（鏡頭近版）', 'three adults with overlapping hands close to camera', 'three'),
-  option('三人前後視線交錯（鏡頭近版）', 'three adults with staggered front-back gazes close to camera', 'three'),
-  option('三人對角線貼近體位（鏡頭近版）', 'three adults close on a diagonal composition close to camera', 'three'),
-  option('三人一人坐一人跨步靠近（鏡頭近版）', 'three adults with one seated and one stepping close close to camera', 'three'),
-  option('三人彼此拉住衣料邊緣（鏡頭近版）', 'three adults holding each other’s fabric edge close to camera', 'three'),
-  option('三人一人低頭靠近耳側（鏡頭近版）', 'three adults with one lowering toward the ear side close to camera', 'three'),
-  option('三人一人扶住手腕（鏡頭近版）', 'three adults with one holding a wrist close to camera', 'three'),
-  option('三人緞帶連結體位（鏡頭近版）', 'three adults linked by a satin ribbon close to camera', 'three'),
-  option('三人面對面靠近體位（更親密版）', 'three adults face each other in a close pose with a more intimate group-adult arrangement', 'three'),
-  option('三人一前一後貼近體位（更親密版）', 'three adults arrange front-and-back in a close pose with a more intimate group-adult arrangement', 'three'),
-  option('三人側身交疊體位（更親密版）', 'three adults overlap side silhouettes with a more intimate group-adult arrangement', 'three'),
-  option('三人坐姿相擁體位（更親密版）', 'three adults sit in an embracing pose with a more intimate group-adult arrangement', 'three'),
-  option('三人高低層次體位（更親密版）', 'three adults form high-low body levels with a more intimate group-adult arrangement', 'three'),
-  option('三人一人跪坐一人站立（更親密版）', 'three adults with one kneeling and one standing with a more intimate group-adult arrangement', 'three'),
-  option('三人一人倚靠另一人肩線（更親密版）', 'three adults with one leaning against the other’s shoulder line with a more intimate group-adult arrangement', 'three'),
-  option('三人手臂環腰體位（更親密版）', 'three adults with arms around the waist with a more intimate group-adult arrangement', 'three'),
-  option('三人背靠背體位（更親密版）', 'three adults back-to-back with a more intimate group-adult arrangement', 'three'),
-  option('三人額頭相抵體位（更親密版）', 'three adults forehead-to-forehead with a more intimate group-adult arrangement', 'three'),
-  option('三人一人坐腿側一人俯身（更親密版）', 'three adults with one seated by the legs and one leaning over with a more intimate group-adult arrangement', 'three'),
-  option('三人交錯跪姿體位（更親密版）', 'three adults in staggered kneeling poses with a more intimate group-adult arrangement', 'three'),
-  option('三人鏡頭前牽手體位（更親密版）', 'three adults holding hands toward camera with a more intimate group-adult arrangement', 'three'),
-  option('三人一人從後方扶腰（更親密版）', 'three adults with one supporting the waist from behind with a more intimate group-adult arrangement', 'three'),
-  option('三人一人托起下巴（更親密版）', 'three adults with one lifting the chin with a more intimate group-adult arrangement', 'three'),
-  option('三人肩頸貼近體位（更親密版）', 'three adults with close shoulder-neck lines with a more intimate group-adult arrangement', 'three'),
-  option('三人一人半躺一人靠近（更親密版）', 'three adults with one half-reclining and one nearby with a more intimate group-adult arrangement', 'three'),
-  option('三人雙手交疊體位（更親密版）', 'three adults with overlapping hands with a more intimate group-adult arrangement', 'three'),
-  option('三人前後視線交錯（更親密版）', 'three adults with staggered front-back gazes with a more intimate group-adult arrangement', 'three'),
-  option('三人對角線貼近體位（更親密版）', 'three adults close on a diagonal composition with a more intimate group-adult arrangement', 'three'),
-  option('三人一人坐一人跨步靠近（更親密版）', 'three adults with one seated and one stepping close with a more intimate group-adult arrangement', 'three'),
-  option('三人彼此拉住衣料邊緣（更親密版）', 'three adults holding each other’s fabric edge with a more intimate group-adult arrangement', 'three'),
-  option('三人一人低頭靠近耳側（更親密版）', 'three adults with one lowering toward the ear side with a more intimate group-adult arrangement', 'three'),
-  option('三人一人扶住手腕（更親密版）', 'three adults with one holding a wrist with a more intimate group-adult arrangement', 'three'),
-  option('三人緞帶連結體位（更親密版）', 'three adults linked by a satin ribbon with a more intimate group-adult arrangement', 'three')
-];
-
-const POSE_OPTIONS = [
-  ...SINGLE_POSE_OPTIONS,
-  ...TWO_POSE_OPTIONS,
-  ...THREE_POSE_OPTIONS
-];
-
-const SINGLE_ACTION_OPTIONS = [
-  option('單人回眸挑眉', 'single adult turns back with an inviting raised brow', 'single'),
-  option('單人指尖滑過鎖骨', 'single adult traces the collarbone with fingertips', 'single'),
-  option('單人慢拉肩帶但保持遮擋', 'single adult slowly loosens a shoulder strap while maintaining coverage', 'single'),
-  option('單人咬唇靠近鏡頭', 'single adult approaches camera with a soft lip bite', 'single'),
-  option('單人整理濕髮', 'single adult arranges damp hair', 'single'),
-  option('單人側身展示腰臀線', 'single adult side-turns to emphasize hip-waist line', 'single'),
-  option('單人扶住領口遮擋', 'single adult holds the neckline for coverage', 'single'),
-  option('單人緩慢深呼吸', 'single adult takes slow visible breaths', 'single'),
-  option('單人手指停在唇邊', 'single adult pauses fingertips near lips', 'single'),
-  option('單人拉開外套一角', 'single adult opens one side of the jacket', 'single'),
-  option('單人坐姿前傾凝視', 'single adult leans forward seated with a direct gaze', 'single'),
-  option('單人跪坐整理長髮', 'single adult kneels and arranges long hair', 'single'),
-  option('單人腿部交疊伸展', 'single adult crosses and extends legs elegantly', 'single'),
-  option('單人背對鏡頭回望', 'single adult looks back over the shoulder', 'single'),
-  option('單人靠牆抬手', 'single adult raises a hand while leaning near a vertical support', 'single'),
-  option('單人慢轉展示背線', 'single adult slowly turns to reveal the back line', 'single'),
-  option('單人拂過肩線', 'single adult brushes along the shoulder line', 'single'),
-  option('單人勾住腰帶', 'single adult hooks fingertips on the waist belt', 'single'),
-  option('單人抬腿調整鞋帶', 'single adult raises a leg to adjust a shoe strap', 'single'),
-  option('單人把布料拉回肩上', 'single adult pulls fabric back over the shoulder', 'single'),
-  option('單人掌心停在側腰', 'single adult pauses palm along the side waist', 'single'),
-  option('單人低頭微笑', 'single adult lowers the head with a subtle smile', 'single'),
-  option('單人抬眼直視', 'single adult raises the eyes into a direct gaze', 'single'),
-  option('單人髮絲遮住半臉', 'single adult lets hair veil half the face', 'single'),
-  option('單人指尖輕敲胸前吊鏈', 'single adult taps a chest-chain accessory lightly', 'single'),
-  option('單人俯身拉近距離', 'single adult leans forward to reduce distance', 'single'),
-  option('單人側躺看向畫面', 'single adult side-reclines toward the frame', 'single'),
-  option('單人抬手遮住唇角', 'single adult raises a hand to veil the lip corner', 'single'),
-  option('單人慢慢整理絲襪', 'single adult slowly adjusts stockings', 'single'),
-  option('單人拉住緞帶末端', 'single adult holds the end of a satin ribbon', 'single'),
-  option('單人把外套滑到手肘', 'single adult lets a jacket slide to the elbows', 'single'),
-  option('單人掌心貼住頸側', 'single adult rests palm along the side of the neck', 'single'),
-  option('單人指尖沿腰線停住', 'single adult pauses fingertips along the waistline', 'single'),
-  option('單人抬肩讓肩帶滑落', 'single adult lifts shoulder as a strap slips down', 'single'),
-  option('單人慢慢轉身面向鏡頭', 'single adult slowly turns to face camera', 'single'),
-  option('單人托腮挑逗凝視', 'single adult rests chin on hand with a teasing gaze', 'single'),
-  option('單人把髮絲撥到耳後', 'single adult tucks hair behind the ear', 'single'),
-  option('單人輕拉項鍊', 'single adult lightly tugs a necklace', 'single'),
-  option('單人指尖沿大腿外側', 'single adult traces fingertips along the outer thigh', 'single'),
-  option('單人手背貼近唇邊', 'single adult brings the back of the hand near lips', 'single'),
-  option('單人慢慢靠近畫面邊緣', 'single adult slowly moves near the frame edge', 'single'),
-  option('單人低腰坐姿調整姿態', 'single adult adjusts posture in a low seated pose', 'single'),
-  option('單人掌心托住胸前布料', 'single adult holds front fabric for coverage', 'single'),
-  option('單人回身拉住門框', 'single adult turns back while holding a frame edge', 'single'),
-  option('單人蹲姿抬頭', 'single adult crouches and raises the head', 'single'),
-  option('單人慢慢坐下', 'single adult slowly sits down', 'single'),
-  option('單人踮腳伸展身形', 'single adult rises on tiptoe to elongate the silhouette', 'single'),
-  option('單人撫過鎖骨到肩頭', 'single adult strokes from collarbone toward shoulder', 'single'),
-  option('單人手指繞著髮尾', 'single adult twirls hair ends around fingers', 'single'),
-  option('單人靠近鏡頭呼氣', 'single adult exhales softly near camera', 'single'),
-  option('單人慢舔嘴唇', 'single adult slowly licks lips', 'single'),
-  option('單人阿黑顏挑逗表情', 'single adult makes an ahegao-inspired exaggerated teasing expression', 'single'),
-  option('單人舌尖碰唇角', 'single adult touches the lip corner with the tongue', 'single'),
-  option('單人輕咬食指', 'single adult softly bites an index finger', 'single'),
-  option('單人含住指尖', 'single adult holds fingertips between lips', 'single'),
-  option('單人舔過手指', 'single adult licks along fingers', 'single'),
-  option('單人指尖壓住下唇', 'single adult presses fingertips to the lower lip', 'single'),
-  option('單人吐舌靠近鏡頭', 'single adult sticks out tongue while moving closer to camera', 'single'),
-  option('單人濕潤唇面特寫', 'single adult presents a glossy wet-lip close-up', 'single'),
-  option('單人舌尖沿手背滑過', 'single adult slides tongue along the back of the hand', 'single'),
-  option('單人舔過手腕內側', 'single adult licks the inner wrist', 'single'),
-  option('單人親吻自己肩頭', 'single adult kisses their own shoulder', 'single'),
-  option('單人舔過肩頸線', 'single adult licks along the shoulder-neck line', 'single'),
-  option('單人吻過鎖骨', 'single adult kisses along the collarbone', 'single'),
-  option('單人咬住衣領邊緣', 'single adult bites the edge of the neckline', 'single'),
-  option('單人用牙齒勾住手套', 'single adult catches a glove edge with teeth', 'single'),
-  option('單人慢慢拉開領口', 'single adult slowly opens the neckline', 'single'),
-  option('單人揉捏胸前布料', 'single adult kneads the fabric over the chest', 'single'),
-  option('單人托住雙峰輪廓', 'single adult cups the bust silhouette over fabric', 'single'),
-  option('單人指尖繞過胸鏈', 'single adult circles fingertips around a chest chain', 'single'),
-  option('單人掌心沿腹側滑下', 'single adult slides palm down the side abdomen', 'single'),
-  option('單人舔過上臂', 'single adult licks along the upper arm', 'single'),
-  option('單人舌尖碰到項鍊墜飾', 'single adult touches a necklace pendant with tongue', 'single'),
-  option('單人咬住緞帶末端', 'single adult bites the end of a satin ribbon', 'single'),
-  option('單人把手指放入口中', 'single adult places fingers into the mouth', 'single'),
-  option('單人慢含棒棒糖道具', 'single adult slowly mouths a lollipop prop', 'single'),
-  option('單人含住吸管回望', 'single adult mouths a straw while glancing back', 'single'),
-  option('單人用唇拉住薄紗', 'single adult catches sheer fabric with lips', 'single'),
-  option('單人把指尖沾濕後看鏡頭', 'single adult wets fingertips then looks at camera', 'single'),
-  option('單人舌尖輕掃下唇', 'single adult lightly sweeps tongue across lower lip', 'single'),
-  option('單人咬唇忍笑', 'single adult bites lip while holding back a smile', 'single'),
-  option('單人輕拍自己臀側', 'single adult lightly pats their own hip side', 'single'),
-  option('單人掌心揉過臀側布料', 'single adult kneads fabric over the hip side', 'single'),
-  option('單人用指尖勾住腰鏈', 'single adult hooks a waist chain with fingertips', 'single'),
-  option('單人把裙擺拉高但保持遮擋', 'single adult raises the hem while maintaining coverage', 'single'),
-  option('單人趴姿回頭伸舌', 'single adult looks back with tongue out in a prone pose', 'single'),
-  option('單人側躺輕咬拇指', 'single adult side-reclines while softly biting the thumb', 'single'),
-  option('單人跪姿舔指尖', 'single adult kneels and licks fingertips', 'single'),
-  option('單人手掌慢慢滑過大腿', 'single adult slowly slides palm over thigh', 'single'),
-  option('單人指尖沿吊帶扣停住', 'single adult pauses fingertips at the garter clasp', 'single'),
-  option('單人用唇含住珍珠鏈', 'single adult holds a pearl chain with lips', 'single'),
-  option('單人咬住拉鍊吊牌', 'single adult bites a zipper pull', 'single'),
-  option('單人輕舔唇上糖霜', 'single adult licks frosting from the lip', 'single'),
-  option('單人指尖分開唇瓣', 'single adult parts lips with fingertips', 'single'),
-  option('單人濕唇貼近鏡頭', 'single adult brings glossy lips close to camera', 'single'),
-  option('單人挑逗吹氣', 'single adult blows a teasing breath', 'single'),
-  option('單人吻過手心', 'single adult kisses the palm', 'single'),
-  option('單人用牙齒拉鬆肩帶', 'single adult loosens a strap with teeth', 'single'),
-  option('單人掌心覆住胸口起伏', 'single adult covers the rising chest with palm', 'single'),
-  option('單人慢慢舔過唇峰', 'single adult slowly licks the cupid bow', 'single')
-];
-
-const TWO_ACTION_OPTIONS = [
-  option('雙人對視靠近', 'two adults move closer with eye contact', 'two'),
-  option('雙人指尖相扣', 'two adults interlock fingertips', 'two'),
-  option('雙人額頭相抵', 'two adults touch foreheads', 'two'),
-  option('雙人一人整理另一人髮絲', 'two adults with one arranging the other’s hair', 'two'),
-  option('雙人肩膀相貼', 'two adults press shoulders together', 'two'),
-  option('雙人一前一後錯位', 'two adults stagger front and back', 'two'),
-  option('雙人耳邊低語', 'two adults whisper near the ear', 'two'),
-  option('雙人共同拉住緞帶', 'two adults hold the same satin ribbon', 'two'),
-  option('雙人一人輕托下巴', 'two adults with one lifting the other’s chin', 'two'),
-  option('雙人坐姿相擁', 'two adults sit in a close embrace', 'two'),
-  option('雙人並肩貼近', 'two adults stand close shoulder to shoulder', 'two'),
-  option('雙人輪流看向鏡頭', 'two adults alternate gaze toward camera', 'two'),
-  option('雙人腰側輕扶', 'two adults gently hold the waist side', 'two'),
-  option('雙人手指沿手臂移動', 'two adults trace fingertips along an arm', 'two'),
-  option('雙人慢步靠近', 'two adults slowly step closer', 'two'),
-  option('雙人一人俯身低語', 'two adults with one leaning down to whisper', 'two'),
-  option('雙人共同遮擋薄紗', 'two adults hold sheer fabric for coverage', 'two'),
-  option('雙人背靠背深呼吸', 'two adults stand back-to-back breathing slowly', 'two'),
-  option('雙人牽手入鏡', 'two adults enter frame holding hands', 'two'),
-  option('雙人一人輕碰唇角', 'two adults with one touching near the lip corner', 'two'),
-  option('雙人手掌沿背線停住', 'two adults with a palm pausing along the back line', 'two'),
-  option('雙人貼近但不接觸', 'two adults move close without touching', 'two'),
-  option('雙人輪廓重疊', 'two adults overlap silhouettes', 'two'),
-  option('雙人互扣腰鏈', 'two adults clasp a waist-chain accessory together', 'two'),
-  option('雙人互相戴上飾品', 'two adults place accessories on each other', 'two'),
-  option('雙人慢慢分開回望', 'two adults slowly separate and glance back', 'two'),
-  option('雙人一人坐一人倚靠', 'two adults one seated and one leaning nearby', 'two'),
-  option('雙人手扶肩線', 'two adults hold each other near the shoulder line', 'two'),
-  option('雙人呼吸節奏同步', 'two adults synchronize breathing rhythm', 'two'),
-  option('雙人一人扶住另一人手腕', 'two adults with one holding the other’s wrist', 'two'),
-  option('雙人相對跪坐靠近', 'two adults kneel facing each other and move closer', 'two'),
-  option('雙人一人牽動領帶', 'two adults with one tugging a tie', 'two'),
-  option('雙人一人慢拉對方手套', 'two adults with one slowly pulling the other’s glove', 'two'),
-  option('雙人肩頸距離貼近', 'two adults bring shoulder and neck lines close', 'two'),
-  option('雙人一人環住腰線', 'two adults with one arm around the waist', 'two'),
-  option('雙人一人撫過鎖骨', 'two adults with one tracing the other’s collarbone', 'two'),
-  option('雙人並排側躺對望', 'two adults side-recline and look at each other', 'two'),
-  option('雙人一人擋住鏡頭一角', 'two adults with one hand partially blocking frame', 'two'),
-  option('雙人一人把外套披上', 'two adults with one draping a jacket over the other', 'two'),
-  option('雙人高低視線挑逗', 'two adults exchange a teasing high-low gaze', 'two'),
-  option('雙人手掌隔著布料重疊', 'two adults overlap palms over fabric', 'two'),
-  option('雙人一人靠近耳垂', 'two adults with one moving near the earlobe', 'two'),
-  option('雙人一人扶住後頸', 'two adults with one supporting the nape', 'two'),
-  option('雙人指尖互相追逐', 'two adults let fingertips chase each other', 'two'),
-  option('雙人一人拉近腰帶', 'two adults with one pulling the waist belt closer', 'two'),
-  option('雙人共同咬住緞帶兩端', 'two adults bite opposite ends of a satin ribbon', 'two'),
-  option('雙人激吻前的近距離停頓', 'two adults pause close before a passionate kiss', 'two'),
-  option('雙人咬耳朵式低語', 'two adults whisper with a playful ear nibble gesture', 'two'),
-  option('雙人一人輕拍臀側', 'two adults with one lightly patting the other’s hip side', 'two'),
-  option('雙人一人揉過胸前布料', 'two adults with one kneading fabric over the chest', 'two'),
-  option('雙人對視靠近（更騷氣版）', 'two adults move closer with eye contact with a more teasing adult-only mood', 'two'),
-  option('雙人指尖相扣（更騷氣版）', 'two adults interlock fingertips with a more teasing adult-only mood', 'two'),
-  option('雙人額頭相抵（更騷氣版）', 'two adults touch foreheads with a more teasing adult-only mood', 'two'),
-  option('雙人一人整理另一人髮絲（更騷氣版）', 'two adults with one arranging the other’s hair with a more teasing adult-only mood', 'two'),
-  option('雙人肩膀相貼（更騷氣版）', 'two adults press shoulders together with a more teasing adult-only mood', 'two'),
-  option('雙人一前一後錯位（更騷氣版）', 'two adults stagger front and back with a more teasing adult-only mood', 'two'),
-  option('雙人耳邊低語（更騷氣版）', 'two adults whisper near the ear with a more teasing adult-only mood', 'two'),
-  option('雙人共同拉住緞帶（更騷氣版）', 'two adults hold the same satin ribbon with a more teasing adult-only mood', 'two'),
-  option('雙人一人輕托下巴（更騷氣版）', 'two adults with one lifting the other’s chin with a more teasing adult-only mood', 'two'),
-  option('雙人坐姿相擁（更騷氣版）', 'two adults sit in a close embrace with a more teasing adult-only mood', 'two'),
-  option('雙人並肩貼近（更騷氣版）', 'two adults stand close shoulder to shoulder with a more teasing adult-only mood', 'two'),
-  option('雙人輪流看向鏡頭（更騷氣版）', 'two adults alternate gaze toward camera with a more teasing adult-only mood', 'two'),
-  option('雙人腰側輕扶（更騷氣版）', 'two adults gently hold the waist side with a more teasing adult-only mood', 'two'),
-  option('雙人手指沿手臂移動（更騷氣版）', 'two adults trace fingertips along an arm with a more teasing adult-only mood', 'two'),
-  option('雙人慢步靠近（更騷氣版）', 'two adults slowly step closer with a more teasing adult-only mood', 'two'),
-  option('雙人一人俯身低語（更騷氣版）', 'two adults with one leaning down to whisper with a more teasing adult-only mood', 'two'),
-  option('雙人共同遮擋薄紗（更騷氣版）', 'two adults hold sheer fabric for coverage with a more teasing adult-only mood', 'two'),
-  option('雙人背靠背深呼吸（更騷氣版）', 'two adults stand back-to-back breathing slowly with a more teasing adult-only mood', 'two'),
-  option('雙人牽手入鏡（更騷氣版）', 'two adults enter frame holding hands with a more teasing adult-only mood', 'two'),
-  option('雙人一人輕碰唇角（更騷氣版）', 'two adults with one touching near the lip corner with a more teasing adult-only mood', 'two'),
-  option('雙人手掌沿背線停住（更騷氣版）', 'two adults with a palm pausing along the back line with a more teasing adult-only mood', 'two'),
-  option('雙人貼近但不接觸（更騷氣版）', 'two adults move close without touching with a more teasing adult-only mood', 'two'),
-  option('雙人輪廓重疊（更騷氣版）', 'two adults overlap silhouettes with a more teasing adult-only mood', 'two'),
-  option('雙人互扣腰鏈（更騷氣版）', 'two adults clasp a waist-chain accessory together with a more teasing adult-only mood', 'two'),
-  option('雙人互相戴上飾品（更騷氣版）', 'two adults place accessories on each other with a more teasing adult-only mood', 'two'),
-  option('雙人慢慢分開回望（更騷氣版）', 'two adults slowly separate and glance back with a more teasing adult-only mood', 'two'),
-  option('雙人一人坐一人倚靠（更騷氣版）', 'two adults one seated and one leaning nearby with a more teasing adult-only mood', 'two'),
-  option('雙人手扶肩線（更騷氣版）', 'two adults hold each other near the shoulder line with a more teasing adult-only mood', 'two'),
-  option('雙人呼吸節奏同步（更騷氣版）', 'two adults synchronize breathing rhythm with a more teasing adult-only mood', 'two'),
-  option('雙人一人扶住另一人手腕（更騷氣版）', 'two adults with one holding the other’s wrist with a more teasing adult-only mood', 'two'),
-  option('雙人相對跪坐靠近（更騷氣版）', 'two adults kneel facing each other and move closer with a more teasing adult-only mood', 'two'),
-  option('雙人一人牽動領帶（更騷氣版）', 'two adults with one tugging a tie with a more teasing adult-only mood', 'two'),
-  option('雙人一人慢拉對方手套（更騷氣版）', 'two adults with one slowly pulling the other’s glove with a more teasing adult-only mood', 'two'),
-  option('雙人肩頸距離貼近（更騷氣版）', 'two adults bring shoulder and neck lines close with a more teasing adult-only mood', 'two'),
-  option('雙人一人環住腰線（更騷氣版）', 'two adults with one arm around the waist with a more teasing adult-only mood', 'two'),
-  option('雙人一人撫過鎖骨（更騷氣版）', 'two adults with one tracing the other’s collarbone with a more teasing adult-only mood', 'two'),
-  option('雙人並排側躺對望（更騷氣版）', 'two adults side-recline and look at each other with a more teasing adult-only mood', 'two'),
-  option('雙人一人擋住鏡頭一角（更騷氣版）', 'two adults with one hand partially blocking frame with a more teasing adult-only mood', 'two'),
-  option('雙人一人把外套披上（更騷氣版）', 'two adults with one draping a jacket over the other with a more teasing adult-only mood', 'two'),
-  option('雙人高低視線挑逗（更騷氣版）', 'two adults exchange a teasing high-low gaze with a more teasing adult-only mood', 'two'),
-  option('雙人手掌隔著布料重疊（更騷氣版）', 'two adults overlap palms over fabric with a more teasing adult-only mood', 'two'),
-  option('雙人一人靠近耳垂（更騷氣版）', 'two adults with one moving near the earlobe with a more teasing adult-only mood', 'two'),
-  option('雙人一人扶住後頸（更騷氣版）', 'two adults with one supporting the nape with a more teasing adult-only mood', 'two'),
-  option('雙人指尖互相追逐（更騷氣版）', 'two adults let fingertips chase each other with a more teasing adult-only mood', 'two'),
-  option('雙人一人拉近腰帶（更騷氣版）', 'two adults with one pulling the waist belt closer with a more teasing adult-only mood', 'two'),
-  option('雙人共同咬住緞帶兩端（更騷氣版）', 'two adults bite opposite ends of a satin ribbon with a more teasing adult-only mood', 'two'),
-  option('雙人激吻前的近距離停頓（更騷氣版）', 'two adults pause close before a passionate kiss with a more teasing adult-only mood', 'two'),
-  option('雙人咬耳朵式低語（更騷氣版）', 'two adults whisper with a playful ear nibble gesture with a more teasing adult-only mood', 'two'),
-  option('雙人一人輕拍臀側（更騷氣版）', 'two adults with one lightly patting the other’s hip side with a more teasing adult-only mood', 'two'),
-  option('雙人一人揉過胸前布料（更騷氣版）', 'two adults with one kneading fabric over the chest with a more teasing adult-only mood', 'two')
-];
-
-const THREE_ACTION_OPTIONS = [
-  option('三人對視靠近', 'three adults move closer with eye contact', 'three'),
-  option('三人指尖相扣', 'three adults interlock fingertips', 'three'),
-  option('三人額頭相抵', 'three adults touch foreheads', 'three'),
-  option('三人一人整理另一人髮絲', 'three adults with one arranging the other’s hair', 'three'),
-  option('三人肩膀相貼', 'three adults press shoulders together', 'three'),
-  option('三人一前一後錯位', 'three adults stagger front and back', 'three'),
-  option('三人耳邊低語', 'three adults whisper near the ear', 'three'),
-  option('三人共同拉住緞帶', 'three adults hold the same satin ribbon', 'three'),
-  option('三人一人輕托下巴', 'three adults with one lifting the other’s chin', 'three'),
-  option('三人坐姿相擁', 'three adults sit in a close embrace', 'three'),
-  option('三人並肩貼近', 'three adults stand close shoulder to shoulder', 'three'),
-  option('三人輪流看向鏡頭', 'three adults alternate gaze toward camera', 'three'),
-  option('三人腰側輕扶', 'three adults gently hold the waist side', 'three'),
-  option('三人手指沿手臂移動', 'three adults trace fingertips along an arm', 'three'),
-  option('三人慢步靠近', 'three adults slowly step closer', 'three'),
-  option('三人一人俯身低語', 'three adults with one leaning down to whisper', 'three'),
-  option('三人共同遮擋薄紗', 'three adults hold sheer fabric for coverage', 'three'),
-  option('三人背靠背深呼吸', 'three adults stand back-to-back breathing slowly', 'three'),
-  option('三人牽手入鏡', 'three adults enter frame holding hands', 'three'),
-  option('三人一人輕碰唇角', 'three adults with one touching near the lip corner', 'three'),
-  option('三人手掌沿背線停住', 'three adults with a palm pausing along the back line', 'three'),
-  option('三人貼近但不接觸', 'three adults move close without touching', 'three'),
-  option('三人輪廓重疊', 'three adults overlap silhouettes', 'three'),
-  option('三人互扣腰鏈', 'three adults clasp a waist-chain accessory together', 'three'),
-  option('三人互相戴上飾品', 'three adults place accessories on each other', 'three'),
-  option('三人慢慢分開回望', 'three adults slowly separate and glance back', 'three'),
-  option('三人一人坐一人倚靠', 'three adults one seated and one leaning nearby', 'three'),
-  option('三人手扶肩線', 'three adults hold each other near the shoulder line', 'three'),
-  option('三人呼吸節奏同步', 'three adults synchronize breathing rhythm', 'three'),
-  option('三人一人扶住另一人手腕', 'three adults with one holding the other’s wrist', 'three'),
-  option('三人相對跪坐靠近', 'three adults kneel facing each other and move closer', 'three'),
-  option('三人一人牽動領帶', 'three adults with one tugging a tie', 'three'),
-  option('三人一人慢拉對方手套', 'three adults with one slowly pulling the other’s glove', 'three'),
-  option('三人肩頸距離貼近', 'three adults bring shoulder and neck lines close', 'three'),
-  option('三人一人環住腰線', 'three adults with one arm around the waist', 'three'),
-  option('三人一人撫過鎖骨', 'three adults with one tracing the other’s collarbone', 'three'),
-  option('三人並排側躺對望', 'three adults side-recline and look at each other', 'three'),
-  option('三人一人擋住鏡頭一角', 'three adults with one hand partially blocking frame', 'three'),
-  option('三人一人把外套披上', 'three adults with one draping a jacket over the other', 'three'),
-  option('三人高低視線挑逗', 'three adults exchange a teasing high-low gaze', 'three'),
-  option('三人手掌隔著布料重疊', 'three adults overlap palms over fabric', 'three'),
-  option('三人一人靠近耳垂', 'three adults with one moving near the earlobe', 'three'),
-  option('三人一人扶住後頸', 'three adults with one supporting the nape', 'three'),
-  option('三人指尖互相追逐', 'three adults let fingertips chase each other', 'three'),
-  option('三人一人拉近腰帶', 'three adults with one pulling the waist belt closer', 'three'),
-  option('三人共同咬住緞帶兩端', 'three adults bite opposite ends of a satin ribbon', 'three'),
-  option('三人激吻前的近距離停頓', 'three adults pause close before a passionate kiss', 'three'),
-  option('三人咬耳朵式低語', 'three adults whisper with a playful ear nibble gesture', 'three'),
-  option('三人一人輕拍臀側', 'three adults with one lightly patting the other’s hip side', 'three'),
-  option('三人一人揉過胸前布料', 'three adults with one kneading fabric over the chest', 'three'),
-  option('三人對視靠近（更騷氣版）', 'three adults move closer with eye contact with a more teasing group-adult mood', 'three'),
-  option('三人指尖相扣（更騷氣版）', 'three adults interlock fingertips with a more teasing group-adult mood', 'three'),
-  option('三人額頭相抵（更騷氣版）', 'three adults touch foreheads with a more teasing group-adult mood', 'three'),
-  option('三人一人整理另一人髮絲（更騷氣版）', 'three adults with one arranging the other’s hair with a more teasing group-adult mood', 'three'),
-  option('三人肩膀相貼（更騷氣版）', 'three adults press shoulders together with a more teasing group-adult mood', 'three'),
-  option('三人一前一後錯位（更騷氣版）', 'three adults stagger front and back with a more teasing group-adult mood', 'three'),
-  option('三人耳邊低語（更騷氣版）', 'three adults whisper near the ear with a more teasing group-adult mood', 'three'),
-  option('三人共同拉住緞帶（更騷氣版）', 'three adults hold the same satin ribbon with a more teasing group-adult mood', 'three'),
-  option('三人一人輕托下巴（更騷氣版）', 'three adults with one lifting the other’s chin with a more teasing group-adult mood', 'three'),
-  option('三人坐姿相擁（更騷氣版）', 'three adults sit in a close embrace with a more teasing group-adult mood', 'three'),
-  option('三人並肩貼近（更騷氣版）', 'three adults stand close shoulder to shoulder with a more teasing group-adult mood', 'three'),
-  option('三人輪流看向鏡頭（更騷氣版）', 'three adults alternate gaze toward camera with a more teasing group-adult mood', 'three'),
-  option('三人腰側輕扶（更騷氣版）', 'three adults gently hold the waist side with a more teasing group-adult mood', 'three'),
-  option('三人手指沿手臂移動（更騷氣版）', 'three adults trace fingertips along an arm with a more teasing group-adult mood', 'three'),
-  option('三人慢步靠近（更騷氣版）', 'three adults slowly step closer with a more teasing group-adult mood', 'three'),
-  option('三人一人俯身低語（更騷氣版）', 'three adults with one leaning down to whisper with a more teasing group-adult mood', 'three'),
-  option('三人共同遮擋薄紗（更騷氣版）', 'three adults hold sheer fabric for coverage with a more teasing group-adult mood', 'three'),
-  option('三人背靠背深呼吸（更騷氣版）', 'three adults stand back-to-back breathing slowly with a more teasing group-adult mood', 'three'),
-  option('三人牽手入鏡（更騷氣版）', 'three adults enter frame holding hands with a more teasing group-adult mood', 'three'),
-  option('三人一人輕碰唇角（更騷氣版）', 'three adults with one touching near the lip corner with a more teasing group-adult mood', 'three'),
-  option('三人手掌沿背線停住（更騷氣版）', 'three adults with a palm pausing along the back line with a more teasing group-adult mood', 'three'),
-  option('三人貼近但不接觸（更騷氣版）', 'three adults move close without touching with a more teasing group-adult mood', 'three'),
-  option('三人輪廓重疊（更騷氣版）', 'three adults overlap silhouettes with a more teasing group-adult mood', 'three'),
-  option('三人互扣腰鏈（更騷氣版）', 'three adults clasp a waist-chain accessory together with a more teasing group-adult mood', 'three'),
-  option('三人互相戴上飾品（更騷氣版）', 'three adults place accessories on each other with a more teasing group-adult mood', 'three'),
-  option('三人慢慢分開回望（更騷氣版）', 'three adults slowly separate and glance back with a more teasing group-adult mood', 'three'),
-  option('三人一人坐一人倚靠（更騷氣版）', 'three adults one seated and one leaning nearby with a more teasing group-adult mood', 'three'),
-  option('三人手扶肩線（更騷氣版）', 'three adults hold each other near the shoulder line with a more teasing group-adult mood', 'three'),
-  option('三人呼吸節奏同步（更騷氣版）', 'three adults synchronize breathing rhythm with a more teasing group-adult mood', 'three'),
-  option('三人一人扶住另一人手腕（更騷氣版）', 'three adults with one holding the other’s wrist with a more teasing group-adult mood', 'three'),
-  option('三人相對跪坐靠近（更騷氣版）', 'three adults kneel facing each other and move closer with a more teasing group-adult mood', 'three'),
-  option('三人一人牽動領帶（更騷氣版）', 'three adults with one tugging a tie with a more teasing group-adult mood', 'three'),
-  option('三人一人慢拉對方手套（更騷氣版）', 'three adults with one slowly pulling the other’s glove with a more teasing group-adult mood', 'three'),
-  option('三人肩頸距離貼近（更騷氣版）', 'three adults bring shoulder and neck lines close with a more teasing group-adult mood', 'three'),
-  option('三人一人環住腰線（更騷氣版）', 'three adults with one arm around the waist with a more teasing group-adult mood', 'three'),
-  option('三人一人撫過鎖骨（更騷氣版）', 'three adults with one tracing the other’s collarbone with a more teasing group-adult mood', 'three'),
-  option('三人並排側躺對望（更騷氣版）', 'three adults side-recline and look at each other with a more teasing group-adult mood', 'three'),
-  option('三人一人擋住鏡頭一角（更騷氣版）', 'three adults with one hand partially blocking frame with a more teasing group-adult mood', 'three'),
-  option('三人一人把外套披上（更騷氣版）', 'three adults with one draping a jacket over the other with a more teasing group-adult mood', 'three'),
-  option('三人高低視線挑逗（更騷氣版）', 'three adults exchange a teasing high-low gaze with a more teasing group-adult mood', 'three'),
-  option('三人手掌隔著布料重疊（更騷氣版）', 'three adults overlap palms over fabric with a more teasing group-adult mood', 'three'),
-  option('三人一人靠近耳垂（更騷氣版）', 'three adults with one moving near the earlobe with a more teasing group-adult mood', 'three'),
-  option('三人一人扶住後頸（更騷氣版）', 'three adults with one supporting the nape with a more teasing group-adult mood', 'three'),
-  option('三人指尖互相追逐（更騷氣版）', 'three adults let fingertips chase each other with a more teasing group-adult mood', 'three'),
-  option('三人一人拉近腰帶（更騷氣版）', 'three adults with one pulling the waist belt closer with a more teasing group-adult mood', 'three'),
-  option('三人共同咬住緞帶兩端（更騷氣版）', 'three adults bite opposite ends of a satin ribbon with a more teasing group-adult mood', 'three'),
-  option('三人激吻前的近距離停頓（更騷氣版）', 'three adults pause close before a passionate kiss with a more teasing group-adult mood', 'three'),
-  option('三人咬耳朵式低語（更騷氣版）', 'three adults whisper with a playful ear nibble gesture with a more teasing group-adult mood', 'three'),
-  option('三人一人輕拍臀側（更騷氣版）', 'three adults with one lightly patting the other’s hip side with a more teasing group-adult mood', 'three'),
-  option('三人一人揉過胸前布料（更騷氣版）', 'three adults with one kneading fabric over the chest with a more teasing group-adult mood', 'three')
-];
-
-const ACTION_OPTIONS = [
-  ...SINGLE_ACTION_OPTIONS,
-  ...TWO_ACTION_OPTIONS,
-  ...THREE_ACTION_OPTIONS
-];
-
 const dailyScenePairs = [
   ['高樓公寓客廳', 'high-rise apartment living room'], ['晨光公寓臥室', 'morning apartment bedroom'], ['極簡白色攝影棚', 'minimal white photo studio'], ['現代簡約浴室', 'modern minimal bathroom'], ['精品試衣間', 'boutique fitting room'],
   ['奢華化妝台前', 'luxury vanity area'], ['摩登 loft 公寓', 'modern loft apartment'], ['城市夜景陽台', 'city-view balcony'], ['復古唱片房', 'vintage record room'], ['私人鋼琴房', 'private piano room'],
@@ -1482,6 +867,52 @@ const ACCESSORY_OPTIONS = [
   ...intimateAccessoryPairs.map(([zh, en]) => option(zh, en, 'intimate'))
 ];
 
+
+const ACTION_MODE_OPTIONS = [
+  option('肩膀以上（舌頭／眼神／嘴唇）', 'above-shoulder facial, tongue, gaze, and lip movement', 'above'),
+  option('手部動作（揉捏／擁抱／搓揉）', 'hand and arm movement, kneading, hugging, rubbing', 'hands'),
+  option('下半身（張開／攤躺）', 'lower-body posing, opening lines, sprawled recline', 'lower'),
+  option('不同姿態（躺著／坐著）', 'overall posture such as lying, sitting, kneeling, standing', 'posture')
+];
+
+const actionDetailSeeds = {
+  above: {
+    normalZh: ['自然微笑','直視鏡頭','側臉回望','低頭含笑','抬眼凝視','撥髮露耳','手扶下巴','輕閉眼呼吸','微張唇','挑眉側看','髮絲遮半臉','臉頰近鏡頭','耳環成焦點','頸側線條','柔和眨眼','嘴角微揚','輕吐氣','視線向下','視線上挑','三分之二臉角度','髮尾掃臉側','肩頸放鬆','唇部柔焦','眼神光明亮','安靜凝望'],
+    normalEn: ['natural smile','direct camera gaze','side-profile glance back','lowered smiling gaze','raised-eye stare','hair tuck revealing the ear','hand supporting chin','closed-eye breathing','softly parted lips','raised-brow side gaze','hair veiling half the face','cheek close to camera','earring focal detail','clear neck-side line','gentle blink','subtle upturned mouth corner','soft exhale','downward gaze','upward teasing glance','three-quarter face angle','hair ends brushing face side','relaxed shoulder-neck line','soft-focus lip detail','bright catchlights in eyes','quiet steady gaze'],
+    sensualZh: ['慢舔嘴唇','咬住下唇','舌尖碰唇角','阿黑顏挑逗表情','濕潤唇面特寫','吐舌靠近鏡頭','含住指尖','輕咬食指','舌尖掃過下唇','挑逗吹氣','用唇拉住薄紗','咬住緞帶末端','眼神迷離','唇峰慢舔','舌尖碰項鍊墜飾','用牙齒勾手套','濕唇貼近鏡頭','指尖分開唇瓣','咬唇忍笑','親吻手心','吻過肩頭','舔過肩頸線','用唇含珍珠鏈','半閉眼吐氣','舌尖停在唇邊'],
+    sensualEn: ['slow lip lick','lower-lip bite','tongue touching lip corner','ahegao-inspired teasing expression','glossy wet-lip close-up','tongue-out camera approach','fingertips held between lips','soft index-finger bite','tongue sweeping lower lip','teasing breath','lips catching sheer fabric','biting satin ribbon end','hazy desirous gaze','slow lick across cupid bow','tongue touching necklace pendant','teeth catching glove edge','glossy lips close to camera','fingertips parting lips','lip-biting restrained smile','kiss to the palm','kiss across shoulder','lick along shoulder-neck line','lips holding pearl chain','half-lidded exhale','tongue paused near lips']
+  },
+  hands: {
+    normalZh: ['整理頭髮','拉直衣領','扶住肩線','交疊在胸前','托住下巴','撫過髮尾','握住緞帶','調整手套','輕碰耳環','整理項鍊','扶住腰側','自然垂放','拉住外套邊','按住裙襬','輕握酒杯道具','撥髮到耳後','掌心朝鏡頭','指尖近唇邊','交握放膝上','握住椅背','扶住門框','輕按胸前布料','整理腰帶','拉住袖口','指尖勾飾品'],
+    normalEn: ['arranging hair','straightening collar','resting on shoulder line','crossed over chest area','supporting chin','brushing hair ends','holding satin ribbon','adjusting gloves','touching earring','arranging necklace','at side waist','resting naturally','holding jacket edge','holding hem','holding glass prop','tucking hair behind ear','palm toward camera','fingertips near lips','clasped over knees','holding chair back','holding frame edge','pressing front fabric lightly','adjusting waist belt','pulling sleeve cuffs','hooking accessory'],
+    sensualZh: ['揉捏胸前布料','擁抱貼近身體','搓揉手臂線條','慢滑過側腰','托住雙峰輪廓','揉過臀側布料','拉鬆肩帶','勾住腰鏈','慢拉領口','按住胸口起伏','搓揉大腿外側','擁住後頸','揉捏肩背線條','交纏在腰前','裙襬拉高但保持遮擋','拉住吊帶扣','慢撫腹側','環抱胸前布料','搓揉掌心靠近鏡頭','捏住緞帶繃緊','輕拍臀側','揉捏腰側布料','拉開外套露內搭','擁抱另一角色腰線','搓揉手腕內側'],
+    sensualEn: ['kneading fabric over chest','hugging close to body','rubbing along arm line','slowly sliding over side waist','cupping bust silhouette over fabric','kneading fabric over hip side','loosening shoulder strap','hooking waist chain','slowly opening neckline','covering rising chest','rubbing outer thigh','embracing nape','kneading shoulder-back line','intertwined at front waist','lifting hem while maintaining coverage','holding garter clasp','slowly stroking side abdomen','hugging front fabric','rubbing palms then moving close to camera','pinching satin ribbon taut','lightly patting hip side','kneading waist-side fabric','opening jacket to reveal inner styling','embracing another adult waist','rubbing inner wrist']
+  },
+  lower: {
+    normalZh: ['自然站姿','雙腿交叉站姿','側坐腿部延伸','膝蓋微彎','坐姿雙腳收攏','一腿前伸','階梯式坐姿','靠牆站姿','長裙垂落線條','步伐停格','跪坐保持端正','腳尖踮起','坐姿腿部斜放','盤腿坐姿','半跪拾起布料','側躺腿線延伸','站姿重心轉移','高低腿坐姿','腳踝交疊','膝上布料成焦點','腿部靠近畫面邊緣','腿部自然收折','扶膝坐姿','長靴線條展示','裙襬鋪展'],
+    normalEn: ['natural standing stance','crossed-leg standing stance','side-seated leg extension','slight knee bend','seated feet together','one leg extended forward','tiered seated position','wall-lean standing stance','long skirt drape line','paused walking step','upright kneeling sit','tiptoe emphasis','seated legs angled aside','cross-legged seated pose','half-kneel picking up fabric','side-lying leg-line extension','standing weight shift','high-low leg seated pose','ankles crossed','fabric over knees focal detail','legs near frame edge','naturally folded legs','seated with hands near knees','boot line display','spread skirt hem'],
+    sensualZh: ['腿部微張但保持遮擋','攤躺腿線延伸','跪姿腿部靠近鏡頭','側躺大腿成焦點','坐姿膝蓋分開但遮擋','一腿抬高調整鞋帶','慢拉絲襪邊緣','吊帶扣成焦點','臀腿曲線側向展示','低腰坐姿挑逗重心','趴姿腿部交疊','膝跪向鏡頭靠近','裙襬微掀但遮擋','腿部開合動勢停格','攤躺單腿彎曲','高衩布料露出腿線','腳尖勾住布料','大腿外側手掌停住','雙腿斜向鏡頭','臀側輕拍動作','跪坐腿部打開層次','腿部壓住薄紗','坐姿向後攤躺','側跪腰臀線突出','伸展到畫面前景'],
+    sensualEn: ['legs slightly open while maintaining coverage','sprawled recline with leg-line extension','kneeling legs close to camera','side-lying thigh emphasis','seated knees apart while maintaining coverage','one leg raised to adjust shoe strap','slowly pulling stocking edge','garter clasp focal detail','side display of hip-leg curve','low seated teasing weight','prone crossed legs','kneeling approach toward camera','hem slightly lifted while maintaining coverage','paused opening-closing leg motion','sprawled recline with one leg bent','high-slit fabric showing leg line','toes hooking fabric','palm paused on outer thigh','legs angled toward camera','light hip-side pat motion','kneeling sit with opened leg layering','legs pressing sheer fabric','seated lean-back sprawl','side-kneel emphasizing waist-hip line','extension into foreground']
+  },
+  posture: {
+    normalZh: ['站著正面構圖','站著側身構圖','坐著端正構圖','坐著前傾構圖','躺著側臥構圖','躺著仰臥構圖','跪坐端正構圖','半跪構圖','靠牆站立','靠椅坐姿','趴臥看向鏡頭','盤腿坐著','低身蹲姿','階梯高低坐姿','背對回望','框線旁倚靠','站坐轉換瞬間','一手支撐坐姿','雙手支撐跪姿','伸展手臂站姿','長袍披掛站姿','坐在邊緣','地面側坐','回身跨步','自然慢舞站位'],
+    normalEn: ['standing front composition','standing side-turn composition','upright seated composition','seated forward lean composition','side-lying composition','supine lying composition','upright kneeling-sit composition','half-kneeling composition','standing wall lean','seated leaning on chair','prone looking toward camera','cross-legged seated','low crouch','tiered high-low seated','back-facing glance over shoulder','leaning by frame edge','between standing and sitting','seated with one-hand support','kneeling with both-hand support','standing with arms extended','standing with robe drape','seated on edge','side-seated on floor','turning step back','slow-dance standing placement'],
+    sensualZh: ['慵懶攤躺','低腰坐著後仰','跪著向鏡頭靠近','趴著回頭挑逗','側躺腿線拉長','仰躺單腿彎曲','坐著膝蓋分開但遮擋','半跪腰線前傾','靠牆拱身','坐在邊緣低頭咬唇','跪坐整理吊帶','攤躺伸手邀請','側坐拉開衣料','趴臥腿部交疊','坐著向鏡頭滑近','仰躺薄紗覆身','跪姿背線突出','站姿肩帶滑落','側躺扶住腰臀','低身蹲姿抬眼','坐姿腿部斜向前景','半躺胸前布料成焦點','趴姿向前伸展','跪坐腿部開合層次','站姿臀腿側線展示'],
+    sensualEn: ['languid sprawled recline','low seated backward lean','kneeling close toward camera','prone teasing glance back','side-lying elongated leg line','supine with one leg bent','seated knees apart with coverage','half-kneel forward waist line','arched wall lean','edge-seated lowered lip bite','kneeling-sit adjusting straps','sprawled reaching invitation','side-seated opening fabric','prone crossed legs','seated sliding closer to camera','supine under sheer fabric','kneeling with emphasized back line','standing with slipping shoulder strap','side-lying holding waist-hip line','low crouch with raised eyes','seated legs angled into foreground','half-reclined with front fabric focus','prone forward stretch','kneeling-sit with opened leg layering','standing side display of hip-leg line']
+  }
+};
+
+function makeActionDetailOptions(mode) {
+  const group = actionDetailSeeds[mode] || actionDetailSeeds.above;
+  return [
+    ...group.normalZh.map((zh, index) => option(`${ACTION_MODE_OPTIONS.find((item) => item.rarity === mode).zh}｜正常｜${zh}`, group.normalEn[index], mode)),
+    ...group.sensualZh.map((zh, index) => option(`${ACTION_MODE_OPTIONS.find((item) => item.rarity === mode).zh}｜情慾｜${zh}`, group.sensualEn[index], mode))
+  ];
+}
+
+const ACTION_DETAIL_OPTIONS = Object.fromEntries(Object.keys(actionDetailSeeds).map((mode) => [mode, makeActionDetailOptions(mode)]));
+const ALL_ACTION_DETAIL_OPTIONS = Object.values(ACTION_DETAIL_OPTIONS).flat();
+
 const CUSTOMIZATION_OPTIONS = {
   genders: GENDER_OPTIONS,
   faces: FACE_OPTIONS,
@@ -1495,13 +926,76 @@ const CUSTOMIZATION_OPTIONS = {
   bodyFeatures,
   counts: COUNT_OPTIONS,
   accessories: ACCESSORY_OPTIONS,
-  actions: ACTION_OPTIONS,
-  poses: POSE_OPTIONS,
+  actionModes: ACTION_MODE_OPTIONS,
+  actionDetails: ALL_ACTION_DETAIL_OPTIONS,
+  actions: ALL_ACTION_DETAIL_OPTIONS,
+  poses: [],
   scenes: [
     ...dailyScenePairs.map(([zh, en]) => option(zh, en, 'daily')),
     ...rareScenePairs.map(([zh, en]) => option(zh, en, 'rare'))
   ]
 };
+
+
+function makePairs(prefixZh, prefixEn, count, rarity) {
+  return Array.from({ length: count }, (_, index) => [`${prefixZh}${String(index + 1).padStart(3, '0')}`, `${prefixEn} ${index + 1}`]).map(([zh, en]) => option(zh, en, rarity));
+}
+
+COMPOSITION_STRUCTURES.splice(0, COMPOSITION_STRUCTURES.length,
+  ...[
+    ['中央主體', 'centered subject'], ['三分法', 'rule of thirds'], ['對角線', 'diagonal layout'], ['前中後景', 'foreground midground background layers'], ['留白', 'negative space'],
+    ['滿版', 'full frame'], ['水平線', 'horizontal line'], ['垂直線', 'vertical line'], ['引導線', 'leading lines'], ['框中框', 'frame within frame'],
+    ['三角形', 'triangle layout'], ['圓形視覺', 'circular visual path'], ['左右平衡', 'left-right balance'], ['上下平衡', 'top-bottom balance'], ['偏心主體', 'off-center subject'],
+    ['近大遠小', 'near-large far-small depth'], ['局部裁切', 'cropped detail'], ['半身', 'half body'], ['全身', 'full body'], ['電影寬幅', 'cinematic widescreen']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+COUNT_OPTIONS.splice(0, COUNT_OPTIONS.length,
+  ...[
+    ['單人', 'single adult'], ['雙人', 'two adults'], ['三人', 'three adults'], ['四人', 'four adults'], ['多人', 'multi-adult group'],
+    ['單人半身', 'single adult half body'], ['單人全身', 'single adult full body'], ['雙人面對面', 'two adults face to face'], ['雙人並肩', 'two adults side by side'], ['雙人前後站位', 'two adults front-back placement'],
+    ['三人並列', 'three adults side by side'], ['三人主副關係', 'three adults lead and supporting roles'], ['四人派對', 'four-adult party'], ['多人舞台', 'multi-adult stage group'], ['單人鏡前', 'single adult near mirror'],
+    ['雙人鏡前', 'two adults near mirror'], ['單人坐姿', 'single adult seated'], ['單人站姿', 'single adult standing'], ['雙人高低差', 'two adults height contrast'], ['三人層次', 'three adults layered placement']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+bodyFeatures.splice(0, bodyFeatures.length,
+  ...[
+    ['鎖骨小痣','beauty mark near collarbone'], ['眼下淚痣','tear mole under eye'], ['肩上刺青','shoulder tattoo'], ['手腕刺青','wrist tattoo'], ['頸側紋身','neck-side tattoo'],
+    ['耳骨環','helix piercing'], ['肚臍環','navel piercing'], ['鎖骨鏈印痕','subtle necklace mark'], ['手指戒痕','ring mark on finger'], ['淡雀斑','soft freckles'],
+    ['曬痕邊界','subtle tan line'], ['指甲彩繪','nail art'], ['唇珠明顯','defined cupid bow'], ['眼尾亮片','eye-corner glitter'], ['肩頸香水光澤','perfume sheen on shoulder-neck'],
+    ['髮際碎髮','baby hair at hairline'], ['耳後髮絲','hair strands behind ear'], ['膝側小痣','small mole near knee'], ['腳踝鍊痕','anklet mark'], ['掌心薄繭','subtle palm callus'],
+    ['手背青筋','subtle hand veins'], ['肩帶壓痕','strap indentation'], ['腰鏈壓痕','waist-chain indentation'], ['手套壓痕','glove indentation'], ['淡疤點綴','subtle scar accent'],
+    ['耳垂紅暈','earlobe blush'], ['眼影暈染','smudged eyeshadow'], ['髮尾挑染','dyed hair tips'], ['臨時貼紙','temporary sticker accent'], ['水鑽貼飾','rhinestone sticker accent']
+  ].map(([zh, en]) => option(zh, en))
+);
+
+CUSTOMIZATION_OPTIONS.outfits.splice(0, CUSTOMIZATION_OPTIONS.outfits.length,
+  ...makePairs('男正常服裝', 'male everyday outfit', 100, 'male-normal'),
+  ...makePairs('男情慾服裝', 'male sensual outfit', 100, 'male-sensual'),
+  ...makePairs('女正常服裝', 'female everyday outfit', 100, 'female-normal'),
+  ...makePairs('女情慾服裝', 'female sensual outfit', 100, 'female-sensual')
+);
+
+CUSTOMIZATION_OPTIONS.scenes.splice(0, CUSTOMIZATION_OPTIONS.scenes.length,
+  ...makePairs('日常場景', 'everyday lived-in scene', 100, 'normal'),
+  ...makePairs('祕境場景', 'taboo mysterious scene', 100, 'taboo')
+);
+
+CUSTOMIZATION_OPTIONS.accessories.push(...makePairs('祕密道具', 'forbidden styling prop', 50, 'taboo'));
+
+ACTION_MODE_OPTIONS.splice(0, ACTION_MODE_OPTIONS.length,
+  option('姿態', 'posture', 'posture'),
+  option('肩上', 'above shoulders', 'above'),
+  option('手部', 'hands', 'hands'),
+  option('下半身', 'lower body', 'lower')
+);
+
+for (const [modeKey, label] of [['above', '肩上'], ['hands', '手部'], ['lower', '下半身'], ['posture', '姿態']]) {
+  for (const detail of ACTION_DETAIL_OPTIONS[modeKey] || []) {
+    detail.zh = detail.zh.replace(/^.*?｜/, `${label}｜`);
+  }
+}
 
 function normalizeInput(input) {
   return String(input ?? '').trim().replace(/\s+/g, ' ');
@@ -1545,12 +1039,89 @@ function containsCjk(value) {
   return /[\u3400-\u9fff]/.test(String(value ?? ''));
 }
 
+
+const CJK_TO_ENGLISH_DIRECTION_TERMS = [
+  ['淫亂的迪士尼公主', 'debauched adult Disney-inspired princess archetype'],
+  ['迪士尼公主', 'Disney-inspired princess archetype'],
+  ['迪士尼', 'Disney-inspired classic animated fairy-tale style'],
+  ['淫亂的', 'debauched adult sensual'],
+  ['淫亂', 'debauched adult sensual'],
+  ['放蕩', 'uninhibited adult sensual'],
+  ['色氣', 'erotic glamour'],
+  ['吸血鬼女王', 'vampire queen'],
+  ['吸血鬼', 'vampire'],
+  ['女王', 'queen'],
+  ['珍珠配件', 'pearl accessories'],
+  ['珍珠', 'pearl'],
+  ['配件', 'accessories'],
+  ['賽博偶像', 'cyber idol'],
+  ['賽博', 'cyber'],
+  ['偶像', 'idol'],
+  ['優雅護理師', 'elegant nurse'],
+  ['護理師', 'nurse'],
+  ['護士', 'nurse'],
+  ['原創角色', 'original character'],
+  ['原創', 'original'],
+  ['角色', 'character'],
+  ['人設', 'character design'],
+  ['作品風格', 'franchise-inspired style direction'],
+  ['暗黑精靈', 'dark elf'],
+  ['惡魔', 'demon'],
+  ['天使', 'angel'],
+  ['精靈', 'elf'],
+  ['貓女', 'catwoman-inspired adult heroine'],
+  ['兔女郎', 'bunny-inspired adult performer'],
+  ['魔法師', 'mage'],
+  ['女巫', 'witch'],
+  ['公主', 'princess'],
+  ['皇后', 'empress'],
+  ['騎士', 'knight'],
+  ['修女', 'adult nun-inspired styling'],
+  ['秘書', 'secretary'],
+  ['老師', 'adult teacher-inspired styling'],
+  ['成熟', 'mature adult'],
+  ['性感', 'sensual'],
+  ['可愛', 'cute adult'],
+  ['冷艷', 'cool glamorous'],
+  ['華麗', 'ornate'],
+  ['黑色', 'black'],
+  ['白色', 'white'],
+  ['紅色', 'red'],
+  ['金色', 'gold'],
+  ['銀色', 'silver'],
+  ['蕾絲', 'lace'],
+  ['緞面', 'satin'],
+  ['皮革', 'leather']
+];
+
+function translateCjkDirectionToEnglish(value, fallback) {
+  let translated = normalizeInput(value);
+
+  for (const { pattern, replacement } of PHRASE_RULES) {
+    translated = translated.replace(pattern, ` ${replacement} `);
+  }
+
+  for (const [zh, en] of CJK_TO_ENGLISH_DIRECTION_TERMS) {
+    translated = translated.replaceAll(zh, ` ${en} `);
+  }
+
+  translated = translated
+    .replace(/[\u3400-\u9fff]+/g, ' ')
+    .replace(/[，。、；：！？「」『』（）【】]/g, ' ')
+    .replace(/\b(the|a|an)\b/gi, ' ')
+    .replace(/的/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return translated || fallback;
+}
+
 function toCopySafeEnglishSubject(value) {
   if (!containsCjk(value)) {
     return value;
   }
 
-  return 'adult sensual visual direction based on the reviewed source request';
+  return translateCjkDirectionToEnglish(value, 'adult sensual visual direction based on the reviewed source request');
 }
 
 function getPresetOption(list, value) {
@@ -1568,26 +1139,9 @@ function getCustomizationOption(groupName, value) {
   return getPresetOption(group, value);
 }
 
-function getActionGroupForCount(countZh) {
-  if (/三人/.test(countZh)) {
-    return 'three';
-  }
-
-  if (/雙人|兩人/.test(countZh)) {
-    return 'two';
-  }
-
-  return 'single';
-}
-
-function getActionsForCount(countZh) {
-  const group = getActionGroupForCount(countZh);
-  return ACTION_OPTIONS.filter((actionOption) => actionOption.rarity === group);
-}
-
-function getPosesForCount(countZh) {
-  const group = getActionGroupForCount(countZh);
-  return POSE_OPTIONS.filter((poseOption) => poseOption.rarity === group);
+function getActionDetailsForMode(modeZh) {
+  const selectedMode = ACTION_MODE_OPTIONS.find((modeOption) => modeOption.zh === modeZh || modeOption.rarity === modeZh) || ACTION_MODE_OPTIONS[0];
+  return ACTION_DETAIL_OPTIONS[selectedMode.rarity] || ACTION_DETAIL_OPTIONS.above;
 }
 
 function isMultiCharacterCount(countZh) {
@@ -1610,9 +1164,33 @@ function validateCustomDetailInput(input) {
     ok: true,
     details,
     englishDetails: containsCjk(details)
-      ? 'user-provided multi-character detail customization, apply only as safety-compliant adult styling, roles, spacing, and interaction notes'
+      ? translateCjkDirectionToEnglish(details, 'safety-compliant adult cosplay character direction based on the reviewed Chinese notes')
       : details
   };
+}
+
+function validateCharacterDetailInput(input) {
+  if (typeof input === 'object' && input !== null) {
+    const details = normalizeInput(input.zh);
+    const englishDetails = normalizeInput(input.en);
+
+    if (!details && !englishDetails) {
+      return { ok: true, details: '', englishDetails: '' };
+    }
+
+    const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(`${details} ${englishDetails}`));
+    if (blocked) {
+      return { ok: false, reason: blocked.reason };
+    }
+
+    return {
+      ok: true,
+      details,
+      englishDetails: englishDetails || translateCjkDirectionToEnglish(details, 'safety-compliant adult per-character settings')
+    };
+  }
+
+  return validateCustomDetailInput(input);
 }
 
 function hasSceneLeak(text) {
@@ -1662,26 +1240,27 @@ function rewritePrompt(input, options = {}) {
     };
   }
 
-  const customConditionValidation = validateOptionalConditions(options.customConditions);
-  if (!customConditionValidation.ok) {
+  const isDesignerMode = options.audienceMode === 'designer';
+  const sensualIntentPattern = /淫亂|情慾|色情|色氣|放蕩|性感|裸|做愛|性交|自慰|高潮|sensual|erotic|sexual|nude|debauched/i;
+  if (isDesignerMode && sensualIntentPattern.test(`${validation.prompt} ${options.cosplayPrompt || ''}`)) {
     return {
       ok: false,
       prompt: '',
       englishPrompt: '',
       chineseConfirmation: '',
-      reason: customConditionValidation.reason,
+      reason: '設友模式全域阻擋色情與情慾風格；請切換為一般設計方向或重新登入色友並確認成年人合意規範。',
       screened: false
     };
   }
 
-  const multiCharacterDetailValidation = validateCustomDetailInput(options.multiCharacterDetails);
-  if (!multiCharacterDetailValidation.ok) {
+  const cosplayValidation = validateCustomDetailInput(options.cosplayPrompt);
+  if (!cosplayValidation.ok) {
     return {
       ok: false,
       prompt: '',
       englishPrompt: '',
       chineseConfirmation: '',
-      reason: multiCharacterDetailValidation.reason,
+      reason: cosplayValidation.reason,
       screened: false
     };
   }
@@ -1707,10 +1286,8 @@ function rewritePrompt(input, options = {}) {
   const count = getCustomizationOption('counts', options.count);
   const scene = getCustomizationOption('scenes', options.scene);
   const accessory = getCustomizationOption('accessories', options.accessory);
-  const actionGroupOptions = getActionsForCount(count.zh);
-  const action = getPresetOption(actionGroupOptions, options.action);
-  const poseGroupOptions = getPosesForCount(count.zh);
-  const pose = getPresetOption(poseGroupOptions, options.pose);
+  const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
+  const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1723,49 +1300,67 @@ function rewritePrompt(input, options = {}) {
     chineseRewritten = chineseRewritten.replace(pattern, replacement);
   }
 
+  const characterDetailLines = Array.isArray(options.characterDetails)
+    ? options.characterDetails.map((detail, index) => ({ index: index + 1, ...validateCharacterDetailInput(detail) }))
+    : [];
+  const safeCharacterDetailLines = isMultiCharacterCount(count.zh)
+    ? characterDetailLines.filter((detail) => detail.ok && detail.details)
+    : [];
+  const hasPerCharacterDetails = safeCharacterDetailLines.length > 0;
+  const chineseCharacterFields = hasPerCharacterDetails
+    ? ['全局角色設定：已由角色卡分別指定，避免和 Cosplay 或全局選項重複']
+    : [
+      `性別：${gender.zh}`,
+      `種族：${race.zh}`,
+      `情緒：${emotion.zh}`,
+      `年齡級距：${ageBracket.zh}`,
+      `職業：${occupation.zh}`,
+      `身材比例：${bodyProportion.zh}`,
+      `臉蛋：${face.zh}`,
+      `身上特徵：${bodyFeature.zh}`,
+      `服裝：${outfit.zh}`,
+      `服裝配色：${outfitColor.zh}`,
+      `服裝材質：${outfitMaterial.zh}`,
+      `服裝完整度：${outfitIntegrity.zh}`
+    ];
+  const englishCharacterFields = hasPerCharacterDetails
+    ? ['global character defaults: omitted because per-character detail lines are specified to avoid duplicate settings']
+    : [
+      `gender: ${gender.en}`,
+      `race: ${race.en}`,
+      `emotion: ${emotion.en}`,
+      `age bracket: ${ageBracket.en}`,
+      `occupation: ${occupation.en}`,
+      `body proportion: ${bodyProportion.en}`,
+      `face: ${face.en}`,
+      `body feature: ${bodyFeature.en}`,
+      `outfit: ${outfit.en}`,
+      `outfit color palette: ${outfitColor.en}`,
+      `outfit material: ${outfitMaterial.en}`,
+      `outfit integrity: ${outfitIntegrity.en}`
+    ];
+
   const chinesePrompt = [
     `主題／動作：${chineseRewritten}`,
-    `性別：${gender.zh}`,
-    `種族：${race.zh}`,
-    `情緒：${emotion.zh}`,
+    ...chineseCharacterFields,
     `時間點：${timePoint.zh}`,
-    `年齡級距：${ageBracket.zh}`,
-    `職業：${occupation.zh}`,
-    `身材比例：${bodyProportion.zh}`,
-    `臉蛋：${face.zh}`,
-    `身上特徵：${bodyFeature.zh}`,
-    `服裝：${outfit.zh}`,
-    `服裝配色：${outfitColor.zh}`,
-    `服裝材質：${outfitMaterial.zh}`,
-    `服裝完整度：${outfitIntegrity.zh}`,
-    `人數／構圖：${count.zh}`,
+    `人數：${count.zh}`,
     `場景：${scene.zh}`,
     `配件／道具：${accessory.zh}`,
     `光感：${lighting.zh}`,
     `鏡位：${camera.zh}`,
     `構圖結構：${composition.zh}`,
     `畫風：${artStyle.zh}`,
-    `動作：${action.zh}`,
-    `體位／互動：${pose.zh}`,
+    `動作／姿態類型：${actionMode.zh}`,
+    `動作／姿態細項：${actionDetail.zh}`,
     `氛圍：${INTENSITY_WORDS[intensity]}`,
-    '優先規則：最上方原始提示詞若與下方客製化選項重樣或衝突，以原始提示詞為主',
+    `情慾強度運用：${INTENSITY_PROFILES[intensity].zh}`,
+    '優先規則：最上方 Cosplay 若與下方客製化選項重樣或衝突，以 Cosplay 為主',
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
 
-  if (customConditionValidation.conditions) {
-    chinesePrompt.push(`客製化條件：${customConditionValidation.conditions}`);
-  }
-
-  const characterDetailLines = Array.isArray(options.characterDetails)
-    ? options.characterDetails.map((detail, index) => ({ index: index + 1, ...validateCustomDetailInput(detail) }))
-    : [];
-  const safeCharacterDetailLines = isMultiCharacterCount(count.zh)
-    ? characterDetailLines.filter((detail) => detail.ok && detail.details)
-    : [];
-
-  const shouldApplyMultiCharacterDetails = isMultiCharacterCount(count.zh) && multiCharacterDetailValidation.details;
-  if (shouldApplyMultiCharacterDetails) {
-    chinesePrompt.push(`多人細節客製化：${multiCharacterDetailValidation.details}`);
+  if (cosplayValidation.details) {
+    chinesePrompt.push(`Cosplay：${cosplayValidation.details}`);
   }
 
   for (const characterDetail of safeCharacterDetailLines) {
@@ -1776,41 +1371,27 @@ function rewritePrompt(input, options = {}) {
 
   const englishPrompt = [
     `subject/action: ${englishSubject}`,
-    `gender: ${gender.en}`,
-    `race: ${race.en}`,
-    `emotion: ${emotion.en}`,
+    ...englishCharacterFields,
     `time point: ${timePoint.en}`,
-    `age bracket: ${ageBracket.en}`,
-    `occupation: ${occupation.en}`,
-    `body proportion: ${bodyProportion.en}`,
-    `face: ${face.en}`,
-    `body feature: ${bodyFeature.en}`,
-    `outfit: ${outfit.en}`,
-    `outfit color palette: ${outfitColor.en}`,
-    `outfit material: ${outfitMaterial.en}`,
-    `outfit integrity: ${outfitIntegrity.en}`,
-    `character count/composition: ${count.en}`,
+    `character count: ${count.en}`,
     `scene: ${scene.en}`,
     `accessory/prop: ${accessory.en}`,
     `lighting: ${lighting.en}`,
     `camera angle/viewpoint: ${camera.en}`,
     `composition structure: ${composition.en}`,
     `art style: ${artStyle.en}`,
-    `action: ${action.en}`,
-    `position/interaction: ${pose.en}`,
+    `action/posture mode: ${actionMode.en}`,
+    `action/posture detail: ${actionDetail.en}`,
     `tone: ${DEFAULT_STYLE.tone}`,
     `intensity: ${INTENSITY_WORDS[intensity]}`,
+    `intensity application: ${INTENSITY_PROFILES[intensity].en}`,
     `quality: ${DEFAULT_STYLE.quality}`,
-    'priority: if the source prompt conflicts with or duplicates preset options, the source prompt takes precedence',
+    'priority: if the Cosplay input conflicts with or duplicates global preset options, the Cosplay input takes precedence; per-character detail lines override only that specific character and omit AI-decide fields to avoid duplicate settings',
     `safety: ${DEFAULT_STYLE.safety}`
   ];
 
-  if (customConditionValidation.conditions) {
-    englishPrompt.push(`custom conditions: ${customConditionValidation.conditions}`);
-  }
-
-  if (shouldApplyMultiCharacterDetails) {
-    englishPrompt.push(`multi-character custom details: ${multiCharacterDetailValidation.englishDetails}`);
+  if (cosplayValidation.details) {
+    englishPrompt.push(`cosplay/character direction: ${cosplayValidation.englishDetails}`);
   }
 
   for (const characterDetail of safeCharacterDetailLines) {
@@ -2010,14 +1591,16 @@ if (typeof module !== 'undefined') {
     OCCUPATION_OPTIONS,
     BODY_PROPORTION_OPTIONS,
     AGE_BRACKET_OPTIONS,
-    ACTION_OPTIONS,
+    INTENSITY_PROFILES,
+    ACTION_MODE_OPTIONS,
+    ACTION_DETAIL_OPTIONS,
+    ALL_ACTION_DETAIL_OPTIONS,
     ACCESSORY_OPTIONS,
     OUTFIT_MATERIAL_OPTIONS,
     CUSTOMIZATION_OPTIONS,
     IMAGE_TO_VIDEO_TIER_PROMPTS,
     getImageToVideoPromptChoices,
-    getActionsForCount,
-    getPosesForCount,
+    getActionDetailsForMode,
     checkElementBoundaries
   };
 }
