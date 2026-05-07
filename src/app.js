@@ -22,6 +22,11 @@ const scene = document.querySelector('#scene');
 const accessory = document.querySelector('#accessory');
 const actionMode = document.querySelector('#actionMode');
 const actionDetail = document.querySelector('#actionDetail');
+const sensualOutfit = document.querySelector('#sensualOutfit');
+const sensualScene = document.querySelector('#sensualScene');
+const sensualAccessory = document.querySelector('#sensualAccessory');
+const sensualActionMode = document.querySelector('#sensualActionMode');
+const sensualActionDetail = document.querySelector('#sensualActionDetail');
 const autoVideoPanel = document.querySelector('#autoVideoPanel');
 const autoVideoChoice = document.querySelector('#autoVideoChoice');
 const autoVideoConfirmation = document.querySelector('#autoVideoConfirmation');
@@ -114,8 +119,9 @@ function updateAudienceMode(mode, gmail) {
     setTextStep('visual');
   }
   authStatus.textContent = mode === 'sensual'
-    ? `已用 ${gmail || 'Gmail'} 登入色友；情慾分頁與成人合意規範已啟用。`
-    : `已用 ${gmail || 'Gmail'} 登入設友；色情與情慾風格全域阻擋。`;
+    ? `已用 ${gmail || 'Gmail'} 登入色友；獨立成人向專區與合意規範已啟用。`
+    : `已用 ${gmail || 'Gmail'} 登入設友；目前只顯示一般設計素材。`;
+  setupCustomizationControls();
   authStatus.dataset.state = 'success';
 }
 
@@ -255,6 +261,30 @@ function setOutputVisibility(kind, isVisible) {
   }
 }
 
+const DESIGNER_BLOCKED_OPTION_PATTERN = /情慾|色情|性感|誘惑|貼身|私房|夜色|裸|近乎未著|滑落|半透明|透明|吊襪|束縛|手銬|harness|胸鏈|腰鏈|身體鏈|adult sensual|sensual|seduction|alluring|body-hugging|nude|unclothed|garter|restraint|cuff|chest-chain|body chain|transparent/i;
+
+function isDesignerSafeOption(optionText) {
+  const optionObject = typeof optionText === 'string' ? { zh: optionText, en: optionText } : optionText;
+  const rarity = optionObject?.rarity || '';
+
+  if (/sensual|intimate|taboo/.test(rarity)) {
+    return false;
+  }
+
+  return !DESIGNER_BLOCKED_OPTION_PATTERN.test(`${optionObject?.zh || ''} ${optionObject?.en || ''}`);
+}
+
+function getDesignerOptions(options) {
+  return options.filter(isDesignerSafeOption);
+}
+
+function getSensualOnlyOptions(options) {
+  return options.filter((optionText) => {
+    const optionObject = typeof optionText === 'string' ? { zh: optionText, en: optionText } : optionText;
+    return /sensual|intimate|taboo/.test(optionObject?.rarity || '') || DESIGNER_BLOCKED_OPTION_PATTERN.test(`${optionObject?.zh || ''} ${optionObject?.en || ''}`);
+  });
+}
+
 function getOptionLabel(optionText) {
   return typeof optionText === 'string' ? optionText : optionText.zh;
 }
@@ -313,11 +343,21 @@ function updateCharacterCards() {
 
 function updateActionDetailOptions() {
   const previousDetail = actionDetail.value;
-  const detailOptions = getActionDetailsForMode(actionMode.value);
+  const detailOptions = getDesignerOptions(getActionDetailsForMode(actionMode.value));
   populateSelect(actionDetail, detailOptions);
 
   if (detailOptions.some((option) => option.zh === previousDetail)) {
     actionDetail.value = previousDetail;
+  }
+}
+
+function updateSensualActionDetailOptions() {
+  const previousDetail = sensualActionDetail.value;
+  const detailOptions = getSensualOnlyOptions(getActionDetailsForMode(sensualActionMode.value));
+  populateSelect(sensualActionDetail, detailOptions);
+
+  if (detailOptions.some((option) => option.zh === previousDetail)) {
+    sensualActionDetail.value = previousDetail;
   }
 }
 
@@ -330,11 +370,11 @@ function setupCharacterControls() {
     populateSelect(document.querySelector(`#character${index}Age`), AGE_BRACKET_OPTIONS);
     populateSelect(document.querySelector(`#character${index}Body`), BODY_PROPORTION_OPTIONS);
     populateSelect(document.querySelector(`#character${index}Face`), CUSTOMIZATION_OPTIONS.faces);
-    populateSelect(document.querySelector(`#character${index}Outfit`), CUSTOMIZATION_OPTIONS.outfits);
+    populateSelect(document.querySelector(`#character${index}Outfit`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
     populateSelect(document.querySelector(`#character${index}OutfitColor`), CUSTOMIZATION_OPTIONS.outfitColors);
     populateSelect(document.querySelector(`#character${index}OutfitMaterial`), CUSTOMIZATION_OPTIONS.outfitMaterials);
-    populateSelect(document.querySelector(`#character${index}BodyFeature`), CUSTOMIZATION_OPTIONS.bodyFeatures);
-    populateSelect(document.querySelector(`#character${index}OutfitIntegrity`), CUSTOMIZATION_OPTIONS.outfitIntegrity);
+    populateSelect(document.querySelector(`#character${index}BodyFeature`), getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
+    populateSelect(document.querySelector(`#character${index}OutfitIntegrity`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   }
 }
 
@@ -403,17 +443,22 @@ function setupCustomizationControls() {
   populateSelect(occupation, OCCUPATION_OPTIONS);
   populateSelect(bodyProportion, BODY_PROPORTION_OPTIONS);
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
-  populateSelect(outfit, CUSTOMIZATION_OPTIONS.outfits);
+  populateSelect(outfit, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
   populateSelect(outfitMaterial, CUSTOMIZATION_OPTIONS.outfitMaterials);
-  populateSelect(bodyFeature, CUSTOMIZATION_OPTIONS.bodyFeatures);
-  populateSelect(outfitIntegrity, CUSTOMIZATION_OPTIONS.outfitIntegrity);
+  populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
+  populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
-  populateSelect(accessory, CUSTOMIZATION_OPTIONS.accessories);
-  populateSelect(scene, CUSTOMIZATION_OPTIONS.scenes);
+  populateSelect(accessory, getDesignerOptions(CUSTOMIZATION_OPTIONS.accessories));
+  populateSelect(scene, getDesignerOptions(CUSTOMIZATION_OPTIONS.scenes));
   populateSelect(actionMode, ACTION_MODE_OPTIONS);
+  populateSelect(sensualOutfit, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.outfits));
+  populateSelect(sensualScene, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.scenes));
+  populateSelect(sensualAccessory, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.accessories));
+  populateSelect(sensualActionMode, ACTION_MODE_OPTIONS);
   setupCharacterControls();
   updateActionDetailOptions();
+  updateSensualActionDetailOptions();
   updateCharacterCards();
 }
 
@@ -491,7 +536,7 @@ function buildAutoVideoChoices(textPrompt) {
   const variants = [
     ['AI 1｜柔和呼吸運鏡', '柔和呼吸與慢推鏡；髮絲、布料輕微晃動，保持原本構圖。', 'subtle breathing, gentle hair and fabric motion, slow cinematic push-in, preserve the source composition'],
     ['AI 2｜眼神與唇部微動', '眼神慢慢移動、唇部微表情與輕微轉頭，不加入露骨行為動畫。', 'slow eye movement, soft lip micro-expression, slight head turn, elegant camera easing, no explicit act animation'],
-    ['AI 3｜手部與服裝細節', '手部整理造型、布料自然位移、配件閃光，維持可控成人曖昧張力。', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled adult sensual tension'],
+    ['AI 3｜手部與服裝細節', '手部整理造型、布料自然位移、配件閃光，維持精緻畫面張力。', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled elegant visual tension'],
     ['AI 4｜姿態重心變化', '姿態重心慢慢轉移、身體線條有優雅動勢，維持藝術遮擋。', 'slow posture weight shift, graceful body-line motion, light parallax, keep tasteful artistic coverage'],
     ['AI 5｜電影感環繞鏡頭', '短距離電影感環繞鏡頭、景深層次與氛圍光漂移，適合循環。', 'short cinematic orbit, layered depth, atmospheric light drift, smooth loop-ready motion']
   ];
@@ -657,6 +702,7 @@ count.addEventListener('change', () => {
 });
 
 actionMode.addEventListener('change', updateActionDetailOptions);
+sensualActionMode.addEventListener('change', updateSensualActionDetailOptions);
 
 autoVideoChoice.addEventListener('change', () => {
   const choices = buildAutoVideoChoices(textResultPrompt.value);
@@ -690,11 +736,19 @@ imageInput.addEventListener('change', async () => {
       imageDescription: imageDescription.value,
       desiredMotion: desiredMotion.value
     });
-    setStatus(imageVideoStatus, `已讀取圖片，初步色情程度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
+    setStatus(imageVideoStatus, `已讀取圖片，初步成人向強度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
   } catch (error) {
     setStatus(imageVideoStatus, error.message, 'error');
   }
 });
+
+function getSensualOverride(generalValue, sensualValue) {
+  if (activeAudienceMode !== 'sensual') {
+    return generalValue;
+  }
+
+  return sensualValue && sensualValue !== 'AI判斷' ? sensualValue : generalValue;
+}
 
 rewriteButton.addEventListener('click', () => {
   const result = rewritePrompt(getTextRewriteSource(), {
@@ -712,7 +766,7 @@ rewriteButton.addEventListener('click', () => {
     occupation: occupation.value,
     bodyProportion: bodyProportion.value,
     face: face.value,
-    outfit: outfit.value,
+    outfit: getSensualOverride(outfit.value, sensualOutfit.value),
     outfitColor: outfitColor.value,
     outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
@@ -720,10 +774,10 @@ rewriteButton.addEventListener('click', () => {
     count: count.value,
     cosplayPrompt: cosplayPrompt.value,
     characterDetails: collectCharacterDetails(),
-    accessory: accessory.value,
-    scene: scene.value,
-    actionMode: actionMode.value,
-    actionDetail: actionDetail.value
+    accessory: getSensualOverride(accessory.value, sensualAccessory.value),
+    scene: getSensualOverride(scene.value, sensualScene.value),
+    actionMode: getSensualOverride(actionMode.value, sensualActionMode.value),
+    actionDetail: getSensualOverride(actionDetail.value, sensualActionDetail.value)
   });
 
   renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');
@@ -745,7 +799,7 @@ imageVideoButton.addEventListener('click', () => {
   });
 
   if (!result.ok) {
-    setStatus(imageVideoStatus, `未通過安全篩選，色情程度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
+    setStatus(imageVideoStatus, `未通過安全篩選，成人向強度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
     lastImageVideoResult = null;
     setImageVideoChoiceVisibility(false);
     renderVideoResult(result, result.reason);
@@ -754,7 +808,7 @@ imageVideoButton.addEventListener('click', () => {
 
   lastImageVideoResult = result;
   renderImageVideoChoice(result);
-  renderVideoResult(result, `圖轉影提示詞已產生，AI 估計色情程度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
+  renderVideoResult(result, `圖轉影提示詞已產生，AI 估計成人向強度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
   setStatus(imageVideoStatus, '圖轉影提示詞已通過安全篩選。', 'success');
 });
 

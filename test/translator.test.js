@@ -63,7 +63,7 @@ test('designer mode blocks erotic direction while sensual mode allows it after l
   const sensual = rewritePrompt('淫亂的迪士尼公主', { audienceMode: 'sensual' });
 
   assert.equal(designer.ok, false);
-  assert.match(designer.reason, /設友模式全域阻擋/);
+  assert.match(designer.reason, /設友模式只支援一般設計方向/);
   assert.equal(sensual.ok, true);
   assert.match(sensual.englishPrompt, /debauched adult Disney-inspired princess archetype/);
 });
@@ -107,7 +107,9 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-sensual').length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'female-normal').length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'female-sensual').length, 100);
-  assert.doesNotMatch(CUSTOMIZATION_OPTIONS.outfits.map(({ zh }) => zh).join(' '), /黑|白|紅|金|銀|藍|綠|紫/);
+  assert.ok(CUSTOMIZATION_OPTIONS.outfits.every(({ zh }) => !/服裝\d|場景\d|^男正常服裝|^男情慾服裝|^女正常服裝|^女情慾服裝/.test(zh)));
+  assert.ok(CUSTOMIZATION_OPTIONS.outfits.some(({ zh }) => zh === '休閒亞麻襯衫套裝'));
+  assert.ok(CUSTOMIZATION_OPTIONS.outfits.some(({ zh }) => zh === '私密絲緞睡袍造型'));
   assert.equal(CUSTOMIZATION_OPTIONS.outfitColors.length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.outfitMaterials.length, 50);
   assert.equal(OCCUPATION_OPTIONS.length, 50);
@@ -185,10 +187,10 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /種族：精靈族/);
   assert.match(result.chineseConfirmation, /情緒：咬唇表情/);
   assert.match(result.chineseConfirmation, /身上特徵：鎖骨小痣/);
-  assert.match(result.chineseConfirmation, /服裝：男正常服裝051/);
+  assert.match(result.chineseConfirmation, /服裝：休閒亞麻襯衫套裝/);
   assert.match(result.chineseConfirmation, /服裝配色：酒紅/);
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
-  assert.match(result.chineseConfirmation, /場景：日常場景051/);
+  assert.match(result.chineseConfirmation, /場景：現代公寓客廳/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
   assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
@@ -196,10 +198,10 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
   assert.match(result.englishPrompt, /body feature: beauty mark near collarbone/);
-  assert.match(result.englishPrompt, /outfit: male everyday outfit 51/);
+  assert.match(result.englishPrompt, /outfit: casual linen shirt set/);
   assert.match(result.englishPrompt, /outfit color palette: wine red/);
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
-  assert.match(result.englishPrompt, /scene: everyday lived-in scene 51/);
+  assert.match(result.englishPrompt, /scene: modern apartment living room/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
   assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
   assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen with pearl accessories/);
@@ -301,6 +303,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   const appSource = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
   const styleSource = fs.readFileSync(path.join(__dirname, '../src/styles.css'), 'utf8');
 
+  assert.match(indexSource, /<title>擬愛 NIAI<\/title>/);
+  assert.match(indexSource, /<h1>擬愛 NIAI<\/h1>/);
   assert.match(indexSource, /Easy Flow/);
   assert.match(indexSource, /<h2 id="input-title">Cosplay<\/h2>/);
   assert.doesNotMatch(indexSource, /sourcePrompt|原始描述|輸入提示詞/);
@@ -309,6 +313,10 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
   assert.match(indexSource, /data-text-step="sensual"/);
+  assert.match(indexSource, /色友專區/);
+  assert.match(indexSource, /sensualOutfit/);
+  assert.match(indexSource, /sensualScene/);
+  assert.match(indexSource, /sensualActionDetail/);
   assert.match(indexSource, /登入設友/);
   assert.match(indexSource, /登入色友/);
   assert.match(indexSource, /savePromptButton/);
@@ -319,6 +327,9 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
   assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
   assert.match(appSource, /function setTextStep/);
+  assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfits\)/);
+  assert.match(appSource, /populateSelect\(sensualOutfit, getSensualOnlyOptions\(CUSTOMIZATION_OPTIONS\.outfits\)\)/);
+  assert.match(appSource, /getSensualOverride/);
   assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
   assert.match(styleSource, /\.quick-guide/);
   assert.match(styleSource, /\.text-step-tabs/);
@@ -354,6 +365,7 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(indexSource, /character1Race/);
   assert.match(indexSource, /character1OutfitIntegrity/);
   assert.match(indexSource, /動作和姿態共用這一欄/);
+  assert.doesNotMatch(indexSource, /好設之圖NIAI|圖轉影色情程度/);
 });
 
 test('key prompt element groups do not contain duplicate visible labels', () => {
@@ -395,7 +407,7 @@ test('creates safe image-to-video prompts with Chinese meaning confirmation and 
 
   assert.equal(result.ok, true);
   assert.equal(result.prompt, result.englishPrompt);
-  assert.match(result.chineseConfirmation, /圖轉影色情程度：\d+\/10/);
+  assert.match(result.chineseConfirmation, /圖轉影成人向強度：\d+\/10/);
   assert.match(result.chineseConfirmation, /中文對照詞意/);
   assert.match(result.englishPrompt, /image-to-video prompt/);
   assert.match(result.englishPrompt, /adult-only explicitness rating: \d+\/10/);
@@ -403,7 +415,7 @@ test('creates safe image-to-video prompts with Chinese meaning confirmation and 
   assert.match(result.englishPrompt, /user requested safe motion: slow push-in/);
   assert.ok(result.promptChoices.length >= 2);
   assert.ok(result.promptChoices.every((choice) => choice.score >= 1 && choice.score <= 10));
-  assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|中文對照/);
+  assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|成人向強度|中文對照/);
 });
 
 test('rejects unsafe image-to-video wishes and returns revision advice', () => {

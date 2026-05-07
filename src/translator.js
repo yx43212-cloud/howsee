@@ -827,7 +827,7 @@ const rareScenePairs = [
   ['水晶吊燈宴會廳', 'crystal-chandelier ballroom'], ['黑金主題派對房間', 'black-and-gold theme party room'], ['暗紅地下爵士酒吧', 'dark-red underground jazz bar'], ['暗紫夜店 VIP 包廂', 'dark-purple nightclub VIP booth'], ['霓虹酒吧角落', 'neon bar corner'],
   ['未來感賽博套房', 'futuristic cyber suite'], ['銀色未來實驗室', 'silver futuristic laboratory'], ['星艦觀景艙', 'starship observation cabin'], ['月面基地休息室', 'lunar-base lounge'], ['賽博霓虹街景室內', 'cyber-neon street-view interior'],
   ['粉色霓虹化妝間', 'pink neon makeup room'], ['玻璃天井長廊', 'glass-atrium corridor'], ['海邊玻璃屋', 'seaside glass house'], ['沙漠帳篷豪華房', 'luxury desert tent room'], ['豪華郵輪艙房', 'luxury cruise cabin'],
-  ['私人花園玻璃亭', 'private garden glass pavilion'], ['玫瑰溫室長廊', 'rose greenhouse corridor'], ['月光花園涼亭', 'moonlit garden pavilion'], ['雪夜壁爐旁', 'snow-night fireplace area'], ['雨夜車窗旁', 'rain-night car-window interior'],
+  ['私人花園玻璃亭', 'private garden glass pavilion'], ['玫瑰溫室長廊', 'rose greenhouse corridor'], ['星夜花園涼亭', 'starlit garden pavilion'], ['雪夜壁爐旁', 'snow-night fireplace area'], ['雨夜車窗旁', 'rain-night car-window interior'],
   ['霧面玻璃淋浴間', 'frosted-glass shower room'], ['大理石浴池與霧氣', 'marble bath with mist'], ['私人桑拿房外間', 'private sauna anteroom'], ['黑白棋盤地板房間', 'black-and-white checkerboard room'], ['古董鏡牆房間', 'antique mirror-wall room'],
   ['深色木質酒窖', 'dark wooden wine cellar'], ['深色皮革書房', 'dark leather study'], ['金色電梯廳', 'golden elevator hall'], ['玻璃帷幕辦公室夜景', 'glass-curtain office night view'], ['午夜城市天橋', 'midnight city skybridge'],
   ['水晶洞窟臥榻區', 'crystal cavern lounge bed area'], ['精靈森林樹屋', 'elf forest treehouse'], ['暗精靈地下聖殿', 'dark-elf underground sanctuary'], ['龍巢寶庫內室', 'dragon-hoard inner chamber'], ['人魚海底宮殿', 'merfolk underwater palace'],
@@ -941,6 +941,64 @@ function makePairs(prefixZh, prefixEn, count, rarity) {
   return Array.from({ length: count }, (_, index) => [`${prefixZh}${String(index + 1).padStart(3, '0')}`, `${prefixEn} ${index + 1}`]).map(([zh, en]) => option(zh, en, rarity));
 }
 
+function makeNamedPresetPairs(stylePairs, itemPairs, rarity) {
+  return stylePairs.flatMap(([styleZh, styleEn]) => itemPairs.map(([itemZh, itemEn]) => option(`${styleZh}${itemZh}`, `${styleEn} ${itemEn}`, rarity)));
+}
+
+const maleNormalOutfitItems = [
+  ['亞麻襯衫套裝', 'linen shirt set'], ['飛行員夾克穿搭', 'bomber jacket outfit'], ['羊毛西裝三件式', 'wool three-piece suit'], ['工裝背心長褲', 'utility vest and trousers'], ['針織開襟衫搭配', 'knit cardigan ensemble'],
+  ['高領毛衣長褲', 'turtleneck and trousers'], ['長版風衣造型', 'long trench-coat styling'], ['騎士短外套套裝', 'rider jacket set'], ['寬版連帽上衣', 'oversized hoodie outfit'], ['襯衫馬甲搭配', 'shirt and waistcoat pairing'],
+  ['機能口袋外套', 'technical pocket jacket'], ['絲巾西裝外套', 'scarf with blazer styling'], ['典禮燕尾服', 'ceremonial tailcoat'], ['復古背帶褲', 'vintage suspenders trousers'], ['丹寧外套穿搭', 'denim jacket outfit'],
+  ['軍裝靈感長外套', 'military-inspired long coat'], ['騎馬靴長褲造型', 'riding boots and trousers'], ['廚師外套造型', 'chef jacket styling'], ['醫師長袍造型', 'doctor coat styling'], ['偵探大衣造型', 'detective overcoat styling'],
+  ['星艦制服套裝', 'starship uniform set'], ['魔法師長袍', 'mage robe'], ['武士羽織造型', 'samurai haori styling'], ['禮賓制服套裝', 'concierge uniform set'], ['舞者寬褲造型', 'dancer wide-trouser styling']
+];
+
+const femaleNormalOutfitItems = [
+  ['襯衫長裙套裝', 'shirt and long-skirt set'], ['針織洋裝穿搭', 'knit dress outfit'], ['西裝外套長褲', 'blazer and trousers'], ['長版風衣洋裝', 'trench dress styling'], ['高腰寬褲造型', 'high-waisted wide-trouser styling'],
+  ['百褶裙學院造型', 'pleated-skirt academy styling'], ['絲巾襯衫套裝', 'scarf and blouse set'], ['連帽外套短裙', 'hoodie and skirt outfit'], ['丹寧外套洋裝', 'denim jacket over dress'], ['毛呢斗篷造型', 'wool cape styling'],
+  ['典禮禮服長裙', 'ceremonial evening gown'], ['花藝圍裙洋裝', 'florist apron dress'], ['騎士外套長靴', 'rider jacket with tall boots'], ['空服制服套裝', 'flight-attendant uniform set'], ['護理師外套造型', 'nurse coat styling'],
+  ['書卷風背心裙', 'bookish pinafore dress'], ['調香師工作服', 'perfumer workwear'], ['畫家罩衫長裙', 'painter smock and skirt'], ['魔法師披肩洋裝', 'mage capelet dress'], ['星艦艦長制服', 'starship captain uniform'],
+  ['和風羽織長裙', 'haori and long-skirt styling'], ['歐式宮廷長裙', 'European court gown'], ['現代旗袍改良款', 'modern qipao dress'], ['芭蕾暖身套裝', 'ballet warm-up set'], ['茶會洋裝', 'tea-party dress']
+];
+
+const adultMaleOutfitItems = [
+  ['絲緞睡袍造型', 'satin sleep-robe styling'], ['開領襯衫長褲', 'open-collar shirt and trousers'], ['貼身背心長褲', 'fitted tank and trousers'], ['半披西裝外套', 'half-draped blazer styling'], ['皮革束帶背心', 'leather strapped vest'],
+  ['低腰休閒長褲', 'low-waist lounge trousers'], ['網紗內搭襯衫', 'mesh-layer shirt'], ['緞面家居套裝', 'satin lounge set'], ['展演胸 harness', 'performance chest harness'], ['長袍腰帶造型', 'belted robe styling'],
+  ['透明感罩衫內搭', 'translucent overshirt with inner layer'], ['皮革手套西裝', 'leather-glove suit styling'], ['側開襟長衫', 'side-open long tunic'], ['貼身高領短袖', 'fitted short-sleeve turtleneck'], ['浴袍腰封造型', 'robe with waist cincher'],
+  ['緞帶領結襯衫', 'ribbon-tie shirt'], ['薄針織家居服', 'light knit loungewear'], ['舞者貼身練習服', 'fitted dancer practice outfit'], ['金屬環扣背心', 'metal-ring vest'], ['夜店短外套穿搭', 'club cropped-jacket outfit'],
+  ['宮廷寢袍造型', 'courtly night robe styling'], ['賽博貼身制服', 'cyber fitted uniform'], ['吸血鬼絲絨披風', 'vampire velvet cape styling'], ['溫泉浴衣半披', 'onsen yukata half-drape'], ['睡眠襯衫造型', 'sleep shirt styling']
+];
+
+const adultFemaleOutfitItems = [
+  ['絲緞吊帶長裙', 'satin camisole gown'], ['蕾絲罩衫內搭', 'lace cover-up with inner layer'], ['束腰馬甲長裙', 'corset and long-skirt set'], ['薄紗披肩洋裝', 'tulle shawl over dress'], ['高衩晚禮服', 'high-slit evening gown'],
+  ['緞面睡袍造型', 'satin sleep-robe styling'], ['露肩綁帶上衣', 'off-shoulder tie-front top'], ['貼身連體衣外搭', 'fitted bodysuit with outer layer'], ['長手套禮服造型', 'opera gloves with gown styling'], ['網紗拼接洋裝', 'mesh-panel dress'],
+  ['皮革束腰短外套', 'leather waist-cincher jacket'], ['珍珠肩鏈長裙', 'pearl shoulder-chain gown'], ['蝴蝶結胸衣長裙', 'bow bustier and long skirt'], ['側綁帶短裙套裝', 'side-tie skirt set'], ['透明雨衣內搭', 'transparent raincoat with inner styling'],
+  ['和風短襦袢造型', 'short kimono-inspired robe'], ['改良旗袍高衩款', 'modern qipao with high slit'], ['貓耳連身裝', 'cat-ear fitted outfit'], ['兔耳短版套裝', 'bunny-ear cropped set'], ['女僕圍裙造型', 'maid-inspired apron styling'],
+  ['護士短版制服', 'nurse-inspired cropped uniform'], ['空服貼身制服', 'flight-attendant fitted uniform'], ['秘書窄裙套裝', 'secretary pencil-skirt set'], ['水鑽胸鏈洋裝', 'rhinestone chest-chain dress'], ['乳膠亮面短裝', 'glossy latex short outfit']
+];
+
+const normalOutfitStyles = [['都會', 'urban'], ['復古', 'retro'], ['休閒', 'casual'], ['典禮', 'ceremonial']];
+const adultOutfitStyles = [['私密', 'private'], ['夜色', 'night'], ['誘惑', 'alluring'], ['貼身', 'body-hugging']];
+
+const everydaySceneItems = [
+  ['公寓客廳', 'apartment living room'], ['窗邊臥室', 'window-side bedroom'], ['白色攝影棚', 'white photo studio'], ['精品試衣間', 'boutique fitting room'], ['化妝台角落', 'vanity corner'],
+  ['loft 公寓', 'loft apartment'], ['城市陽台', 'city balcony'], ['唱片房', 'record room'], ['鋼琴房', 'piano room'], ['圖書館角落', 'library corner'],
+  ['老宅書房', 'townhouse study'], ['絲絨會客室', 'velvet parlor'], ['大理石走廊', 'marble corridor'], ['玻璃溫室', 'glass sunroom'], ['湖畔木屋', 'lakeside cabin'],
+  ['度假別墅', 'resort villa'], ['海景露台', 'ocean-view terrace'], ['泳池旁休息區', 'poolside lounge'], ['咖啡館窗邊', 'cafe window seat'], ['甜點店包廂', 'dessert shop booth'],
+  ['音樂酒廊', 'music lounge'], ['錄音室', 'recording studio'], ['藝術家工作室', 'artist studio'], ['美術館展廳', 'gallery exhibition hall'], ['空中花園', 'sky garden']
+];
+
+const mysteriousSceneItems = [
+  ['宮殿內室', 'palace inner chamber'], ['劇院包廂', 'theater box'], ['古典柱廊長階', 'classical colonnade stairway'], ['鏡面沙龍', 'mirror salon'], ['水晶宴會廳', 'crystal ballroom'],
+  ['地下爵士酒吧', 'underground jazz bar'], ['夜店 VIP 包廂', 'nightclub VIP booth'], ['賽博套房', 'cyber suite'], ['未來實驗室', 'futuristic laboratory'], ['星艦觀景艙', 'starship observation cabin'],
+  ['月面基地休息室', 'lunar-base lounge'], ['霓虹街景室內', 'neon street-view interior'], ['玻璃天井長廊', 'glass atrium corridor'], ['海邊玻璃屋', 'seaside glass house'], ['沙漠帳篷豪華房', 'luxury desert tent room'],
+  ['郵輪艙房', 'cruise cabin'], ['玫瑰溫室長廊', 'rose greenhouse corridor'], ['星夜花園涼亭', 'starlit garden pavilion'], ['雪夜壁爐旁', 'snow-night fireplace area'], ['古董鏡牆房間', 'antique mirror-wall room'],
+  ['水晶洞窟休息區', 'crystal cavern lounge'], ['精靈森林樹屋', 'elf forest treehouse'], ['龍巢寶庫內室', 'dragon-hoard chamber'], ['星空觀測穹頂', 'starry observatory dome'], ['鏡像迷宮沙龍', 'mirror-maze salon']
+];
+
+const sceneStyles = [['都會', 'urban'], ['古典', 'classic'], ['現代', 'modern'], ['靜謐', 'quiet']];
+const mysteriousSceneStyles = [['皇家', 'royal'], ['霓虹', 'neon'], ['奇幻', 'fantasy'], ['密會', 'secret-meeting']];
+
 COMPOSITION_STRUCTURES.splice(0, COMPOSITION_STRUCTURES.length,
   ...[
     ['中央主體', 'centered subject'], ['三分法', 'rule of thirds'], ['對角線', 'diagonal layout'], ['前中後景', 'foreground midground background layers'], ['留白', 'negative space'],
@@ -971,15 +1029,15 @@ bodyFeatures.splice(0, bodyFeatures.length,
 );
 
 CUSTOMIZATION_OPTIONS.outfits.splice(0, CUSTOMIZATION_OPTIONS.outfits.length,
-  ...makePairs('男正常服裝', 'male everyday outfit', 100, 'male-normal'),
-  ...makePairs('男情慾服裝', 'male sensual outfit', 100, 'male-sensual'),
-  ...makePairs('女正常服裝', 'female everyday outfit', 100, 'female-normal'),
-  ...makePairs('女情慾服裝', 'female sensual outfit', 100, 'female-sensual')
+  ...makeNamedPresetPairs(normalOutfitStyles, maleNormalOutfitItems, 'male-normal'),
+  ...makeNamedPresetPairs(adultOutfitStyles, adultMaleOutfitItems, 'male-sensual'),
+  ...makeNamedPresetPairs(normalOutfitStyles, femaleNormalOutfitItems, 'female-normal'),
+  ...makeNamedPresetPairs(adultOutfitStyles, adultFemaleOutfitItems, 'female-sensual')
 );
 
 CUSTOMIZATION_OPTIONS.scenes.splice(0, CUSTOMIZATION_OPTIONS.scenes.length,
-  ...makePairs('日常場景', 'everyday lived-in scene', 100, 'normal'),
-  ...makePairs('祕境場景', 'taboo mysterious scene', 100, 'taboo')
+  ...makeNamedPresetPairs(sceneStyles, everydaySceneItems, 'normal'),
+  ...makeNamedPresetPairs(mysteriousSceneStyles, mysteriousSceneItems, 'taboo')
 );
 
 CUSTOMIZATION_OPTIONS.accessories.push(...makePairs('祕密道具', 'forbidden styling prop', 50, 'taboo'));
@@ -1248,7 +1306,7 @@ function rewritePrompt(input, options = {}) {
       prompt: '',
       englishPrompt: '',
       chineseConfirmation: '',
-      reason: '設友模式全域阻擋色情與情慾風格；請切換為一般設計方向或重新登入色友並確認成年人合意規範。',
+      reason: '設友模式只支援一般設計方向；如需成人向創作，請重新登入色友並確認成年人合意規範。',
       screened: false
     };
   }
@@ -1530,10 +1588,10 @@ function createImageToVideoPrompt({
   const safeDuration = Math.min(12, Math.max(3, Number(durationSeconds) || 5));
   const safeMotionStrength = ['subtle', 'medium', 'strong'].includes(motionStrength) ? motionStrength : 'medium';
   const sourceNoteZh = normalizeInput(imageDescription) || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
-  const requestedMotionZh = normalizeInput(desiredMotion) || '未指定額外動態，依色情程度自動建議安全圖轉影動作';
+  const requestedMotionZh = normalizeInput(desiredMotion) || '未指定額外動態，依成人向強度自動建議安全圖轉影動作';
 
   const chinesePrompt = [
-    `圖轉影色情程度：${explicitnessScore}/10`,
+    `圖轉影成人向強度：${explicitnessScore}/10`,
     `中文對照詞意：${tier.zh}`,
     `圖片判定：${sourceNoteZh}`,
     `用戶希望：${requestedMotionZh}`,

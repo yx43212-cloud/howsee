@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>好設之圖NIAI</title>
+    <title>擬愛 NIAI</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="hero">
         <p class="eyebrow">NIAI prompt atelier</p>
-        <h1>好設之圖NIAI</h1>
+        <h1>擬愛 NIAI</h1>
         <p>設計你愛的提示詞，把想像都變現實</p>
       </section>
 
@@ -18,7 +18,7 @@
         <div class="section-heading compact">
           <p class="section-kicker">Login</p>
           <h2 id="auth-title">選擇功能身份</h2>
-          <p>用 Gmail 綁定本機儲存紀錄；設友全域阻擋色情情慾，色友會顯示情慾分頁與再次確認。</p>
+          <p>用 Gmail 綁定本機儲存紀錄；設友只顯示一般設計素材，色友會開啟獨立成人向分頁並要求再次確認。</p>
         </div>
         <label for="gmailInput">Gmail</label>
         <input id="gmailInput" type="email" placeholder="yourname@gmail.com" autocomplete="email" />
@@ -27,7 +27,7 @@
           <button id="sensualLoginButton" type="button" class="secondary-button">登入色友</button>
         </div>
         <label class="confirm-row"><input id="sensualConfirm" type="checkbox" /> 我確認以成年人合意創作使用色友模式</label>
-        <p id="authStatus" class="status">尚未登入；預設以設友規範阻擋情慾方向。</p>
+        <p id="authStatus" class="status">尚未登入；預設以設友規範只顯示一般設計方向。</p>
       </section>
 
       <nav class="app-page-tabs" aria-label="功能頁面切換">
@@ -65,7 +65,7 @@
           <button class="text-step-button active" type="button" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
           <button class="text-step-button" type="button" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
           <button class="text-step-button" type="button" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
-          <button id="sensualStepButton" class="text-step-button sensual-only" type="button" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>4 情慾方向</button>
+          <button id="sensualStepButton" class="text-step-button sensual-only" type="button" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>4 色友專區</button>
         </nav>
 
         <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
@@ -232,7 +232,7 @@
               <p class="field-help">肩膀以上、手部動作、下半身屬於動作；不同姿態屬於姿態。</p>
             </div>
             <div class="field wide-field">
-              <label for="actionDetail">動作或姿態細項（每類 50：25 正常／25 情慾）</label>
+              <label for="actionDetail">動作或姿態細項</label>
               <select id="actionDetail"></select>
               <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
             </div>
@@ -242,18 +242,38 @@
         <section id="sensualStepPanel" class="text-step-panel sensual-only" data-text-step-panel="sensual" aria-labelledby="sensual-step-title" hidden>
           <div class="section-heading compact">
             <p class="section-kicker">Step 05</p>
-            <h2 id="sensual-step-title">情慾方向</h2>
-            <p>僅色友模式顯示；設友模式會全域阻擋色情情慾風格。</p>
+            <h2 id="sensual-step-title">色友專區</h2>
+            <p>僅色友模式顯示；成人向服裝、地點、道具與動作全部集中在此區，設友介面不顯示這些內容。</p>
           </div>
           <div class="control-grid">
             <div class="field">
-              <label for="intensity">情慾強度</label>
+              <label for="intensity">成人向氛圍強度</label>
               <select id="intensity">
                 <option value="soft">柔和</option>
                 <option value="medium" selected>中等</option>
                 <option value="strong">強烈</option>
               </select>
-              <p class="field-help">柔和、強烈會套用不同鏡頭距離、肢體語言與張力。</p>
+              <p class="field-help">柔和、強烈會套用不同鏡頭距離、肢體語言與張力，並維持成年人合意與非露骨界線。</p>
+            </div>
+            <div class="field">
+              <label for="sensualOutfit">成人向服裝</label>
+              <select id="sensualOutfit"></select>
+            </div>
+            <div class="field">
+              <label for="sensualScene">成人向地點</label>
+              <select id="sensualScene"></select>
+            </div>
+            <div class="field">
+              <label for="sensualAccessory">成人向道具</label>
+              <select id="sensualAccessory"></select>
+            </div>
+            <div class="field">
+              <label for="sensualActionMode">成人向動作類型</label>
+              <select id="sensualActionMode"></select>
+            </div>
+            <div class="field wide-field">
+              <label for="sensualActionDetail">成人向動作細項</label>
+              <select id="sensualActionDetail"></select>
             </div>
           </div>
         </section>
@@ -266,7 +286,7 @@
         <div class="section-heading">
           <p class="section-kicker">Image to Video</p>
           <h2 id="image-title">圖轉影提示詞建議</h2>
-          <p>上傳圖片後，瀏覽器會在本機估算色情程度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
+          <p>上傳圖片後，瀏覽器會在本機估算成人向強度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
         </div>
 
         <div class="image-upload-grid">
@@ -300,7 +320,7 @@
 
         <button id="imageVideoButton" type="button">產生圖轉影提示詞</button>
         <div class="field" id="imageVideoChoiceField" hidden>
-          <label for="imageVideoPromptChoice">圖轉影色情程度提示詞（可挑選）</label>
+          <label for="imageVideoPromptChoice">圖轉影成人向強度提示詞（可挑選）</label>
           <select id="imageVideoPromptChoice"></select>
         </div>
         <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
