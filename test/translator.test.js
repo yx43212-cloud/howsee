@@ -8,9 +8,8 @@ const {
   OCCUPATION_OPTIONS,
   BODY_PROPORTION_OPTIONS,
   AGE_BRACKET_OPTIONS,
-  getActionDetailsForMode,
-  ACTION_MODE_OPTIONS,
-  ACTION_DETAIL_OPTIONS,
+  getActionsForCount,
+  getPosesForCount,
   LIGHTING_DESCRIPTIONS,
   CAMERA_ANGLES,
   ART_STYLES,
@@ -95,29 +94,14 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
-  assert.deepEqual(ACTION_MODE_OPTIONS.map(({ zh }) => zh), [
-    '肩膀以上（舌頭／眼神／嘴唇）',
-    '手部動作（揉捏／擁抱／搓揉）',
-    '下半身（張開／攤躺）',
-    '不同姿態（躺著／坐著）'
-  ]);
-  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 200);
-  for (const mode of ACTION_MODE_OPTIONS) {
-    const details = getActionDetailsForMode(mode.zh);
-    assert.equal(details.length, 50);
-    assert.equal(details.filter(({ zh }) => /正常/.test(zh)).length, 25);
-    assert.equal(details.filter(({ zh }) => /情慾/.test(zh)).length, 25);
-  }
-  assert.equal(Object.keys(ACTION_DETAIL_OPTIONS).length, 4);
-  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 0);
-});
-
-test('legacy separate action and pose banks are removed from translator exports', () => {
-  const translatorSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/translator.js'), 'utf8');
-
-  assert.doesNotMatch(translatorSource, /SINGLE_ACTION_OPTIONS|TWO_ACTION_OPTIONS|THREE_ACTION_OPTIONS/);
-  assert.doesNotMatch(translatorSource, /SINGLE_POSE_OPTIONS|TWO_POSE_OPTIONS|THREE_POSE_OPTIONS/);
-  assert.doesNotMatch(translatorSource, /getActionsForCount|getPosesForCount/);
+  assert.equal(CUSTOMIZATION_OPTIONS.actions.length, 300);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
+  assert.equal(getActionsForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
+  assert.equal(CUSTOMIZATION_OPTIONS.poses.length, 300);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[0].zh).length, 100);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh).length, 100);
+  assert.equal(getPosesForCount(CUSTOMIZATION_OPTIONS.counts[2].zh).length, 100);
 });
 
 test('keeps lighting, pose, and outfit preset domains from leaking conflicting scene or light terms', () => {
@@ -147,9 +131,9 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
-    actionMode: ACTION_MODE_OPTIONS[1].zh,
-    actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[1].zh)[25].zh,
-    cosplayPrompt: 'vampire queen with pearl accessories'
+    action: getActionsForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[0].zh,
+    pose: getPosesForCount(CUSTOMIZATION_OPTIONS.counts[1].zh)[10].zh,
+    multiCharacterDetails: 'A wears black styling, B wears white styling, A leads the interaction'
   });
 
   assert.equal(result.ok, true);
@@ -163,7 +147,7 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /場景：金色宮殿內室/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
-  assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
+  assert.match(result.chineseConfirmation, /多人細節客製化：A wears black styling/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
@@ -174,10 +158,9 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.englishPrompt, /scene: golden palace inner chamber/);
   assert.match(result.englishPrompt, /lighting: front soft light/);
   assert.match(result.englishPrompt, /accessory\/prop: leather thigh garter/);
-  assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen with pearl accessories/);
-  assert.match(result.chineseConfirmation, /動作／姿態類型：手部動作/);
-  assert.match(result.chineseConfirmation, /動作／姿態細項：.*情慾/);
-  assert.match(result.englishPrompt, /action\/posture detail: kneading fabric over chest/);
+  assert.match(result.englishPrompt, /multi-character custom details: A wears black styling/);
+  assert.match(result.chineseConfirmation, /動作：雙人對視靠近/);
+  assert.match(result.englishPrompt, /action: two adults move closer with eye contact/);
   assert.doesNotMatch(result.englishPrompt, /性別|種族|情緒|服裝|場景|光感/);
 });
 
@@ -195,69 +178,50 @@ test('keeps copyable output English-only even when the source has unsupported Ch
   assert.equal(result.ok, true);
   assert.doesNotMatch(result.englishPrompt, /[\u3400-\u9fff]/);
   assert.match(result.chineseConfirmation, /性感站著/);
-  assert.match(result.englishPrompt, /subject\/action: sensual/);
+  assert.match(result.englishPrompt, /adult sensual visual direction based on the reviewed source request/);
 });
 
-test('translates safe Chinese Cosplay character direction into English prompt text', () => {
-  const result = rewritePrompt('吸血鬼女王 珍珠配件', {
-    cosplayPrompt: '吸血鬼女王 珍珠配件'
+test('does not apply multi-character detail field when a single-person count is selected', () => {
+  const result = rewritePrompt('親吻', {
+    count: CUSTOMIZATION_OPTIONS.counts[0].zh,
+    multiCharacterDetails: 'A and B detailed styling'
   });
 
   assert.equal(result.ok, true);
-  assert.match(result.chineseConfirmation, /Cosplay：吸血鬼女王 珍珠配件/);
-  assert.match(result.englishPrompt, /subject\/action: vampire queen pearl accessories/);
-  assert.match(result.englishPrompt, /cosplay\/character direction: vampire queen pearl accessories/);
-  assert.doesNotMatch(result.englishPrompt, /[㐀-鿿]|user-provided cosplay/);
+  assert.doesNotMatch(result.chineseConfirmation, /多人細節客製化/);
+  assert.doesNotMatch(result.englishPrompt, /multi-character custom details/);
 });
 
-test('rejects unsafe Cosplay character direction', () => {
+test('appends safe free-form custom conditions to the English prompt and confirmation', () => {
   const result = rewritePrompt('親吻', {
-    cosplayPrompt: '學生 costume'
+    customConditions: '85mm lens, pearl accessories, no watermark, clean background'
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.chineseConfirmation, /客製化條件：85mm lens, pearl accessories, no watermark, clean background/);
+  assert.match(result.englishPrompt, /custom conditions: 85mm lens, pearl accessories, no watermark, clean background/);
+});
+
+test('rejects Chinese free-form custom conditions because copy output is English-only', () => {
+  const result = rewritePrompt('親吻', {
+    customConditions: '珍珠配件'
+  });
+
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /英文/);
+});
+
+test('rejects unsafe free-form custom conditions', () => {
+  const result = rewritePrompt('親吻', {
+    customConditions: '學生 costume'
   });
 
   assert.equal(result.ok, false);
   assert.match(result.reason, /未成年人/);
 });
 
-test('preview UI is removed from the simplified layout', () => {
-  const fs = require('node:fs');
-  const path = require('node:path');
-  const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const appSource = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
-  const styleSource = fs.readFileSync(path.join(__dirname, '../src/styles.css'), 'utf8');
-
-  assert.doesNotMatch(indexSource, /beginnerPreview|imagePreview|客製化條件/);
-  assert.doesNotMatch(appSource, /beginnerPreview|imagePreview|customConditions/);
-  assert.doesNotMatch(styleSource, /beginner-preview|image-preview/);
-});
 
 
-test('text-to-image controls are split into guided setup tabs', () => {
-  const fs = require('node:fs');
-  const path = require('node:path');
-  const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const appSource = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8');
-  const styleSource = fs.readFileSync(path.join(__dirname, '../src/styles.css'), 'utf8');
-
-  assert.match(indexSource, /Easy Flow/);
-  assert.match(indexSource, /<h2 id="input-title">Cosplay<\/h2>/);
-  assert.doesNotMatch(indexSource, /sourcePrompt|原始描述|輸入提示詞/);
-  assert.match(indexSource, /中文也可以/);
-  assert.match(indexSource, /data-text-step="visual"/);
-  assert.match(indexSource, /data-text-step="character"/);
-  assert.match(indexSource, /data-text-step="scene"/);
-  assert.match(indexSource, /data-text-step-panel="visual"/);
-  assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
-  assert.match(indexSource, /data-text-step-panel="scene"[^>]*hidden/);
-  assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
-  assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
-  assert.match(appSource, /function setTextStep/);
-  assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
-  assert.match(styleSource, /\.quick-guide/);
-  assert.match(styleSource, /\.text-step-tabs/);
-  assert.match(styleSource, /overflow-x: auto/);
-  assert.match(styleSource, /flex: 0 0 min\(46vw, 168px\)/);
-});
 
 test('all customization selectors include AI judgment in the browser', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
@@ -265,17 +229,15 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
   assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
-  assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
+  assert.match(appSource, /updateBeginnerPreview/);
+  assert.match(appSource, /getPreviewPalette/);
+  assert.match(appSource, /getResolvedLabel/);
   assert.match(appSource, /getTextRewriteSource/);
-  assert.match(appSource, /cosplayPrompt\.value\.trim\(\)/);
-  assert.doesNotMatch(appSource, /sourcePrompt/);
   assert.match(appSource, /selected customization controls/);
-  assert.match(appSource, /buildAutoVideoChoices/);
-  assert.match(appSource, /autoVideoChoice/);
-
-  const indexSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
-  assert.match(indexSource, /data-autovideo-count="5"/);
-  assert.match(indexSource, /動作和姿態共用這一欄/);
+  assert.match(appSource, /previewDetails\.replaceChildren/);
+  assert.match(appSource, /previewStage\.style\.setProperty\('--preview-primary'/);
+  assert.match(appSource, /preview-scene-mark/);
+  assert.match(appSource, /你的客製化條件/);
 });
 
 test('key prompt element groups do not contain duplicate visible labels', () => {
@@ -290,6 +252,7 @@ test('key prompt element groups do not contain duplicate visible labels', () => 
     CUSTOMIZATION_OPTIONS.outfitMaterials,
     CUSTOMIZATION_OPTIONS.accessories,
     CUSTOMIZATION_OPTIONS.actions,
+    CUSTOMIZATION_OPTIONS.poses,
     OCCUPATION_OPTIONS,
     BODY_PROPORTION_OPTIONS
   ];

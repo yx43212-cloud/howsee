@@ -22,185 +22,153 @@
       <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
         <div class="section-heading">
           <p class="section-kicker">Step 01</p>
-          <h2 id="input-title">Cosplay</h2>
-          <p>只要輸入角色、人設或作品風格即可，中文也可以；英文可複製提示詞會自動轉成安全的英文描述。</p>
+          <h2 id="input-title">輸入提示詞</h2>
         </div>
 
-        <label for="cosplayPrompt">Cosplay（主要輸入：角色／人設／作品風格）</label>
-        <textarea id="cosplayPrompt" rows="4" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
-        <p class="field-help">這是唯一的自由輸入欄位；不要填未成年、偷拍、強迫或血腥內容。不想細調時，填完這欄就能直接轉譯。</p>
+        <label for="sourcePrompt">原始描述</label>
+        <textarea id="sourcePrompt" rows="7" placeholder="例如：脫衣服 親吻"></textarea>
 
-        <div class="quick-guide" aria-label="操作提示">
-          <p class="section-kicker">Easy Flow</p>
-          <ol>
-            <li><strong>先填 Cosplay：</strong>中文角色、人設或作品風格都可以。</li>
-            <li><strong>用分頁慢慢補設定：</strong>基本畫面、角色設定、場景動作分開處理，每個下拉都可維持 AI 判斷。</li>
-            <li><strong>產生後直接複製：</strong>右側會出英文文生圖提示詞，並自動附 5 種可選圖轉影提示詞。</li>
-          </ol>
+        <div class="control-grid">
+          <div class="field">
+            <label for="intensity">情慾強度</label>
+            <select id="intensity">
+              <option value="soft">柔和</option>
+              <option value="medium" selected>中等</option>
+              <option value="strong">強烈</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="lighting">光感描述（50 種）</label>
+            <select id="lighting"></select>
+          </div>
+
+          <div class="field">
+            <label for="camera">鏡位視角（50 種）</label>
+            <select id="camera"></select>
+          </div>
+
+          <div class="field">
+            <label for="composition">構圖結構（50 種）</label>
+            <select id="composition"></select>
+          </div>
+
+          <div class="field">
+            <label for="artStyle">畫風（100 種）</label>
+            <select id="artStyle"></select>
+          </div>
         </div>
 
-        <nav class="text-step-tabs" aria-label="文生圖設定分頁">
-          <button class="text-step-button active" type="button" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
-          <button class="text-step-button" type="button" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
-          <button class="text-step-button" type="button" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
-        </nav>
+        <div class="section-heading compact">
+          <p class="section-kicker">Step 02</p>
+          <h2>角色客製化安排</h2>
+          <p>新增性別挑選；種族後 50 項為非自然幻想／科幻類，服裝前 50 項日常、後 50 項騷氣情趣感但不顯示標籤；動作與體位會依人數切換，單人偏鏡頭／POV／入鏡手互動，多人偏角色間互動。中文只供確認，複製區只輸出英文提示詞。</p>
+        </div>
 
-        <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
-          <div class="section-heading compact">
-            <p class="section-kicker">Step 02</p>
-            <h2 id="visual-step-title">基本畫面</h2>
-            <p>先決定整張圖的強度、光、鏡位、構圖和畫風；不確定的選項保持 AI 判斷即可。</p>
+        <div class="custom-grid">
+          <div class="field">
+            <label for="gender">性別</label>
+            <select id="gender"></select>
           </div>
-          <div class="control-grid">
-            <div class="field">
-              <label for="intensity">情慾強度</label>
-              <select id="intensity">
-                <option value="soft">柔和</option>
-                <option value="medium" selected>中等</option>
-                <option value="strong">強烈</option>
-              </select>
-              <p class="field-help">只影響整體氛圍，不會突破安全規則。</p>
-            </div>
-
-            <div class="field">
-              <label for="lighting">光感描述（50 種）</label>
-              <select id="lighting"></select>
-            </div>
-
-            <div class="field">
-              <label for="camera">鏡位視角（50 種）</label>
-              <select id="camera"></select>
-            </div>
-
-            <div class="field">
-              <label for="composition">構圖結構（50 種）</label>
-              <select id="composition"></select>
-            </div>
-
-            <div class="field">
-              <label for="artStyle">畫風（100 種）</label>
-              <select id="artStyle"></select>
-            </div>
+          <div class="field">
+            <label for="race">種族（100 種，後 50 非自然）</label>
+            <select id="race"></select>
           </div>
-        </section>
+          <div class="field">
+            <label for="emotion">情緒（50 種）</label>
+            <select id="emotion"></select>
+          </div>
+          <div class="field">
+            <label for="timePoint">時間點／光色質感（20 種）</label>
+            <select id="timePoint"></select>
+          </div>
+          <div class="field">
+            <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
+            <select id="ageBracket"></select>
+          </div>
+          <div class="field">
+            <label for="occupation">職業（50 種）</label>
+            <select id="occupation"></select>
+          </div>
+          <div class="field">
+            <label for="bodyProportion">身材比例（50 種）</label>
+            <select id="bodyProportion"></select>
+          </div>
+          <div class="field">
+            <label for="face">臉蛋</label>
+            <select id="face"></select>
+          </div>
+          <div class="field">
+            <label for="outfit">服裝穿搭（前50日常／後50情趣）</label>
+            <select id="outfit"></select>
+          </div>
+          <div class="field">
+            <label for="outfitColor">服裝顏色（50 種）</label>
+            <select id="outfitColor"></select>
+          </div>
+          <div class="field">
+            <label for="outfitMaterial">服裝材質（50 種）</label>
+            <select id="outfitMaterial"></select>
+          </div>
+          <div class="field">
+            <label for="bodyFeature">身上特徵（30 種）</label>
+            <select id="bodyFeature"></select>
+          </div>
+          <div class="field">
+            <label for="outfitIntegrity">服裝完整度</label>
+            <select id="outfitIntegrity"></select>
+          </div>
+          <div class="field">
+            <label for="count">人數</label>
+            <select id="count"></select>
+          </div>
+          <div class="field wide-field">
+            <label for="multiCharacterDetails">多人細節客製化（人數超過 1 人時套用）</label>
+            <textarea id="multiCharacterDetails" rows="3" placeholder="例如：A wears a black dress, B wears a white shirt, A leads the pose, B responds with soft eye contact"></textarea>
+          </div>
+          <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
+            <article class="character-card" data-character-card="1">
+              <h3>角色 1</h3>
+              <label for="character1Gender">性別</label><select id="character1Gender"></select>
+              <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
+              <label for="character1Age">年齡</label><select id="character1Age"></select>
+              <label for="character1Body">身材比例</label><select id="character1Body"></select>
+            </article>
+            <article class="character-card" data-character-card="2" hidden>
+              <h3>角色 2</h3>
+              <label for="character2Gender">性別</label><select id="character2Gender"></select>
+              <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
+              <label for="character2Age">年齡</label><select id="character2Age"></select>
+              <label for="character2Body">身材比例</label><select id="character2Body"></select>
+            </article>
+            <article class="character-card" data-character-card="3" hidden>
+              <h3>角色 3</h3>
+              <label for="character3Gender">性別</label><select id="character3Gender"></select>
+              <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
+              <label for="character3Age">年齡</label><select id="character3Age"></select>
+              <label for="character3Body">身材比例</label><select id="character3Body"></select>
+            </article>
+          </div>
+          <div class="field">
+            <label for="scene">場景配置（100 種）</label>
+            <select id="scene"></select>
+          </div>
+          <div class="field">
+            <label for="accessory">配件與道具（100 種）</label>
+            <select id="accessory"></select>
+          </div>
+          <div class="field">
+            <label for="action">動作（依人數各 100 種）</label>
+            <select id="action"></select>
+          </div>
+          <div class="field wide-field">
+            <label for="pose">體位／互動（依人數各 100 種）</label>
+            <select id="pose"></select>
+          </div>
+        </div>
 
-        <section id="characterStepPanel" class="text-step-panel" data-text-step-panel="character" aria-labelledby="character-step-title" hidden>
-          <div class="section-heading compact">
-            <p class="section-kicker">Step 03</p>
-            <h2 id="character-step-title">角色設定</h2>
-            <p>角色細節分頁只處理人物與穿搭。Cosplay 已移到最上方作為唯一自由輸入欄位；多人時才需要看下方角色卡。</p>
-          </div>
-          <div class="custom-grid">
-            <div class="field">
-              <label for="gender">性別</label>
-              <select id="gender"></select>
-            </div>
-            <div class="field">
-              <label for="race">種族（100 種，後 50 非自然）</label>
-              <select id="race"></select>
-            </div>
-            <div class="field">
-              <label for="emotion">情緒（50 種）</label>
-              <select id="emotion"></select>
-            </div>
-            <div class="field">
-              <label for="timePoint">時間點／光色質感（20 種）</label>
-              <select id="timePoint"></select>
-            </div>
-            <div class="field">
-              <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
-              <select id="ageBracket"></select>
-              <p class="field-help">只提供成年級距，避免未成年內容。</p>
-            </div>
-            <div class="field">
-              <label for="occupation">職業（50 種）</label>
-              <select id="occupation"></select>
-            </div>
-            <div class="field">
-              <label for="bodyProportion">身材比例（50 種）</label>
-              <select id="bodyProportion"></select>
-            </div>
-            <div class="field">
-              <label for="face">臉蛋</label>
-              <select id="face"></select>
-            </div>
-            <div class="field">
-              <label for="outfit">服裝穿搭（前50日常／後50情趣）</label>
-              <select id="outfit"></select>
-            </div>
-            <div class="field">
-              <label for="outfitColor">服裝顏色（50 種）</label>
-              <select id="outfitColor"></select>
-            </div>
-            <div class="field">
-              <label for="outfitMaterial">服裝材質（50 種）</label>
-              <select id="outfitMaterial"></select>
-            </div>
-            <div class="field">
-              <label for="bodyFeature">身上特徵（30 種）</label>
-              <select id="bodyFeature"></select>
-            </div>
-            <div class="field">
-              <label for="outfitIntegrity">服裝完整度</label>
-              <select id="outfitIntegrity"></select>
-            </div>
-            <div class="field">
-              <label for="count">人數</label>
-              <select id="count"></select>
-            </div>
-            <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
-              <article class="character-card" data-character-card="1">
-                <h3>角色 1</h3>
-                <label for="character1Gender">性別</label><select id="character1Gender"></select>
-                <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
-                <label for="character1Age">年齡</label><select id="character1Age"></select>
-                <label for="character1Body">身材比例</label><select id="character1Body"></select>
-              </article>
-              <article class="character-card" data-character-card="2" hidden>
-                <h3>角色 2</h3>
-                <label for="character2Gender">性別</label><select id="character2Gender"></select>
-                <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
-                <label for="character2Age">年齡</label><select id="character2Age"></select>
-                <label for="character2Body">身材比例</label><select id="character2Body"></select>
-              </article>
-              <article class="character-card" data-character-card="3" hidden>
-                <h3>角色 3</h3>
-                <label for="character3Gender">性別</label><select id="character3Gender"></select>
-                <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
-                <label for="character3Age">年齡</label><select id="character3Age"></select>
-                <label for="character3Body">身材比例</label><select id="character3Body"></select>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="sceneStepPanel" class="text-step-panel" data-text-step-panel="scene" aria-labelledby="scene-step-title" hidden>
-          <div class="section-heading compact">
-            <p class="section-kicker">Step 04</p>
-            <h2 id="scene-step-title">場景與動作</h2>
-            <p>最後再選場景、道具和動作／姿態。動作跟姿態是二擇一：先選類型，再選該類 50 個細項。</p>
-          </div>
-          <div class="custom-grid">
-            <div class="field">
-              <label for="scene">場景配置（100 種）</label>
-              <select id="scene"></select>
-            </div>
-            <div class="field">
-              <label for="accessory">配件與道具（100 種）</label>
-              <select id="accessory"></select>
-            </div>
-            <div class="field">
-              <label for="actionMode">動作／姿態類型（4 類）</label>
-              <select id="actionMode"></select>
-              <p class="field-help">肩膀以上、手部動作、下半身屬於動作；不同姿態屬於姿態。</p>
-            </div>
-            <div class="field wide-field">
-              <label for="actionDetail">動作或姿態細項（每類 50：25 正常／25 情慾）</label>
-              <select id="actionDetail"></select>
-              <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
-            </div>
-          </div>
-        </section>
+        <label for="customConditions">可塞入的客製化條件</label>
+        <textarea id="customConditions" rows="4" placeholder="例如：85mm lens, shallow depth of field, pearl accessories, no watermark"></textarea>
 
         <button id="rewriteButton" type="button">轉譯提示詞</button>
       </section>
@@ -236,6 +204,9 @@
             </select>
           </div>
         </div>
+
+        <img id="imagePreview" class="image-preview" alt="上傳圖片預覽" hidden />
+
         <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
         <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
 
@@ -251,30 +222,32 @@
       </section>
 
       <section class="panel output-panel" aria-live="polite">
+        <div id="beginnerPreview" class="beginner-preview">
+          <div class="section-heading">
+            <p class="section-kicker">Beginner Preview</p>
+            <h2>新手大概預覽</h2>
+            <p>這不是生成圖片，只是依照你選的客製化條件做構圖、角色與氛圍摘要，方便先確認方向。</p>
+          </div>
+          <div id="previewStage" class="preview-stage" data-count="single" aria-label="大概構圖預覽">
+            <span class="preview-silhouette primary"></span>
+          </div>
+          <p id="previewSummary" class="preview-summary">先輸入描述或挑選條件，這裡會即時整理你的客製化方向。</p>
+          <div id="previewDetails" class="preview-details" aria-label="分層預覽說明"></div>
+          <p id="previewAdvice" class="preview-advice">AI 判斷會先自動補一組具體建議，方便新手看方向。</p>
+          <div id="previewChips" class="preview-chips" aria-label="目前客製化條件摘要"></div>
+        </div>
+
         <div id="textOutputArea" class="output-mode-area">
           <div class="section-heading">
             <p class="section-kicker">Text Output</p>
             <h2>文生圖：中文對照＋英文可複製</h2>
           </div>
-          <p id="textStatus" class="status">填寫 Cosplay 後可直接轉譯；其他分頁都可保持 AI 判斷。</p>
+          <p id="textStatus" class="status">可直接用客製化選項轉譯；原始描述空白時會自動建立基本成人視覺主題。</p>
           <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
           <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
           <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
           <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
           <button id="copyTextButton" type="button" class="secondary-button" hidden>複製文生圖英文提示詞</button>
-
-          <div id="autoVideoPanel" class="auto-video-panel" data-autovideo-count="5" hidden>
-            <div class="section-heading compact">
-              <p class="section-kicker">Auto Video</p>
-              <h2>AI 判定圖轉影提示詞（5 種）</h2>
-              <p>文生圖提示詞產生後自動建立 5 種 AI 判定版本；下拉自選一種後，可直接複製英文圖轉影提示詞。</p>
-            </div>
-            <label for="autoVideoChoice">選擇圖轉影版本</label>
-            <select id="autoVideoChoice"></select>
-            <label for="autoVideoPrompt" class="text-output-label">English image-to-video prompt（可複製）</label>
-            <textarea id="autoVideoPrompt" rows="8" readonly></textarea>
-            <button id="copyAutoVideoButton" type="button" class="secondary-button">複製自動圖轉影英文提示詞</button>
-          </div>
         </div>
 
         <div id="videoOutputArea" class="output-mode-area" hidden>
