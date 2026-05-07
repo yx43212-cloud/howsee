@@ -1303,26 +1303,81 @@ function normalizeSponsorSettings(settings = {}) {
   const text = normalizeInput(settings.text);
   const imageName = normalizeInput(settings.imageName);
   const hasSponsor = Boolean(text || imageName || (settings.goalZh && settings.goalZh !== 'AI判斷'));
+  const baseZhParts = [
+    `內容：${text || imageName || 'AI判斷'}`,
+    `受眾：${settings.audienceAgeZh || 'AI判斷'}／${settings.audienceIdentityZh || 'AI判斷'}`,
+    `目標成果：${settings.goalZh || 'AI判斷'}`,
+    `置入類型：${settings.itemTypeZh || 'AI判斷'}`,
+    `露出形式：${settings.formZh || 'AI判斷'}`
+  ];
+  const baseEnParts = [
+    `sponsored content: ${text || imageName || 'AI decides'}`,
+    `target audience: ${settings.audienceAgeEn || 'AI decides'} ${settings.audienceIdentityEn || ''}`.trim(),
+    `campaign goal: ${settings.goalEn || 'AI decides'}`,
+    `placement type: ${settings.itemTypeEn || 'AI decides'}`,
+    `exposure form: ${settings.formEn || 'AI decides'}`
+  ];
+  const videoZhParts = [
+    ...baseZhParts,
+    `露出時刻：${settings.timingZh || 'AI判斷'}`,
+    `腳本規劃：${buildSponsorExposurePlanZh(settings)}`
+  ];
+  const videoEnParts = [
+    ...baseEnParts,
+    `video exposure timing: ${settings.timingEn || 'AI decides'}`,
+    `script plan: ${buildSponsorExposurePlanEn(settings)}`
+  ];
+
   return {
     hasSponsor,
     zh: [
-      `內容：${text || imageName || 'AI判斷'}`,
-      `受眾：${settings.audienceAgeZh || 'AI判斷'}／${settings.audienceIdentityZh || 'AI判斷'}`,
-      `目標成果：${settings.goalZh || 'AI判斷'}`,
-      `置入類型：${settings.itemTypeZh || 'AI判斷'}`,
-      `露出時刻：${settings.timingZh || 'AI判斷'}`,
-      `露出形式：${settings.formZh || 'AI判斷'}`
+      ...baseZhParts,
+      '文生圖先自然置入；露出時刻留給圖轉影腳本'
     ].join('，'),
     en: [
-      `sponsored content: ${text || imageName || 'AI decides'}`,
-      `target audience: ${settings.audienceAgeEn || 'AI decides'} ${settings.audienceIdentityEn || ''}`.trim(),
-      `campaign goal: ${settings.goalEn || 'AI decides'}`,
-      `placement type: ${settings.itemTypeEn || 'AI decides'}`,
-      `video exposure timing: ${settings.timingEn || 'AI decides'}`,
-      `exposure form: ${settings.formEn || 'AI decides'}`,
-      'include the sponsored placement naturally in the final prompt without over-explaining it'
+      ...baseEnParts,
+      'include the sponsored placement naturally in text-to-image without video timing details'
+    ].join(', '),
+    videoZh: videoZhParts.join('，'),
+    videoEn: [
+      ...videoEnParts,
+      'include the sponsored placement naturally in the image-to-video prompt without over-explaining it'
     ].join(', ')
   };
+}
+
+function buildSponsorExposurePlanZh(settings = {}) {
+  const itemType = settings.itemTypeZh || 'AI判斷';
+  const timing = settings.timingZh || 'AI判斷';
+  const form = settings.formZh || 'AI判斷';
+
+  if (itemType === '小物品') {
+    return `${timing}以${form}呈現展示或操作，手部動作清楚但不搶走角色表情`;
+  }
+  if (itemType === '大物品') {
+    return `${timing}以${form}呈現角色靠近、觸碰或使用，讓互動關係被看見`;
+  }
+  if (/活動|服務|品牌概念/.test(itemType)) {
+    return `${timing}以${form}呈現介紹、指向或情境化說明，讓非實體概念自然被理解`;
+  }
+  return `${timing}安排自然露出，形式為${form}`;
+}
+
+function buildSponsorExposurePlanEn(settings = {}) {
+  const itemType = settings.itemTypeEn || 'AI decides';
+  const timing = settings.timingEn || 'AI decides';
+  const form = settings.formEn || 'AI decides';
+
+  if (itemType === 'small item') {
+    return `${timing}, use ${form} to show display or operation, with clear hand movement that does not overpower the character expression`;
+  }
+  if (itemType === 'large item') {
+    return `${timing}, use ${form} to show the character approaching, touching, or using it so the interaction is visible`;
+  }
+  if (/event|service|brand concept|campaign/.test(itemType)) {
+    return `${timing}, use ${form} to introduce, point to, or contextualize the non-physical idea naturally`;
+  }
+  return `${timing}, arrange a natural reveal through ${form}`;
 }
 
 function rewritePrompt(input, options = {}) {
@@ -1708,7 +1763,7 @@ function createImageToVideoPrompt({
     normalizeInput(dialogueToCamera) ? `跟鏡頭說：${normalizeInput(dialogueToCamera)}` : '',
     normalizeInput(dialogueBetweenCharacters) ? `角色間互動對話：${normalizeInput(dialogueBetweenCharacters)}` : ''
   ].filter(Boolean).join('；') || '未設定對話';
-  const sponsorZh = sponsor.hasSponsor ? sponsor.zh : '未設定業配';
+  const sponsorZh = sponsor.hasSponsor ? sponsor.videoZh : '未設定業配';
 
   const chinesePrompt = isDesignerMode
     ? [
@@ -1763,7 +1818,7 @@ function createImageToVideoPrompt({
     englishPrompt.push(dialogueBetweenCharactersEn);
   }
   if (sponsor.hasSponsor) {
-    englishPrompt.push(`sponsored placement settings: ${sponsor.en}`);
+    englishPrompt.push(`sponsored placement settings: ${sponsor.videoEn}`);
   }
 
   return {

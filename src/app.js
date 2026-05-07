@@ -97,8 +97,8 @@ let sponsorImageName = '';
 
 let currentWizardIndex = 0;
 
-function simpleOption(zh, en = zh) {
-  return { zh, en };
+function simpleOption(zh, en = zh, group = '') {
+  return { zh, en, group };
 }
 
 const SPONSOR_AGE_OPTIONS = ['18-20', '21-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60+'].map((value) => simpleOption(value, value));
@@ -110,11 +110,11 @@ const SPONSOR_IDENTITY_OPTIONS = [
   '永續族', '公益族', '活動策展', '品牌主理人', '小店店主', '銀髮族', '高端客', '節慶送禮', '約會族', '夜生活族'
 ].map((zh) => simpleOption(zh, zh));
 const SPONSOR_GOAL_OPTIONS = [
-  ['認識品牌', 'brand awareness'], ['記住品名', 'name recall'], ['理解賣點', 'benefit understanding'], ['建立好感', 'positive brand affinity'], ['提升信任', 'trust building'],
-  ['促成點擊', 'click-through intent'], ['引導收藏', 'save or bookmark intent'], ['鼓勵分享', 'share intent'], ['帶動留言', 'comment engagement'], ['增加追蹤', 'follow intent'],
-  ['預約諮詢', 'consultation booking'], ['加入名單', 'lead capture'], ['下載試用', 'trial download'], ['領取優惠', 'coupon claim'], ['到店體驗', 'store visit'],
-  ['活動報名', 'event signup'], ['新品預購', 'preorder intent'], ['完成購買', 'purchase conversion'], ['會員註冊', 'membership signup'], ['口碑擴散', 'word-of-mouth lift']
-].map(([zh, en]) => simpleOption(zh, en));
+  ['認識品牌', 'brand awareness', '認知'], ['記住品名', 'name recall', '認知'], ['理解賣點', 'benefit understanding', '認知'], ['建立好感', 'positive brand affinity', '認知'], ['提升信任', 'trust building', '認知'],
+  ['促成點擊', 'click-through intent', '互動'], ['引導收藏', 'save or bookmark intent', '互動'], ['鼓勵分享', 'share intent', '互動'], ['帶動留言', 'comment engagement', '互動'], ['增加追蹤', 'follow intent', '互動'],
+  ['預約諮詢', 'consultation booking', '名單'], ['加入名單', 'lead capture', '名單'], ['下載試用', 'trial download', '名單'], ['領取優惠', 'coupon claim', '名單'], ['到店體驗', 'store visit', '名單'],
+  ['活動報名', 'event signup', '轉換'], ['新品預購', 'preorder intent', '轉換'], ['完成購買', 'purchase conversion', '轉換'], ['會員註冊', 'membership signup', '轉換'], ['口碑擴散', 'word-of-mouth lift', '轉換']
+].map(([zh, en, group]) => simpleOption(zh, en, group));
 const SPONSOR_ITEM_TYPE_OPTIONS = [simpleOption('小物品', 'small item'), simpleOption('大物品', 'large item'), simpleOption('活動', 'event or campaign'), simpleOption('服務', 'service'), simpleOption('品牌概念', 'brand concept')];
 const SPONSOR_TIMING_OPTIONS = [
   ['開場 0-1 秒', 'opening 0-1s'], ['前段 1-3 秒', 'early 1-3s'], ['中段 3-5 秒', 'middle 3-5s'], ['轉場瞬間', 'transition moment'], ['結尾 1 秒', 'final 1s'], ['全程自然露出', 'continuous subtle presence']
@@ -507,12 +507,27 @@ function populateSelect(select, options, { includeAi = true } = {}) {
     fragment.append(aiOption);
   }
 
+  const optionParents = new Map();
+
   for (const optionText of options) {
+    const group = typeof optionText === 'string' ? '' : optionText.group || '';
+    let parent = fragment;
+
+    if (group) {
+      if (!optionParents.has(group)) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = group;
+        optionParents.set(group, optgroup);
+        fragment.append(optgroup);
+      }
+      parent = optionParents.get(group);
+    }
+
     const option = document.createElement('option');
     const value = typeof optionText === 'string' ? optionText : optionText.zh;
     option.value = value;
     option.textContent = getOptionLabel(optionText);
-    fragment.append(option);
+    parent.append(option);
   }
 
   select.replaceChildren(fragment);
@@ -1059,8 +1074,8 @@ function getSponsorSettings() {
     audienceAgeEn: age.en,
     audienceIdentityZh: identity.zh,
     audienceIdentityEn: identity.en,
-    goalZh: goal.zh,
-    goalEn: goal.en,
+    goalZh: goal.group && goal.zh !== 'AI判斷' ? `${goal.group}／${goal.zh}` : goal.zh,
+    goalEn: goal.group && goal.en !== 'AI decides' ? `${goal.group} ${goal.en}` : goal.en,
     itemTypeZh: itemType.zh,
     itemTypeEn: itemType.en,
     timingZh: timing.zh,

@@ -239,6 +239,9 @@ test('includes sponsor placement settings in text and image-to-video prompts', (
   assert.match(textResult.chineseConfirmation, /業配設定/);
   assert.match(textResult.englishPrompt, /sponsored placement settings/);
   assert.match(textResult.englishPrompt, /Serenity Mist/);
+  assert.match(textResult.englishPrompt, /without video timing details/);
+  assert.doesNotMatch(textResult.englishPrompt, /video exposure timing/);
+  assert.doesNotMatch(textResult.chineseConfirmation, /腳本規劃/);
 
   const videoResult = createImageToVideoPrompt({
     audienceMode: 'designer',
@@ -248,6 +251,9 @@ test('includes sponsor placement settings in text and image-to-video prompts', (
   assert.equal(videoResult.ok, true);
   assert.match(videoResult.chineseConfirmation, /業配設定/);
   assert.match(videoResult.englishPrompt, /sponsored placement settings/);
+  assert.match(videoResult.englishPrompt, /video exposure timing: middle 3-5s/);
+  assert.match(videoResult.englishPrompt, /script plan:/);
+  assert.match(videoResult.chineseConfirmation, /腳本規劃/);
   assert.match(videoResult.englishPrompt, /middle 3-5s/);
 });
 
@@ -410,6 +416,9 @@ test('all customization selectors include AI judgment in the browser', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
 
   assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
+  assert.match(appSource, /optgroup/);
+  assert.match(appSource, /認知/);
+  assert.match(appSource, /轉換/);
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
   assert.match(appSource, /populateSelect\(outfitMaterial, getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)\)/);
   assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
