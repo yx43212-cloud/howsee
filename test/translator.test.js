@@ -125,6 +125,9 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'taboo').length, 50);
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.every(({ zh }) => !/祕密道具\d|秘密道具\d/.test(zh)));
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.some(({ zh }) => zh === '古銅鑰匙串'));
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.some(({ zh }) => zh === '午夜請帖'));
   assert.deepEqual(ACTION_MODE_OPTIONS.map(({ zh }) => zh), [
     '姿態',
     '肩上',
@@ -213,6 +216,47 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
 
 
 
+
+test('includes sponsor placement settings in text and image-to-video prompts', () => {
+  const sponsorSettings = {
+    text: '新品香氛 Serenity Mist',
+    imageName: 'serenity-bottle.png',
+    audienceAgeZh: '25-29',
+    audienceAgeEn: '25-29',
+    audienceIdentityZh: '香氛控',
+    audienceIdentityEn: 'fragrance fans',
+    goalZh: '記住品名',
+    goalEn: 'name recall',
+    itemTypeZh: '小物品',
+    itemTypeEn: 'small item',
+    timingZh: '中段 3-5 秒',
+    timingEn: 'middle 3-5s',
+    formZh: '操作',
+    formEn: 'hands-on operation'
+  };
+  const textResult = rewritePrompt('香氛少女', { sponsorSettings });
+  assert.equal(textResult.ok, true);
+  assert.match(textResult.chineseConfirmation, /業配設定/);
+  assert.match(textResult.englishPrompt, /sponsored placement settings/);
+  assert.match(textResult.englishPrompt, /Serenity Mist/);
+  assert.match(textResult.englishPrompt, /without video timing details/);
+  assert.doesNotMatch(textResult.englishPrompt, /video exposure timing/);
+  assert.doesNotMatch(textResult.chineseConfirmation, /腳本規劃/);
+
+  const videoResult = createImageToVideoPrompt({
+    audienceMode: 'designer',
+    imageDescription: '香水瓶產品展示照',
+    sponsorSettings
+  });
+  assert.equal(videoResult.ok, true);
+  assert.match(videoResult.chineseConfirmation, /業配設定/);
+  assert.match(videoResult.englishPrompt, /sponsored placement settings/);
+  assert.match(videoResult.englishPrompt, /video exposure timing: middle 3-5s/);
+  assert.match(videoResult.englishPrompt, /script plan:/);
+  assert.match(videoResult.chineseConfirmation, /腳本規劃/);
+  assert.match(videoResult.englishPrompt, /middle 3-5s/);
+});
+
 test('per-character detail objects can override each adult character without duplicating global defaults', () => {
   const result = rewritePrompt('吸血鬼女王', {
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
@@ -238,7 +282,7 @@ test('does not append category tag text to browser option labels', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
 
   assert.doesNotMatch(appSource, /稀少|少見|（日常）|（情趣）|rarityLabel/);
-  assert.match(appSource, /return typeof optionText === 'string' \? optionText : optionText\.zh/);
+  assert.match(appSource, /split\('｜'\)\.at\(-1\)/);
 });
 
 test('keeps copyable output English-only even when the source has unsupported Chinese terms', () => {
@@ -312,14 +356,35 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
+  assert.match(indexSource, /data-text-step="sponsor"/);
   assert.match(indexSource, /data-text-step="sensual"/);
+  assert.match(indexSource, /data-character-substep="basics"/);
+  assert.match(indexSource, /data-character-substep="outfit"/);
+  assert.match(indexSource, /data-character-substep="multi"/);
+  assert.match(indexSource, /data-scene-substep="place"/);
+  assert.match(indexSource, /data-scene-substep="motion"/);
+  assert.match(indexSource, /wizardPrevButton/);
+  assert.match(indexSource, /wizardNextButton/);
+  assert.match(indexSource, /wizardProgress/);
+  assert.match(indexSource, /sponsorAudienceAge/);
+  assert.match(indexSource, /sponsorAudienceIdentity/);
+  assert.match(indexSource, /sponsorGoal/);
+  assert.match(indexSource, /sponsorExposureTiming/);
+  assert.match(indexSource, /sponsorExposureForm/);
+  assert.match(indexSource, /清純戀愛/);
+  assert.match(indexSource, /神秘曖昧/);
+  assert.match(indexSource, /陽光熱戀/);
+  assert.match(indexSource, /禁忌戀情/);
   assert.match(indexSource, /色友專區/);
   assert.match(indexSource, /sensualOutfit/);
   assert.match(indexSource, /sensualScene/);
   assert.match(indexSource, /sensualActionDetail/);
-  assert.match(indexSource, /登入設友/);
-  assert.match(indexSource, /登入色友/);
+  assert.match(indexSource, /切換為設友/);
+  assert.match(indexSource, /切換為色友/);
   assert.match(indexSource, /savePromptButton/);
+  assert.match(indexSource, /saveTitleInput/);
+  assert.match(indexSource, /dialogueToCamera/);
+  assert.match(indexSource, /dialogueBetweenCharacters/);
   assert.match(indexSource, /resultImageInput/);
   assert.match(indexSource, /data-text-step-panel="visual"/);
   assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
@@ -327,7 +392,13 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
   assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
   assert.match(appSource, /function setTextStep/);
+  assert.match(appSource, /WIZARD_PAGES/);
+  assert.match(appSource, /function renderWizardPage/);
   assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfits\)/);
+  assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
+  assert.match(appSource, /function setCharacterSubstep/);
+  assert.match(appSource, /function setSceneSubstep/);
+  assert.match(appSource, /function updateAdultOnlyControls/);
   assert.match(appSource, /populateSelect\(sensualOutfit, getSensualOnlyOptions\(CUSTOMIZATION_OPTIONS\.outfits\)\)/);
   assert.match(appSource, /getSensualOverride/);
   assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
@@ -335,20 +406,29 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(styleSource, /\.text-step-tabs/);
   assert.match(styleSource, /overflow-x: auto/);
   assert.match(styleSource, /flex: 0 0 min\(46vw, 168px\)/);
+  assert.match(styleSource, /\.wizard-actions/);
+  assert.match(styleSource, /file-selector-button/);
+  assert.match(styleSource, /body\[data-theme='pure-love'\]/);
+  assert.match(styleSource, /body\[data-theme='forbidden-love'\]/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
 
   assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
+  assert.match(appSource, /optgroup/);
+  assert.match(appSource, /認知/);
+  assert.match(appSource, /轉換/);
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
-  assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
+  assert.match(appSource, /populateSelect\(outfitMaterial, getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)\)/);
   assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
   assert.match(appSource, /getTextRewriteSource/);
   assert.match(appSource, /cosplayPrompt\.value\.trim\(\)/);
   assert.doesNotMatch(appSource, /sourcePrompt/);
   assert.match(appSource, /selected customization controls/);
   assert.match(appSource, /buildAutoVideoChoices/);
+  assert.match(appSource, /getDialogueForVideo/);
+  assert.match(appSource, /refreshAutoVideoFromDialogue/);
   assert.match(appSource, /autoVideoChoice/);
   assert.match(appSource, /autoVideoConfirmation/);
   assert.match(appSource, /中文說明：/);
@@ -362,8 +442,11 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(indexSource, /data-autovideo-count="5"/);
   assert.match(indexSource, /autoVideoConfirmation/);
   assert.match(indexSource, /中文圖轉影說明/);
+  assert.match(indexSource, /儲存標題/);
+  assert.match(indexSource, /跟鏡頭說/);
+  assert.match(indexSource, /角色間互動對話/);
   assert.match(indexSource, /character1Race/);
-  assert.match(indexSource, /character1OutfitIntegrity/);
+  assert.match(indexSource, /adult-only-control[^>]*for="character1OutfitIntegrity"/);
   assert.match(indexSource, /動作和姿態共用這一欄/);
   assert.doesNotMatch(indexSource, /好設之圖NIAI|圖轉影色情程度/);
 });
@@ -416,6 +499,29 @@ test('creates safe image-to-video prompts with Chinese meaning confirmation and 
   assert.ok(result.promptChoices.length >= 2);
   assert.ok(result.promptChoices.every((choice) => choice.score >= 1 && choice.score <= 10));
   assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|成人向強度|中文對照/);
+});
+
+
+test('designer image-to-video prompts avoid adult framing and include dialogue', () => {
+  const result = createImageToVideoPrompt({
+    audienceMode: 'designer',
+    imageDescription: '產品展示照、桌面、植物背景',
+    desiredMotion: 'slow orbit around the product',
+    dialogueToCamera: 'Welcome to our studio.',
+    dialogueBetweenCharacters: 'Designer explains the material choice.',
+    skinToneRatio: 0.05,
+    durationSeconds: 5
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.audienceMode, 'designer');
+  assert.equal(result.promptChoices.length, 5);
+  assert.match(result.chineseConfirmation, /圖轉影一般建議/);
+  assert.match(result.chineseConfirmation, /產品展示|品牌細節/);
+  assert.match(result.chineseConfirmation, /跟鏡頭說：Welcome to our studio/);
+  assert.match(result.englishPrompt, /motion suggestion:/);
+  assert.match(result.englishPrompt, /dialogue to camera: Welcome to our studio/);
+  assert.doesNotMatch(result.englishPrompt, /adult-only explicitness|new explicit nudity|露點|adult-only consenting subject/);
 });
 
 test('rejects unsafe image-to-video wishes and returns revision advice', () => {

@@ -27,12 +27,23 @@ const sensualScene = document.querySelector('#sensualScene');
 const sensualAccessory = document.querySelector('#sensualAccessory');
 const sensualActionMode = document.querySelector('#sensualActionMode');
 const sensualActionDetail = document.querySelector('#sensualActionDetail');
+const sponsorImageInput = document.querySelector('#sponsorImageInput');
+const sponsorText = document.querySelector('#sponsorText');
+const sponsorAudienceAge = document.querySelector('#sponsorAudienceAge');
+const sponsorAudienceIdentity = document.querySelector('#sponsorAudienceIdentity');
+const sponsorGoal = document.querySelector('#sponsorGoal');
+const sponsorItemType = document.querySelector('#sponsorItemType');
+const sponsorExposureTiming = document.querySelector('#sponsorExposureTiming');
+const sponsorExposureForm = document.querySelector('#sponsorExposureForm');
 const autoVideoPanel = document.querySelector('#autoVideoPanel');
 const autoVideoChoice = document.querySelector('#autoVideoChoice');
 const autoVideoConfirmation = document.querySelector('#autoVideoConfirmation');
 const autoVideoPrompt = document.querySelector('#autoVideoPrompt');
 const copyAutoVideoButton = document.querySelector('#copyAutoVideoButton');
 const rewriteButton = document.querySelector('#rewriteButton');
+const wizardPrevButton = document.querySelector('#wizardPrevButton');
+const wizardNextButton = document.querySelector('#wizardNextButton');
+const wizardProgress = document.querySelector('#wizardProgress');
 const textModeButton = document.querySelector('#textModeButton');
 const videoModeButton = document.querySelector('#videoModeButton');
 const textPromptPanel = document.querySelector('#textPromptPanel');
@@ -50,6 +61,8 @@ const copyVideoButton = document.querySelector('#copyVideoButton');
 const imageInput = document.querySelector('#imageInput');
 const imageDescription = document.querySelector('#imageDescription');
 const desiredMotion = document.querySelector('#desiredMotion');
+const dialogueToCamera = document.querySelector('#dialogueToCamera');
+const dialogueBetweenCharacters = document.querySelector('#dialogueBetweenCharacters');
 const videoDuration = document.querySelector('#videoDuration');
 const motionStrength = document.querySelector('#motionStrength');
 const imageVideoButton = document.querySelector('#imageVideoButton');
@@ -65,37 +78,180 @@ const sensualLoginButton = document.querySelector('#sensualLoginButton');
 const sensualConfirm = document.querySelector('#sensualConfirm');
 const authStatus = document.querySelector('#authStatus');
 const savePromptButton = document.querySelector('#savePromptButton');
+const saveTitleInput = document.querySelector('#saveTitleInput');
 const resultImageInput = document.querySelector('#resultImageInput');
 const savedPromptList = document.querySelector('#savedPromptList');
 const sensualOnlyElements = Array.from(document.querySelectorAll('.sensual-only'));
 const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
 const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
+const characterSubstepButtons = Array.from(document.querySelectorAll('[data-character-substep]'));
+const sceneSubstepButtons = Array.from(document.querySelectorAll('[data-scene-substep]'));
+const adultOnlyControls = Array.from(document.querySelectorAll('.adult-only-control'));
+const themeButtons = Array.from(document.querySelectorAll('[data-theme-choice]'));
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
 let activeAudienceMode = localStorage.getItem('niaiAudienceMode') || 'designer';
 let activeSavedPromptId = null;
+let sponsorImageName = '';
+
+let currentWizardIndex = 0;
+
+function simpleOption(zh, en = zh, group = '') {
+  return { zh, en, group };
+}
+
+const SPONSOR_AGE_OPTIONS = ['18-20', '21-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60+'].map((value) => simpleOption(value, value));
+const SPONSOR_IDENTITY_OPTIONS = [
+  '學生族', '新鮮人', '上班族', '主管職', '自由工作者', '創作者', '設計師', '攝影師', '美妝族', '保養族',
+  '香氛控', '穿搭控', '健身族', '瑜伽族', '跑步族', '戶外族', '露營族', '旅遊族', '咖啡族', '甜點族',
+  '料理族', '居家族', '租屋族', '新婚族', '親子族', '寵物族', '玩家族', '動漫族', '收藏族', '科技族',
+  '商務族', '理財族', '學習族', '語言族', '音樂族', '電影族', '書迷族', '藝術族', '手作族', '文具族',
+  '永續族', '公益族', '活動策展', '品牌主理人', '小店店主', '銀髮族', '高端客', '節慶送禮', '約會族', '夜生活族'
+].map((zh) => simpleOption(zh, zh));
+const SPONSOR_GOAL_OPTIONS = [
+  ['認識品牌', 'brand awareness', '認知'], ['記住品名', 'name recall', '認知'], ['理解賣點', 'benefit understanding', '認知'], ['建立好感', 'positive brand affinity', '認知'], ['提升信任', 'trust building', '認知'],
+  ['促成點擊', 'click-through intent', '互動'], ['引導收藏', 'save or bookmark intent', '互動'], ['鼓勵分享', 'share intent', '互動'], ['帶動留言', 'comment engagement', '互動'], ['增加追蹤', 'follow intent', '互動'],
+  ['預約諮詢', 'consultation booking', '名單'], ['加入名單', 'lead capture', '名單'], ['下載試用', 'trial download', '名單'], ['領取優惠', 'coupon claim', '名單'], ['到店體驗', 'store visit', '名單'],
+  ['活動報名', 'event signup', '轉換'], ['新品預購', 'preorder intent', '轉換'], ['完成購買', 'purchase conversion', '轉換'], ['會員註冊', 'membership signup', '轉換'], ['口碑擴散', 'word-of-mouth lift', '轉換']
+].map(([zh, en, group]) => simpleOption(zh, en, group));
+const SPONSOR_ITEM_TYPE_OPTIONS = [simpleOption('小物品', 'small item'), simpleOption('大物品', 'large item'), simpleOption('活動', 'event or campaign'), simpleOption('服務', 'service'), simpleOption('品牌概念', 'brand concept')];
+const SPONSOR_TIMING_OPTIONS = [
+  ['開場 0-1 秒', 'opening 0-1s'], ['前段 1-3 秒', 'early 1-3s'], ['中段 3-5 秒', 'middle 3-5s'], ['轉場瞬間', 'transition moment'], ['結尾 1 秒', 'final 1s'], ['全程自然露出', 'continuous subtle presence']
+].map(([zh, en]) => simpleOption(zh, en));
+const SPONSOR_FORM_OPTIONS = [
+  ['展示', 'showcase'], ['操作', 'hands-on operation'], ['互動', 'interaction with the item'], ['介紹', 'spoken or visual introduction'], ['背景植入', 'background placement'], ['特寫', 'close-up reveal'], ['字幕口播', 'caption or voiceover mention'], ['前後對比', 'before-and-after comparison']
+].map(([zh, en]) => simpleOption(zh, en));
+
+const WIZARD_PAGES = [
+  { step: 'visual', title: '基本畫面 1：光與鏡位', controls: ['lighting', 'camera'] },
+  { step: 'visual', title: '基本畫面 2：構圖與畫風', controls: ['composition', 'artStyle'] },
+  { step: 'character', title: '角色 1：人物基本', controls: ['gender', 'race', 'emotion'] },
+  { step: 'character', title: '角色 2：時間年齡職業', controls: ['timePoint', 'ageBracket', 'occupation'] },
+  { step: 'character', title: '角色 3：身形臉蛋人數', controls: ['bodyProportion', 'face', 'count'] },
+  { step: 'character', title: '角色 4：服裝外觀', controls: ['outfit', 'outfitColor', 'outfitMaterial'] },
+  { step: 'character', title: '角色 5：細節補充', controls: ['bodyFeature', 'outfitIntegrity'] },
+  { step: 'character', title: '角色 6：多人細節', controls: ['characterControls'] },
+  { step: 'scene', title: '場景 1：地點道具', controls: ['scene', 'accessory'] },
+  { step: 'scene', title: '場景 2：動作姿態', controls: ['actionMode', 'actionDetail'] },
+  { step: 'sponsor', title: '業配 1：內容置入', controls: ['sponsorImageInput', 'sponsorText'] },
+  { step: 'sponsor', title: '業配 2：受眾目標', controls: ['sponsorAudienceAge', 'sponsorAudienceIdentity', 'sponsorGoal'] },
+  { step: 'sponsor', title: '業配 3：露出規劃', controls: ['sponsorItemType', 'sponsorExposureTiming', 'sponsorExposureForm'] },
+  { step: 'sensual', title: '色友 1：氛圍服裝地點', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
+  { step: 'sensual', title: '色友 2：道具與動作', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
+];
+
+const WIZARD_CONTROL_IDS = Array.from(new Set(WIZARD_PAGES.flatMap((page) => page.controls)));
 
 function setStatus(element, message, state = 'idle') {
   element.textContent = message;
   element.dataset.state = state;
 }
 
-function setTextStep(stepName) {
-  if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
-    stepName = 'visual';
-  }
+function getAvailableWizardPages() {
+  return WIZARD_PAGES.map((page) => {
+    const controls = page.controls.filter((id) => {
+      if (page.step === 'sensual' && activeAudienceMode !== 'sensual') return false;
+      if (id === 'outfitIntegrity' && activeAudienceMode !== 'sensual') return false;
+      return true;
+    });
+    return { ...page, controls };
+  }).filter((page) => page.controls.length > 0);
+}
+
+function renderWizardPage() {
+  const pages = getAvailableWizardPages();
+  currentWizardIndex = Math.min(Math.max(currentWizardIndex, 0), pages.length - 1);
+  const page = pages[currentWizardIndex] || pages[0];
+  if (!page) return;
+
   for (const button of textStepButtons) {
-    const isActive = button.dataset.textStep === stepName;
+    const isActive = button.dataset.textStep === page.step;
     button.classList.toggle('active', isActive);
     button.setAttribute('aria-selected', String(isActive));
   }
 
   for (const panel of textStepPanels) {
-    panel.hidden = panel.dataset.textStepPanel !== stepName;
+    panel.hidden = panel.dataset.textStepPanel !== page.step;
+  }
+
+  for (const id of WIZARD_CONTROL_IDS) {
+    setFieldVisibilityByControlId(id, page.controls.includes(id));
+  }
+
+  updateAdultOnlyControls();
+  wizardProgress.textContent = `${page.title}｜${currentWizardIndex + 1}/${pages.length}｜本步 ${page.controls.length} 項`;
+  wizardPrevButton.disabled = currentWizardIndex === 0;
+  wizardNextButton.disabled = currentWizardIndex === pages.length - 1;
+}
+
+function setWizardIndex(index) {
+  currentWizardIndex = index;
+  renderWizardPage();
+}
+
+function setTextStep(stepName) {
+  if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
+    stepName = 'visual';
+  }
+  const pages = getAvailableWizardPages();
+  const targetIndex = pages.findIndex((page) => page.step === stepName);
+  setWizardIndex(targetIndex >= 0 ? targetIndex : 0);
+}
+
+
+
+
+function setSubstep(buttons, activeName, dataKey) {
+  for (const button of buttons) {
+    const isActive = button.dataset[dataKey] === activeName;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
   }
 }
 
+function setFieldVisibilityByControlId(id, isVisible) {
+  const element = document.querySelector(`#${id}`);
+  const field = element?.closest('.field') || element;
+  if (field) {
+    field.hidden = !isVisible;
+  }
+}
+
+function setCharacterSubstep(stepName) {
+  const targetMap = { basics: 2, outfit: 5, multi: 7 };
+  setSubstep(characterSubstepButtons, stepName, 'characterSubstep');
+  setTextStep('character');
+  const pages = getAvailableWizardPages();
+  const titleNeedle = targetMap[stepName] === 5 ? '服裝外觀' : targetMap[stepName] === 7 ? '多人細節' : '人物基本';
+  const index = pages.findIndex((page) => page.step === 'character' && page.title.includes(titleNeedle));
+  if (index >= 0) setWizardIndex(index);
+}
+
+
+function setSceneSubstep(stepName) {
+  setSubstep(sceneSubstepButtons, stepName, 'sceneSubstep');
+  const pages = getAvailableWizardPages();
+  const titleNeedle = stepName === 'motion' ? '動作姿態' : '地點道具';
+  const index = pages.findIndex((page) => page.step === 'scene' && page.title.includes(titleNeedle));
+  if (index >= 0) setWizardIndex(index);
+}
+
+
+function updateAdultOnlyControls() {
+  const showAdultOnly = activeAudienceMode === 'sensual';
+
+  if (!showAdultOnly) {
+    for (const element of adultOnlyControls) {
+      element.hidden = true;
+    }
+    if (outfitIntegrity) outfitIntegrity.value = 'AI判斷';
+    for (let index = 1; index <= 3; index += 1) {
+      const characterIntegrity = document.querySelector(`#character${index}OutfitIntegrity`);
+      if (characterIntegrity) characterIntegrity.value = 'AI判斷';
+    }
+  }
+}
 
 function setAppPage(pageName) {
   for (const button of appPageButtons) {
@@ -122,6 +278,7 @@ function updateAudienceMode(mode, gmail) {
     ? `已用 ${gmail || 'Gmail'} 登入色友；獨立成人向專區與合意規範已啟用。`
     : `已用 ${gmail || 'Gmail'} 登入設友；目前只顯示一般設計素材。`;
   setupCustomizationControls();
+  renderWizardPage();
   authStatus.dataset.state = 'success';
 }
 
@@ -137,6 +294,21 @@ function setSavedPrompts(items) {
   localStorage.setItem('niaiSavedPrompts', JSON.stringify(items));
 }
 
+function makeReadonlyTextarea(value, rows = 4) {
+  const textarea = document.createElement('textarea');
+  textarea.rows = rows;
+  textarea.readOnly = true;
+  textarea.value = value || '';
+  return textarea;
+}
+
+function makeSavedLabel(text) {
+  const label = document.createElement('p');
+  label.className = 'saved-label';
+  label.textContent = text;
+  return label;
+}
+
 function renderSavedPrompts() {
   const items = getSavedPrompts();
   savedPromptList.replaceChildren();
@@ -149,17 +321,31 @@ function renderSavedPrompts() {
   }
   for (const item of items) {
     const article = document.createElement('article');
-    article.className = 'saved-item';
+    article.className = 'saved-item panel';
     article.dataset.active = String(item.id === activeSavedPromptId);
     const title = document.createElement('h3');
-    title.textContent = item.cosplay || '未命名提示詞';
+    title.textContent = item.title || item.cosplay || '未命名提示詞';
     const meta = document.createElement('p');
-    meta.className = 'status';
+    meta.className = 'status saved-meta';
     meta.textContent = `${item.gmail || 'local'}｜${item.mode === 'sensual' ? '色友' : '設友'}｜${new Date(item.createdAt).toLocaleString()}`;
-    const prompt = document.createElement('textarea');
-    prompt.rows = 4;
-    prompt.readOnly = true;
-    prompt.value = item.englishPrompt;
+
+    const dialogueSummary = document.createElement('p');
+    dialogueSummary.className = 'status';
+    dialogueSummary.textContent = [
+      item.dialogueToCamera ? `跟鏡頭說：${item.dialogueToCamera}` : '',
+      item.dialogueBetweenCharacters ? `角色間互動：${item.dialogueBetweenCharacters}` : ''
+    ].filter(Boolean).join('｜') || '未設定對話。';
+    const sponsorSummary = document.createElement('p');
+    sponsorSummary.className = 'status';
+    sponsorSummary.textContent = item.sponsorSettings?.text || item.sponsorSettings?.imageName
+      ? `業配：${item.sponsorSettings.text || item.sponsorSettings.imageName}｜${item.sponsorSettings.audienceAgeZh}｜${item.sponsorSettings.audienceIdentityZh}｜${item.sponsorSettings.goalZh}`
+      : '未設定業配。';
+
+    const chinesePrompt = makeReadonlyTextarea(item.chineseConfirmation, 5);
+    const englishPrompt = makeReadonlyTextarea(item.englishPrompt, 6);
+    const videoZh = makeReadonlyTextarea(item.autoVideoZh, 4);
+    const videoEn = makeReadonlyTextarea(item.autoVideoPrompt, 5);
+
     const choose = document.createElement('button');
     choose.type = 'button';
     choose.className = 'secondary-button';
@@ -177,6 +363,10 @@ function renderSavedPrompts() {
       if (activeSavedPromptId === item.id) activeSavedPromptId = null;
       renderSavedPrompts();
     });
+    const actions = document.createElement('div');
+    actions.className = 'saved-actions-row';
+    actions.append(choose, remove);
+
     const images = document.createElement('div');
     images.className = 'saved-images';
     for (const image of item.images || []) {
@@ -185,7 +375,18 @@ function renderSavedPrompts() {
       img.alt = '壓縮儲存的成果圖，僅供對照不可下載';
       images.append(img);
     }
-    article.append(title, meta, prompt, choose, remove, images);
+    article.append(
+      title,
+      meta,
+      dialogueSummary,
+      sponsorSummary,
+      makeSavedLabel('文生圖中文對照'), chinesePrompt,
+      makeSavedLabel('Text-to-image English prompt'), englishPrompt,
+      makeSavedLabel('圖轉影中文對照'), videoZh,
+      makeSavedLabel('Image-to-video English prompt'), videoEn,
+      actions,
+      images
+    );
     savedPromptList.append(article);
   }
 }
@@ -199,7 +400,11 @@ function saveCurrentPrompt() {
     id: `prompt-${Date.now()}`,
     gmail: localStorage.getItem('niaiGmail') || gmailInput.value.trim(),
     mode: activeAudienceMode,
+    title: saveTitleInput.value.trim() || cosplayPrompt.value.trim() || '未命名提示詞',
     cosplay: cosplayPrompt.value.trim(),
+    dialogueToCamera: dialogueToCamera.value.trim(),
+    dialogueBetweenCharacters: dialogueBetweenCharacters.value.trim(),
+    sponsorSettings: getSponsorSettings(),
     chineseConfirmation: textConfirmationPrompt.value,
     englishPrompt: textResultPrompt.value,
     autoVideoZh: autoVideoConfirmation.value,
@@ -211,6 +416,7 @@ function saveCurrentPrompt() {
   setSavedPrompts(items);
   activeSavedPromptId = item.id;
   renderSavedPrompts();
+  saveTitleInput.value = '';
   setAppPage('library');
 }
 
@@ -261,7 +467,7 @@ function setOutputVisibility(kind, isVisible) {
   }
 }
 
-const DESIGNER_BLOCKED_OPTION_PATTERN = /情慾|色情|性感|誘惑|貼身|私房|夜色|裸|近乎未著|滑落|半透明|透明|吊襪|束縛|手銬|harness|胸鏈|腰鏈|身體鏈|adult sensual|sensual|seduction|alluring|body-hugging|nude|unclothed|garter|restraint|cuff|chest-chain|body chain|transparent/i;
+const DESIGNER_BLOCKED_OPTION_PATTERN = /情慾|色情|性感|誘惑|貼身|私房|夜色|裸|近乎未著|滑落|半透明|透明|吊襪|束縛|手銬|蕾絲|薄紗|網紗|乳膠|PVC|漆皮|蛇紋|身體鏈|胸鏈|腰鏈|透明薄膜|harness|adult sensual|sensual|seduction|alluring|body-hugging|nude|unclothed|garter|restraint|cuff|lace|tulle|mesh|latex|PVC|patent|transparent|chest-chain|body chain/i;
 
 function isDesignerSafeOption(optionText) {
   const optionObject = typeof optionText === 'string' ? { zh: optionText, en: optionText } : optionText;
@@ -286,10 +492,12 @@ function getSensualOnlyOptions(options) {
 }
 
 function getOptionLabel(optionText) {
-  return typeof optionText === 'string' ? optionText : optionText.zh;
+  const label = typeof optionText === 'string' ? optionText : optionText.zh;
+  return String(label).split('｜').at(-1);
 }
 
 function populateSelect(select, options, { includeAi = true } = {}) {
+  const previousValue = select.value;
   const fragment = document.createDocumentFragment();
 
   if (includeAi) {
@@ -299,15 +507,33 @@ function populateSelect(select, options, { includeAi = true } = {}) {
     fragment.append(aiOption);
   }
 
+  const optionParents = new Map();
+
   for (const optionText of options) {
+    const group = typeof optionText === 'string' ? '' : optionText.group || '';
+    let parent = fragment;
+
+    if (group) {
+      if (!optionParents.has(group)) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = group;
+        optionParents.set(group, optgroup);
+        fragment.append(optgroup);
+      }
+      parent = optionParents.get(group);
+    }
+
     const option = document.createElement('option');
     const value = typeof optionText === 'string' ? optionText : optionText.zh;
     option.value = value;
     option.textContent = getOptionLabel(optionText);
-    fragment.append(option);
+    parent.append(option);
   }
 
   select.replaceChildren(fragment);
+  if (Array.from(select.options).some((option) => option.value === previousValue)) {
+    select.value = previousValue;
+  }
 }
 
 function getCountGroup() {
@@ -372,7 +598,7 @@ function setupCharacterControls() {
     populateSelect(document.querySelector(`#character${index}Face`), CUSTOMIZATION_OPTIONS.faces);
     populateSelect(document.querySelector(`#character${index}Outfit`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
     populateSelect(document.querySelector(`#character${index}OutfitColor`), CUSTOMIZATION_OPTIONS.outfitColors);
-    populateSelect(document.querySelector(`#character${index}OutfitMaterial`), CUSTOMIZATION_OPTIONS.outfitMaterials);
+    populateSelect(document.querySelector(`#character${index}OutfitMaterial`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
     populateSelect(document.querySelector(`#character${index}BodyFeature`), getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
     populateSelect(document.querySelector(`#character${index}OutfitIntegrity`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   }
@@ -406,6 +632,9 @@ function collectCharacterDetails() {
     const enParts = [];
 
     for (const [idSuffix, zhLabel, enLabel, options] of fields) {
+      if (idSuffix === 'OutfitIntegrity' && activeAudienceMode !== 'sensual') {
+        continue;
+      }
       const value = document.querySelector(`#character${index}${idSuffix}`).value;
       if (!value || value === 'AI判斷') {
         continue;
@@ -445,7 +674,7 @@ function setupCustomizationControls() {
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
-  populateSelect(outfitMaterial, CUSTOMIZATION_OPTIONS.outfitMaterials);
+  populateSelect(outfitMaterial, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
   populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
   populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
@@ -456,10 +685,17 @@ function setupCustomizationControls() {
   populateSelect(sensualScene, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.scenes));
   populateSelect(sensualAccessory, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.accessories));
   populateSelect(sensualActionMode, ACTION_MODE_OPTIONS);
+  populateSelect(sponsorAudienceAge, SPONSOR_AGE_OPTIONS);
+  populateSelect(sponsorAudienceIdentity, SPONSOR_IDENTITY_OPTIONS);
+  populateSelect(sponsorGoal, SPONSOR_GOAL_OPTIONS);
+  populateSelect(sponsorItemType, SPONSOR_ITEM_TYPE_OPTIONS);
+  populateSelect(sponsorExposureTiming, SPONSOR_TIMING_OPTIONS);
+  populateSelect(sponsorExposureForm, SPONSOR_FORM_OPTIONS);
   setupCharacterControls();
   updateActionDetailOptions();
   updateSensualActionDetailOptions();
   updateCharacterCards();
+  updateAdultOnlyControls();
 }
 
 function getSkinToneRatioFromImage(imageElement) {
@@ -531,20 +767,58 @@ function loadImageAnalysis(file) {
 }
 
 
+function getDialogueForVideo() {
+  const cameraLine = dialogueToCamera.value.trim();
+  const interactionLine = dialogueBetweenCharacters.value.trim();
+  const zhParts = [];
+  const enParts = [];
+
+  if (cameraLine) {
+    zhParts.push(`跟鏡頭說：${cameraLine}`);
+    enParts.push(containsCjk(cameraLine)
+      ? 'dialogue to camera: translate the user-provided camera-facing line into natural English, then animate subtle lip sync and eye contact'
+      : `dialogue to camera: ${cameraLine}`);
+  }
+
+  if (interactionLine) {
+    zhParts.push(`角色間互動對話：${interactionLine}`);
+    enParts.push(containsCjk(interactionLine)
+      ? 'character-to-character dialogue: translate the user-provided interaction line into natural English, then animate conversational timing and reactions'
+      : `character-to-character dialogue: ${interactionLine}`);
+  }
+
+  return {
+    zh: zhParts.join('；'),
+    en: enParts.join(', ')
+  };
+}
+
 function buildAutoVideoChoices(textPrompt) {
   const base = textPrompt.replace(/\s+/g, ' ').trim();
-  const variants = [
+  const dialogue = getDialogueForVideo();
+  const designerVariants = [
+    ['AI 1｜自然微動', '依照圖片內容加入眨眼、呼吸、髮絲與衣料自然微動。', 'natural blinking, breathing, subtle hair and clothing motion based on the uploaded or generated image'],
+    ['AI 2｜慢速推鏡', '鏡頭慢慢推近主體，保持原本構圖與角色造型。', 'slow push-in toward the subject, preserving original composition and styling'],
+    ['AI 3｜環境氛圍', '背景光影與景深輕微漂移，主體保持穩定。', 'gentle background light and depth-of-field drift while keeping the subject stable'],
+    ['AI 4｜表情反應', '加入自然表情變化、視線移動與小幅轉頭。', 'natural expression change, eye movement, and a slight head turn'],
+    ['AI 5｜電影循環', '短距離電影感運鏡，適合做平順循環短片。', 'short cinematic camera move designed as a smooth loop']
+  ];
+  const sensualVariants = [
     ['AI 1｜柔和呼吸運鏡', '柔和呼吸與慢推鏡；髮絲、布料輕微晃動，保持原本構圖。', 'subtle breathing, gentle hair and fabric motion, slow cinematic push-in, preserve the source composition'],
     ['AI 2｜眼神與唇部微動', '眼神慢慢移動、唇部微表情與輕微轉頭，不加入露骨行為動畫。', 'slow eye movement, soft lip micro-expression, slight head turn, elegant camera easing, no explicit act animation'],
     ['AI 3｜手部與服裝細節', '手部整理造型、布料自然位移、配件閃光，維持精緻畫面張力。', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled elegant visual tension'],
     ['AI 4｜姿態重心變化', '姿態重心慢慢轉移、身體線條有優雅動勢，維持藝術遮擋。', 'slow posture weight shift, graceful body-line motion, light parallax, keep tasteful artistic coverage'],
     ['AI 5｜電影感環繞鏡頭', '短距離電影感環繞鏡頭、景深層次與氛圍光漂移，適合循環。', 'short cinematic orbit, layered depth, atmospheric light drift, smooth loop-ready motion']
   ];
+  const variants = activeAudienceMode === 'sensual' ? sensualVariants : designerVariants;
+  const safety = activeAudienceMode === 'sensual'
+    ? 'no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame'
+    : 'safe general-audience motion, no identity change, no abrupt morphing, no graphic violence';
 
   return variants.map(([label, zh, motion], index) => ({
     label,
-    zh: `中文說明：${zh}`,
-    prompt: `image-to-video prompt option ${index + 1}, adult-only consenting subject, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, duration: 5 seconds, motion strength: medium, preserve identity-agnostic appearance, outfit, scene, camera angle, and art style, no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame`
+    zh: `中文說明：${zh}${dialogue.zh ? `；對話：${dialogue.zh}` : ''}`,
+    prompt: `image-to-video prompt option ${index + 1}, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, ${dialogue.en || 'no spoken dialogue requested'}, duration: 5 seconds, motion strength: medium, preserve subject appearance, outfit, scene, camera angle, and art style, ${safety}`
   }));
 }
 
@@ -617,7 +891,7 @@ function renderImageVideoChoice(result, selectedScore = result.explicitnessScore
   for (const choice of result.promptChoices || []) {
     const option = document.createElement('option');
     option.value = String(choice.score);
-    option.textContent = `${choice.score}/10：${choice.zh}`;
+    option.textContent = result.audienceMode === 'designer' ? `建議 ${choice.score}：${choice.zh}` : `${choice.score}/10：${choice.zh}`;
     imageVideoPromptChoice.append(option);
   }
 
@@ -636,12 +910,16 @@ function applyImageVideoChoice(score) {
   }
 
   videoConfirmationPrompt.value = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
-  videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
+  if (lastImageVideoResult.audienceMode === 'designer') {
+    videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/motion suggestion: [^,]+/, `motion suggestion: ${choice.en}`);
+  } else {
+    videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
+  }
   setOutputVisibility('video', true);
 }
 
 setupCustomizationControls();
-setTextStep('visual');
+setWizardIndex(0);
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
@@ -655,23 +933,46 @@ for (const button of textStepButtons) {
   button.addEventListener('click', () => setTextStep(button.dataset.textStep));
 }
 
+for (const button of characterSubstepButtons) {
+  button.addEventListener('click', () => setCharacterSubstep(button.dataset.characterSubstep));
+}
+
+for (const button of sceneSubstepButtons) {
+  button.addEventListener('click', () => setSceneSubstep(button.dataset.sceneSubstep));
+}
+
 for (const button of appPageButtons) {
   button.addEventListener('click', () => setAppPage(button.dataset.appPage));
 }
 
+wizardPrevButton.addEventListener('click', () => setWizardIndex(currentWizardIndex - 1));
+wizardNextButton.addEventListener('click', () => setWizardIndex(currentWizardIndex + 1));
+
+for (const button of themeButtons) {
+  button.addEventListener('click', () => {
+    document.body.dataset.theme = button.dataset.themeChoice;
+    for (const candidate of themeButtons) candidate.classList.toggle('active', candidate === button);
+  });
+}
+
+function getCurrentGmail() {
+  return gmailInput.value.trim() || localStorage.getItem('niaiGmail') || '';
+}
+
 designerLoginButton.addEventListener('click', () => {
-  const gmail = gmailInput.value.trim();
+  const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
     return;
   }
+  sensualConfirm.checked = false;
   updateAudienceMode('designer', gmail);
 });
 
 sensualLoginButton.addEventListener('click', () => {
-  const gmail = gmailInput.value.trim();
+  const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
     return;
   }
   if (!sensualConfirm.checked) {
@@ -704,11 +1005,22 @@ count.addEventListener('change', () => {
 actionMode.addEventListener('change', updateActionDetailOptions);
 sensualActionMode.addEventListener('change', updateSensualActionDetailOptions);
 
-autoVideoChoice.addEventListener('change', () => {
+function refreshAutoVideoFromDialogue() {
+  if (!textResultPrompt.value || autoVideoPanel.hidden) return;
   const choices = buildAutoVideoChoices(textResultPrompt.value);
-  const choice = choices[Number(autoVideoChoice.value)] || choices[0];
+  const selectedIndex = Number(autoVideoChoice.value) || 0;
+  const choice = choices[selectedIndex] || choices[0];
   autoVideoConfirmation.value = choice.zh;
   autoVideoPrompt.value = choice.prompt;
+}
+
+autoVideoChoice.addEventListener('change', refreshAutoVideoFromDialogue);
+dialogueToCamera.addEventListener('input', refreshAutoVideoFromDialogue);
+dialogueBetweenCharacters.addEventListener('input', refreshAutoVideoFromDialogue);
+
+sponsorImageInput.addEventListener('change', () => {
+  const [file] = sponsorImageInput.files;
+  sponsorImageName = file?.name || '';
 });
 
 imageInput.addEventListener('change', async () => {
@@ -736,11 +1048,42 @@ imageInput.addEventListener('change', async () => {
       imageDescription: imageDescription.value,
       desiredMotion: desiredMotion.value
     });
-    setStatus(imageVideoStatus, `已讀取圖片，初步成人向強度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
+    setStatus(imageVideoStatus, activeAudienceMode === 'sensual'
+      ? `已讀取圖片，初步成人向強度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`
+      : '已讀取圖片；可補充描述、動態或對話後產生 3-5 個一般圖轉影建議。', 'success');
   } catch (error) {
     setStatus(imageVideoStatus, error.message, 'error');
   }
 });
+
+function getOptionObject(options, value) {
+  return options.find((item) => item.zh === value || item.en === value) || { zh: value || 'AI判斷', en: value || 'AI decides' };
+}
+
+function getSponsorSettings() {
+  const age = getOptionObject(SPONSOR_AGE_OPTIONS, sponsorAudienceAge.value);
+  const identity = getOptionObject(SPONSOR_IDENTITY_OPTIONS, sponsorAudienceIdentity.value);
+  const goal = getOptionObject(SPONSOR_GOAL_OPTIONS, sponsorGoal.value);
+  const itemType = getOptionObject(SPONSOR_ITEM_TYPE_OPTIONS, sponsorItemType.value);
+  const timing = getOptionObject(SPONSOR_TIMING_OPTIONS, sponsorExposureTiming.value);
+  const form = getOptionObject(SPONSOR_FORM_OPTIONS, sponsorExposureForm.value);
+  return {
+    text: sponsorText.value.trim(),
+    imageName: sponsorImageName,
+    audienceAgeZh: age.zh,
+    audienceAgeEn: age.en,
+    audienceIdentityZh: identity.zh,
+    audienceIdentityEn: identity.en,
+    goalZh: goal.group && goal.zh !== 'AI判斷' ? `${goal.group}／${goal.zh}` : goal.zh,
+    goalEn: goal.group && goal.en !== 'AI decides' ? `${goal.group} ${goal.en}` : goal.en,
+    itemTypeZh: itemType.zh,
+    itemTypeEn: itemType.en,
+    timingZh: timing.zh,
+    timingEn: timing.en,
+    formZh: form.zh,
+    formEn: form.en
+  };
+}
 
 function getSensualOverride(generalValue, sensualValue) {
   if (activeAudienceMode !== 'sensual') {
@@ -770,14 +1113,15 @@ rewriteButton.addEventListener('click', () => {
     outfitColor: outfitColor.value,
     outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
-    outfitIntegrity: outfitIntegrity.value,
+    outfitIntegrity: activeAudienceMode === 'sensual' ? outfitIntegrity.value : 'AI判斷',
     count: count.value,
     cosplayPrompt: cosplayPrompt.value,
     characterDetails: collectCharacterDetails(),
     accessory: getSensualOverride(accessory.value, sensualAccessory.value),
     scene: getSensualOverride(scene.value, sensualScene.value),
     actionMode: getSensualOverride(actionMode.value, sensualActionMode.value),
-    actionDetail: getSensualOverride(actionDetail.value, sensualActionDetail.value)
+    actionDetail: getSensualOverride(actionDetail.value, sensualActionDetail.value),
+    sponsorSettings: getSponsorSettings()
   });
 
   renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');
@@ -795,11 +1139,17 @@ imageVideoButton.addEventListener('click', () => {
     imageDescription: imageDescription.value,
     desiredMotion: desiredMotion.value,
     durationSeconds: videoDuration.value,
-    motionStrength: motionStrength.value
+    motionStrength: motionStrength.value,
+    audienceMode: activeAudienceMode,
+    dialogueToCamera: dialogueToCamera.value,
+    dialogueBetweenCharacters: dialogueBetweenCharacters.value,
+    sponsorSettings: getSponsorSettings()
   });
 
   if (!result.ok) {
-    setStatus(imageVideoStatus, `未通過安全篩選，成人向強度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
+    setStatus(imageVideoStatus, activeAudienceMode === 'sensual'
+      ? `未通過安全篩選，成人向強度估計 ${result.explicitnessScore}/10；請查看修正建議。`
+      : '未通過安全篩選；請查看修正建議。', 'error');
     lastImageVideoResult = null;
     setImageVideoChoiceVisibility(false);
     renderVideoResult(result, result.reason);
@@ -808,7 +1158,9 @@ imageVideoButton.addEventListener('click', () => {
 
   lastImageVideoResult = result;
   renderImageVideoChoice(result);
-  renderVideoResult(result, `圖轉影提示詞已產生，AI 估計成人向強度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
+  renderVideoResult(result, activeAudienceMode === 'sensual'
+    ? `圖轉影提示詞已產生，AI 估計成人向強度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`
+    : '圖轉影提示詞已產生；可挑選 3-5 個依圖片內容生成的一般動態建議，中文僅供對照，下方可複製英文。');
   setStatus(imageVideoStatus, '圖轉影提示詞已通過安全篩選。', 'success');
 });
 

@@ -862,6 +862,20 @@ const intimateAccessoryPairs = [
   ['透明披覆薄膜', 'transparent drape film'], ['羽毛肩飾', 'feather shoulder accessory'], ['水鑽腰帶', 'rhinestone waist belt'], ['心形鎖頭吊飾', 'heart-lock charm'], ['小鈴鐺飾品', 'small bell charm accessory']
 ];
 
+
+const tabooAccessoryPairs = [
+  ['古銅鑰匙串', 'antique bronze keyring'], ['天鵝絨邀請卡', 'velvet invitation card'], ['封蠟信封', 'wax-sealed envelope'], ['烏木摺扇', 'ebony folding fan'], ['黃銅懷錶', 'brass pocket watch'],
+  ['星盤羅盤', 'astrolabe compass'], ['水晶占卜球', 'crystal scrying orb'], ['塔羅牌盒', 'tarot card box'], ['月相手鏡', 'moon-phase hand mirror'], ['香氛玻璃瓶', 'fragrance glass vial'],
+  ['銀柄手杖', 'silver-handled cane'], ['羽毛面具', 'feather masquerade mask'], ['劇院望遠鏡', 'opera binoculars'], ['黑曜石戒盒', 'obsidian ring box'], ['珍珠信物盒', 'pearl keepsake box'],
+  ['紅木珠寶匣', 'mahogany jewelry casket'], ['金屬書籤匕首', 'dagger-shaped metal bookmark'], ['魔法卷軸筒', 'spell scroll tube'], ['古籍皮革封套', 'antique book leather sleeve'], ['夜航船票', 'night-voyage ticket'],
+  ['密會房卡', 'rendezvous room card'], ['宮廷通行徽章', 'court access badge'], ['星艦身份牌', 'starship identity tag'], ['龍鱗護符', 'dragon-scale talisman'], ['精靈葉冠', 'elf leaf circlet'],
+  ['玫瑰金胸針', 'rose-gold brooch'], ['水晶髮梳', 'crystal hair comb'], ['寶石耳墜盒', 'gem earring case'], ['絲絨手拿包', 'velvet clutch'], ['霧面酒杯', 'matte goblet'],
+  ['月光燭台', 'moonlit candlestick'], ['銀托香爐', 'silver incense burner'], ['琥珀香膏盒', 'amber balm case'], ['羽毛筆與墨水', 'quill and ink set'], ['密碼鎖筆記本', 'coded-lock notebook'],
+  ['古典音樂盒', 'classic music box'], ['小型留聲機', 'mini gramophone'], ['黑膠唱片套', 'vinyl record sleeve'], ['劇本冊', 'script booklet'], ['舞會號碼牌', 'ballroom number card'],
+  ['水晶酒瓶塞', 'crystal bottle stopper'], ['鎏金托盤', 'gilded tray'], ['雪茄木盒', 'cigar wooden box'], ['天文望遠鏡', 'astronomy telescope'], ['航海地圖卷', 'rolled nautical map'],
+  ['古堡徽章', 'castle crest badge'], ['祕境門牌', 'hidden-room door plaque'], ['沙漏計時器', 'hourglass timer'], ['玻璃玫瑰罩', 'glass rose cloche'], ['午夜請帖', 'midnight invitation card']
+];
+
 const ACCESSORY_OPTIONS = [
   ...dailyAccessoryPairs.map(([zh, en]) => option(zh, en, 'daily')),
   ...intimateAccessoryPairs.map(([zh, en]) => option(zh, en, 'intimate'))
@@ -1040,7 +1054,7 @@ CUSTOMIZATION_OPTIONS.scenes.splice(0, CUSTOMIZATION_OPTIONS.scenes.length,
   ...makeNamedPresetPairs(mysteriousSceneStyles, mysteriousSceneItems, 'taboo')
 );
 
-CUSTOMIZATION_OPTIONS.accessories.push(...makePairs('祕密道具', 'forbidden styling prop', 50, 'taboo'));
+CUSTOMIZATION_OPTIONS.accessories.push(...tabooAccessoryPairs.map(([zh, en]) => option(zh, en, 'taboo')));
 
 ACTION_MODE_OPTIONS.splice(0, ACTION_MODE_OPTIONS.length,
   option('姿態', 'posture', 'posture'),
@@ -1285,6 +1299,87 @@ function checkElementBoundaries() {
   };
 }
 
+function normalizeSponsorSettings(settings = {}) {
+  const text = normalizeInput(settings.text);
+  const imageName = normalizeInput(settings.imageName);
+  const hasSponsor = Boolean(text || imageName || (settings.goalZh && settings.goalZh !== 'AI判斷'));
+  const baseZhParts = [
+    `內容：${text || imageName || 'AI判斷'}`,
+    `受眾：${settings.audienceAgeZh || 'AI判斷'}／${settings.audienceIdentityZh || 'AI判斷'}`,
+    `目標成果：${settings.goalZh || 'AI判斷'}`,
+    `置入類型：${settings.itemTypeZh || 'AI判斷'}`,
+    `露出形式：${settings.formZh || 'AI判斷'}`
+  ];
+  const baseEnParts = [
+    `sponsored content: ${text || imageName || 'AI decides'}`,
+    `target audience: ${settings.audienceAgeEn || 'AI decides'} ${settings.audienceIdentityEn || ''}`.trim(),
+    `campaign goal: ${settings.goalEn || 'AI decides'}`,
+    `placement type: ${settings.itemTypeEn || 'AI decides'}`,
+    `exposure form: ${settings.formEn || 'AI decides'}`
+  ];
+  const videoZhParts = [
+    ...baseZhParts,
+    `露出時刻：${settings.timingZh || 'AI判斷'}`,
+    `腳本規劃：${buildSponsorExposurePlanZh(settings)}`
+  ];
+  const videoEnParts = [
+    ...baseEnParts,
+    `video exposure timing: ${settings.timingEn || 'AI decides'}`,
+    `script plan: ${buildSponsorExposurePlanEn(settings)}`
+  ];
+
+  return {
+    hasSponsor,
+    zh: [
+      ...baseZhParts,
+      '文生圖先自然置入；露出時刻留給圖轉影腳本'
+    ].join('，'),
+    en: [
+      ...baseEnParts,
+      'include the sponsored placement naturally in text-to-image without video timing details'
+    ].join(', '),
+    videoZh: videoZhParts.join('，'),
+    videoEn: [
+      ...videoEnParts,
+      'include the sponsored placement naturally in the image-to-video prompt without over-explaining it'
+    ].join(', ')
+  };
+}
+
+function buildSponsorExposurePlanZh(settings = {}) {
+  const itemType = settings.itemTypeZh || 'AI判斷';
+  const timing = settings.timingZh || 'AI判斷';
+  const form = settings.formZh || 'AI判斷';
+
+  if (itemType === '小物品') {
+    return `${timing}以${form}呈現展示或操作，手部動作清楚但不搶走角色表情`;
+  }
+  if (itemType === '大物品') {
+    return `${timing}以${form}呈現角色靠近、觸碰或使用，讓互動關係被看見`;
+  }
+  if (/活動|服務|品牌概念/.test(itemType)) {
+    return `${timing}以${form}呈現介紹、指向或情境化說明，讓非實體概念自然被理解`;
+  }
+  return `${timing}安排自然露出，形式為${form}`;
+}
+
+function buildSponsorExposurePlanEn(settings = {}) {
+  const itemType = settings.itemTypeEn || 'AI decides';
+  const timing = settings.timingEn || 'AI decides';
+  const form = settings.formEn || 'AI decides';
+
+  if (itemType === 'small item') {
+    return `${timing}, use ${form} to show display or operation, with clear hand movement that does not overpower the character expression`;
+  }
+  if (itemType === 'large item') {
+    return `${timing}, use ${form} to show the character approaching, touching, or using it so the interaction is visible`;
+  }
+  if (/event|service|brand concept|campaign/.test(itemType)) {
+    return `${timing}, use ${form} to introduce, point to, or contextualize the non-physical idea naturally`;
+  }
+  return `${timing}, arrange a natural reveal through ${form}`;
+}
+
 function rewritePrompt(input, options = {}) {
   const validation = validatePrompt(input);
   if (!validation.ok) {
@@ -1346,6 +1441,7 @@ function rewritePrompt(input, options = {}) {
   const accessory = getCustomizationOption('accessories', options.accessory);
   const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
   const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
+  const sponsor = normalizeSponsorSettings(options.sponsorSettings);
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1417,6 +1513,10 @@ function rewritePrompt(input, options = {}) {
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
 
+  if (sponsor.hasSponsor) {
+    chinesePrompt.push(`業配設定：${sponsor.zh}`);
+  }
+
   if (cosplayValidation.details) {
     chinesePrompt.push(`Cosplay：${cosplayValidation.details}`);
   }
@@ -1448,6 +1548,10 @@ function rewritePrompt(input, options = {}) {
     `safety: ${DEFAULT_STYLE.safety}`
   ];
 
+  if (sponsor.hasSponsor) {
+    englishPrompt.push(`sponsored placement settings: ${sponsor.en}`);
+  }
+
   if (cosplayValidation.details) {
     englishPrompt.push(`cosplay/character direction: ${cosplayValidation.englishDetails}`);
   }
@@ -1478,6 +1582,51 @@ const IMAGE_TO_VIDEO_TIER_PROMPTS = [
   { score: 9, max: 9, zh: '高色情張力安全版，保留合意成人與遮擋，不新增露骨裸露', en: 'high sensual-tension safety version, consenting adults and coverage preserved, no new explicit nudity' },
   { score: 10, max: 10, zh: '最高張力安全邊界，僅允許藝術遮擋、慢速情緒與非露骨成人氛圍', en: 'maximum-tension safety boundary, only artistic coverage, slow emotion, and non-explicit adult mood' }
 ];
+
+
+const GENERAL_IMAGE_TO_VIDEO_PROMPTS = [
+  { score: 1, zh: '自然微動：眨眼、呼吸、髮絲與衣料輕微動態', en: 'natural micro-motion with blinking, breathing, subtle hair and clothing movement' },
+  { score: 2, zh: '慢速推鏡：依圖片構圖輕推近主體並保留背景', en: 'slow push-in based on the image composition while preserving the background' },
+  { score: 3, zh: '環境氛圍：光影、景深與背景細節輕微漂移', en: 'atmospheric motion with gentle light, depth-of-field, and background detail drift' },
+  { score: 4, zh: '表情反應：自然視線、微笑與小幅轉頭', en: 'natural reaction motion with eye movement, a small smile, and a slight head turn' },
+  { score: 5, zh: '電影循環：短距離平順運鏡，適合循環短片', en: 'smooth short cinematic camera move suitable for a looping clip' }
+];
+
+
+function getGeneralImageToVideoPromptChoices({ fileName = '', imageDescription = '', desiredMotion = '' } = {}) {
+  const source = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  const choices = [];
+  const add = (choice) => {
+    if (!choices.some((candidate) => candidate.zh === choice.zh)) {
+      choices.push({ ...choice, score: choices.length + 1 });
+    }
+  };
+
+  if (/商品|產品|瓶|包裝|珠寶|飾品|product|package|bottle|jewelry|accessory/i.test(source)) {
+    add({ zh: '產品展示：慢速環繞商品，讓邊緣高光順著材質滑過', en: 'product showcase with a slow orbit around the item and highlights gliding along the material edges' });
+    add({ zh: '品牌細節：鏡頭輕推近標誌、材質與關鍵配件', en: 'brand-detail push-in toward the logo, material texture, and key accessory details' });
+  }
+
+  if (/人像|人物|角色|模特|臉|眼神|portrait|person|character|model|face|gaze/i.test(source)) {
+    add({ zh: '人物反應：自然眨眼、視線移動與小幅轉頭', en: 'portrait reaction with natural blinking, eye movement, and a slight head turn' });
+    add({ zh: '造型細節：髮絲、衣料與配件依原圖風格輕微晃動', en: 'styling detail motion with hair, clothing, and accessories subtly moving in the source-image style' });
+  }
+
+  if (/室內|房間|建築|空間|背景|街景|風景|interior|room|architecture|space|background|street|landscape/i.test(source)) {
+    add({ zh: '空間景深：背景前後景產生輕微視差與景深漂移', en: 'spatial depth motion with subtle foreground-background parallax and depth-of-field drift' });
+    add({ zh: '環境光影：依原圖場景讓光影、反射或空氣感慢慢流動', en: 'environmental light motion with scene-matched shadows, reflections, or atmosphere slowly drifting' });
+  }
+
+  if (/食物|飲料|甜點|咖啡|food|drink|dessert|coffee/i.test(source)) {
+    add({ zh: '食物質感：蒸氣、液面或表面光澤自然微動', en: 'food texture motion with natural steam, liquid surface, or glossy highlights moving subtly' });
+  }
+
+  add({ zh: '自然微動：依圖片主體加入眨眼、呼吸、髮絲或物件細節微動', en: 'natural micro-motion based on the image subject, adding blinking, breathing, hair movement, or small object detail motion' });
+  add({ zh: '慢速推鏡：鏡頭慢慢靠近主體，同時保持原圖構圖', en: 'slow camera push-in toward the subject while preserving the original composition' });
+  add({ zh: '電影循環：短距離平順運鏡，適合做循環短片', en: 'smooth short cinematic camera move suitable for a looping clip' });
+
+  return choices.slice(0, 5).map((choice, index) => ({ ...choice, score: index + 1 }));
+}
 
 const IMAGE_TO_VIDEO_UNSAFE_REVISIONS = [
   { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, zh: '改成「所有角色皆為明確 18+ 成年人，成熟外觀與成人造型」。', en: 'Change it to clearly 18+ adult characters with mature styling and adult presentation.' },
@@ -1538,6 +1687,19 @@ function buildImageToVideoRevision(input) {
   };
 }
 
+function rewriteDialogueToEnglish(input, label) {
+  const text = normalizeInput(input);
+  if (!text) {
+    return '';
+  }
+
+  if (containsCjk(text)) {
+    return `${label}: translate the user-provided Chinese dialogue into natural English, then animate subtle lip sync and matching reactions`;
+  }
+
+  return `${label}: ${text}`;
+}
+
 function rewriteImageMotionToEnglish(input) {
   let rewritten = normalizeInput(input);
 
@@ -1562,9 +1724,14 @@ function createImageToVideoPrompt({
   desiredMotion = '',
   skinToneRatio = 0,
   durationSeconds = 5,
-  motionStrength = 'medium'
+  motionStrength = 'medium',
+  audienceMode = 'sensual',
+  dialogueToCamera = '',
+  dialogueBetweenCharacters = '',
+  sponsorSettings = {}
 } = {}) {
-  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  const sponsor = normalizeSponsorSettings(sponsorSettings);
+  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters} ${sponsorSettings.text || ''}`);
   const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(combinedForSafety));
 
   if (blocked) {
@@ -1582,37 +1749,76 @@ function createImageToVideoPrompt({
   }
 
   const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
-  const tier = getImageToVideoTier(explicitnessScore);
-  const promptChoices = getImageToVideoPromptChoices(explicitnessScore);
+  const isDesignerMode = audienceMode === 'designer';
+  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription: `${imageDescription} ${sponsorSettings.text || ''} ${sponsorSettings.itemTypeZh || ''}`, desiredMotion }) : getImageToVideoPromptChoices(explicitnessScore);
+  const tier = isDesignerMode ? promptChoices[0] : getImageToVideoTier(explicitnessScore);
   const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
+  const dialogueToCameraEn = rewriteDialogueToEnglish(dialogueToCamera, 'dialogue to camera');
+  const dialogueBetweenCharactersEn = rewriteDialogueToEnglish(dialogueBetweenCharacters, 'character-to-character dialogue');
   const safeDuration = Math.min(12, Math.max(3, Number(durationSeconds) || 5));
   const safeMotionStrength = ['subtle', 'medium', 'strong'].includes(motionStrength) ? motionStrength : 'medium';
   const sourceNoteZh = normalizeInput(imageDescription) || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
-  const requestedMotionZh = normalizeInput(desiredMotion) || '未指定額外動態，依成人向強度自動建議安全圖轉影動作';
+  const requestedMotionZh = normalizeInput(desiredMotion) || (isDesignerMode ? '未指定額外動態，依圖片內容提供自然圖轉影建議' : '未指定額外動態，依成人向強度自動建議安全圖轉影動作');
+  const dialogueZh = [
+    normalizeInput(dialogueToCamera) ? `跟鏡頭說：${normalizeInput(dialogueToCamera)}` : '',
+    normalizeInput(dialogueBetweenCharacters) ? `角色間互動對話：${normalizeInput(dialogueBetweenCharacters)}` : ''
+  ].filter(Boolean).join('；') || '未設定對話';
+  const sponsorZh = sponsor.hasSponsor ? sponsor.videoZh : '未設定業配';
 
-  const chinesePrompt = [
-    `圖轉影成人向強度：${explicitnessScore}/10`,
-    `中文對照詞意：${tier.zh}`,
-    `圖片判定：${sourceNoteZh}`,
-    `用戶希望：${requestedMotionZh}`,
-    `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
-    '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
-  ];
+  const chinesePrompt = isDesignerMode
+    ? [
+      '圖轉影一般建議：依照上傳圖片內容生成 3-5 個自然動態方向',
+      `中文對照詞意：${tier.zh}`,
+      `圖片判定：${sourceNoteZh}`,
+      `用戶希望：${requestedMotionZh}`,
+      `對話：${dialogueZh}`,
+      `業配設定：${sponsorZh}`,
+      '安全：維持原圖角色、服裝、背景與構圖，不新增危險、血腥或未成年內容'
+    ]
+    : [
+      `圖轉影成人向強度：${explicitnessScore}/10`,
+      `中文對照詞意：${tier.zh}`,
+      `圖片判定：${sourceNoteZh}`,
+      `用戶希望：${requestedMotionZh}`,
+      `對話：${dialogueZh}`,
+      `業配設定：${sponsorZh}`,
+      `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
+      '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
+    ];
 
-  const englishPrompt = [
-    'image-to-video prompt',
-    `adult-only explicitness rating: ${explicitnessScore}/10`,
-    tier.en,
-    'use the uploaded image as the visual reference, preserve identity-agnostic subject appearance, outfit, composition, and background',
-    `duration: ${safeDuration} seconds`,
-    `motion strength: ${safeMotionStrength}`,
-    'add natural micro-movements, breathing, hair motion, fabric motion, cinematic camera easing, no abrupt morphing',
-    'no new explicit nudity beyond the source image, no sexual-act animation, no coercion, no minors, no voyeur framing, no graphic violence',
-    DEFAULT_STYLE.safety
-  ];
+  const englishPrompt = isDesignerMode
+    ? [
+      'image-to-video prompt',
+      `motion suggestion: ${tier.en}`,
+      'use the uploaded image as the visual reference, preserve subject appearance, outfit, composition, and background',
+      `duration: ${safeDuration} seconds`,
+      `motion strength: ${safeMotionStrength}`,
+      'add natural micro-movements based on the source image, cinematic camera easing, no abrupt morphing',
+      'safe general-audience motion, no identity change, no graphic violence'
+    ]
+    : [
+      'image-to-video prompt',
+      `adult-only explicitness rating: ${explicitnessScore}/10`,
+      tier.en,
+      'use the uploaded image as the visual reference, preserve identity-agnostic subject appearance, outfit, composition, and background',
+      `duration: ${safeDuration} seconds`,
+      `motion strength: ${safeMotionStrength}`,
+      'add natural micro-movements, breathing, hair motion, fabric motion, cinematic camera easing, no abrupt morphing',
+      'no new explicit nudity beyond the source image, no sexual-act animation, no coercion, no minors, no voyeur framing, no graphic violence',
+      DEFAULT_STYLE.safety
+    ];
 
   if (requestedMotionEn) {
     englishPrompt.push(`user requested safe motion: ${requestedMotionEn}`);
+  }
+  if (dialogueToCameraEn) {
+    englishPrompt.push(dialogueToCameraEn);
+  }
+  if (dialogueBetweenCharactersEn) {
+    englishPrompt.push(dialogueBetweenCharactersEn);
+  }
+  if (sponsor.hasSponsor) {
+    englishPrompt.push(`sponsored placement settings: ${sponsor.videoEn}`);
   }
 
   return {
@@ -1624,7 +1830,8 @@ function createImageToVideoPrompt({
     screened: true,
     explicitnessScore,
     suggestedFix: null,
-    promptChoices
+    promptChoices,
+    audienceMode: isDesignerMode ? 'designer' : 'sensual'
   };
 }
 
