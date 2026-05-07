@@ -23,8 +23,8 @@
         <label for="gmailInput">Gmail</label>
         <input id="gmailInput" type="email" placeholder="yourname@gmail.com" autocomplete="email" />
         <div class="auth-actions">
-          <button id="designerLoginButton" type="button" class="secondary-button">登入設友</button>
-          <button id="sensualLoginButton" type="button" class="secondary-button">登入色友</button>
+          <button id="designerLoginButton" type="button" class="secondary-button">切換為設友</button>
+          <button id="sensualLoginButton" type="button" class="secondary-button">切換為色友</button>
         </div>
         <label class="confirm-row"><input id="sensualConfirm" type="checkbox" /> 我確認以成年人合意創作使用色友模式</label>
         <p id="authStatus" class="status">尚未登入；預設以設友規範只顯示一般設計方向。</p>
@@ -103,6 +103,11 @@
             <h2 id="character-step-title">角色設定</h2>
             <p>角色細節分頁只處理人物與穿搭。Cosplay 已移到最上方作為唯一自由輸入欄位；多人時才需要看下方角色卡；角色卡只輸出你實際選的項目，避免和最上方 Cosplay 重複。</p>
           </div>
+          <nav class="setup-subtabs" aria-label="角色設定小步驟">
+            <button class="setup-subtab active" type="button" data-character-substep="basics" aria-selected="true">人物基本</button>
+            <button class="setup-subtab" type="button" data-character-substep="outfit" aria-selected="false">服裝外觀</button>
+            <button class="setup-subtab" type="button" data-character-substep="multi" aria-selected="false">多人細節</button>
+          </nav>
           <div class="custom-grid">
             <div class="field">
               <label for="gender">性別</label>
@@ -153,7 +158,7 @@
               <label for="bodyFeature">身上特徵（30 種）</label>
               <select id="bodyFeature"></select>
             </div>
-            <div class="field">
+            <div class="field adult-only-control">
               <label for="outfitIntegrity">服裝完整度</label>
               <select id="outfitIntegrity"></select>
             </div>
@@ -175,7 +180,7 @@
                 <label for="character1OutfitColor">服裝顏色</label><select id="character1OutfitColor"></select>
                 <label for="character1OutfitMaterial">服裝材質</label><select id="character1OutfitMaterial"></select>
                 <label for="character1BodyFeature">身上特徵</label><select id="character1BodyFeature"></select>
-                <label for="character1OutfitIntegrity">服裝完整度</label><select id="character1OutfitIntegrity"></select>
+                <label class="adult-only-control" for="character1OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character1OutfitIntegrity"></select>
               </article>
               <article class="character-card" data-character-card="2" hidden>
                 <h3>角色 2</h3>
@@ -190,7 +195,7 @@
                 <label for="character2OutfitColor">服裝顏色</label><select id="character2OutfitColor"></select>
                 <label for="character2OutfitMaterial">服裝材質</label><select id="character2OutfitMaterial"></select>
                 <label for="character2BodyFeature">身上特徵</label><select id="character2BodyFeature"></select>
-                <label for="character2OutfitIntegrity">服裝完整度</label><select id="character2OutfitIntegrity"></select>
+                <label class="adult-only-control" for="character2OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character2OutfitIntegrity"></select>
               </article>
               <article class="character-card" data-character-card="3" hidden>
                 <h3>角色 3</h3>
@@ -205,7 +210,7 @@
                 <label for="character3OutfitColor">服裝顏色</label><select id="character3OutfitColor"></select>
                 <label for="character3OutfitMaterial">服裝材質</label><select id="character3OutfitMaterial"></select>
                 <label for="character3BodyFeature">身上特徵</label><select id="character3BodyFeature"></select>
-                <label for="character3OutfitIntegrity">服裝完整度</label><select id="character3OutfitIntegrity"></select>
+                <label class="adult-only-control" for="character3OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character3OutfitIntegrity"></select>
               </article>
             </div>
           </div>
@@ -217,6 +222,10 @@
             <h2 id="scene-step-title">場景與動作</h2>
             <p>最後再選場景、道具和動作／姿態。動作跟姿態是二擇一：先選類型，再選該類 50 個細項。</p>
           </div>
+          <nav class="setup-subtabs" aria-label="場景動作小步驟">
+            <button class="setup-subtab active" type="button" data-scene-substep="place" aria-selected="true">地點道具</button>
+            <button class="setup-subtab" type="button" data-scene-substep="motion" aria-selected="false">動作姿態</button>
+          </nav>
           <div class="custom-grid">
             <div class="field">
               <label for="scene">場景配置（100 日常／100 祕境）</label>
@@ -318,9 +327,21 @@
         <label for="desiredMotion">希望圖轉影怎麼動（選填）</label>
         <textarea id="desiredMotion" rows="4" placeholder="例如：slow push-in, hair and fabric gently moving, confident gaze to camera"></textarea>
 
+        <div class="dialogue-panel">
+          <div class="section-heading compact">
+            <p class="section-kicker">Dialogue</p>
+            <h2>對話</h2>
+            <p>填寫後會自動加入文生圖附帶的圖轉影建議，以及上傳圖片產生的圖轉影提示詞。</p>
+          </div>
+          <label for="dialogueToCamera">跟鏡頭說</label>
+          <textarea id="dialogueToCamera" rows="3" placeholder="例如：Look into the camera and say: I am ready."></textarea>
+          <label for="dialogueBetweenCharacters">角色間互動對話</label>
+          <textarea id="dialogueBetweenCharacters" rows="3" placeholder="例如：Character A whispers to Character B, then both smile."></textarea>
+        </div>
+
         <button id="imageVideoButton" type="button">產生圖轉影提示詞</button>
         <div class="field" id="imageVideoChoiceField" hidden>
-          <label for="imageVideoPromptChoice">圖轉影成人向強度提示詞（可挑選）</label>
+          <label for="imageVideoPromptChoice">圖轉影建議（可挑選）</label>
           <select id="imageVideoPromptChoice"></select>
         </div>
         <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
@@ -377,6 +398,8 @@
           <h2>已儲存提示詞</h2>
           <p>提示詞與壓縮成果圖只存於本機瀏覽器，成果圖降畫質保存且不提供下載連結。</p>
         </div>
+        <label for="saveTitleInput">儲存標題</label>
+        <input id="saveTitleInput" type="text" placeholder="例如：吸血鬼女王鏡頭版、設友產品形象短片" />
         <div class="save-actions">
           <button id="savePromptButton" type="button" class="secondary-button">儲存目前提示詞</button>
           <label for="resultImageInput" class="secondary-button upload-button">上傳成果到選取紀錄</label>

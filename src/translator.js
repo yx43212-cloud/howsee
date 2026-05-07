@@ -862,6 +862,20 @@ const intimateAccessoryPairs = [
   ['透明披覆薄膜', 'transparent drape film'], ['羽毛肩飾', 'feather shoulder accessory'], ['水鑽腰帶', 'rhinestone waist belt'], ['心形鎖頭吊飾', 'heart-lock charm'], ['小鈴鐺飾品', 'small bell charm accessory']
 ];
 
+
+const tabooAccessoryPairs = [
+  ['古銅鑰匙串', 'antique bronze keyring'], ['天鵝絨邀請卡', 'velvet invitation card'], ['封蠟信封', 'wax-sealed envelope'], ['烏木摺扇', 'ebony folding fan'], ['黃銅懷錶', 'brass pocket watch'],
+  ['星盤羅盤', 'astrolabe compass'], ['水晶占卜球', 'crystal scrying orb'], ['塔羅牌盒', 'tarot card box'], ['月相手鏡', 'moon-phase hand mirror'], ['香氛玻璃瓶', 'fragrance glass vial'],
+  ['銀柄手杖', 'silver-handled cane'], ['羽毛面具', 'feather masquerade mask'], ['劇院望遠鏡', 'opera binoculars'], ['黑曜石戒盒', 'obsidian ring box'], ['珍珠信物盒', 'pearl keepsake box'],
+  ['紅木珠寶匣', 'mahogany jewelry casket'], ['金屬書籤匕首', 'dagger-shaped metal bookmark'], ['魔法卷軸筒', 'spell scroll tube'], ['古籍皮革封套', 'antique book leather sleeve'], ['夜航船票', 'night-voyage ticket'],
+  ['密會房卡', 'rendezvous room card'], ['宮廷通行徽章', 'court access badge'], ['星艦身份牌', 'starship identity tag'], ['龍鱗護符', 'dragon-scale talisman'], ['精靈葉冠', 'elf leaf circlet'],
+  ['玫瑰金胸針', 'rose-gold brooch'], ['水晶髮梳', 'crystal hair comb'], ['寶石耳墜盒', 'gem earring case'], ['絲絨手拿包', 'velvet clutch'], ['霧面酒杯', 'matte goblet'],
+  ['月光燭台', 'moonlit candlestick'], ['銀托香爐', 'silver incense burner'], ['琥珀香膏盒', 'amber balm case'], ['羽毛筆與墨水', 'quill and ink set'], ['密碼鎖筆記本', 'coded-lock notebook'],
+  ['古典音樂盒', 'classic music box'], ['小型留聲機', 'mini gramophone'], ['黑膠唱片套', 'vinyl record sleeve'], ['劇本冊', 'script booklet'], ['舞會號碼牌', 'ballroom number card'],
+  ['水晶酒瓶塞', 'crystal bottle stopper'], ['鎏金托盤', 'gilded tray'], ['雪茄木盒', 'cigar wooden box'], ['天文望遠鏡', 'astronomy telescope'], ['航海地圖卷', 'rolled nautical map'],
+  ['古堡徽章', 'castle crest badge'], ['祕境門牌', 'hidden-room door plaque'], ['沙漏計時器', 'hourglass timer'], ['玻璃玫瑰罩', 'glass rose cloche'], ['午夜請帖', 'midnight invitation card']
+];
+
 const ACCESSORY_OPTIONS = [
   ...dailyAccessoryPairs.map(([zh, en]) => option(zh, en, 'daily')),
   ...intimateAccessoryPairs.map(([zh, en]) => option(zh, en, 'intimate'))
@@ -1040,7 +1054,7 @@ CUSTOMIZATION_OPTIONS.scenes.splice(0, CUSTOMIZATION_OPTIONS.scenes.length,
   ...makeNamedPresetPairs(mysteriousSceneStyles, mysteriousSceneItems, 'taboo')
 );
 
-CUSTOMIZATION_OPTIONS.accessories.push(...makePairs('祕密道具', 'forbidden styling prop', 50, 'taboo'));
+CUSTOMIZATION_OPTIONS.accessories.push(...tabooAccessoryPairs.map(([zh, en]) => option(zh, en, 'taboo')));
 
 ACTION_MODE_OPTIONS.splice(0, ACTION_MODE_OPTIONS.length,
   option('姿態', 'posture', 'posture'),
@@ -1479,6 +1493,15 @@ const IMAGE_TO_VIDEO_TIER_PROMPTS = [
   { score: 10, max: 10, zh: '最高張力安全邊界，僅允許藝術遮擋、慢速情緒與非露骨成人氛圍', en: 'maximum-tension safety boundary, only artistic coverage, slow emotion, and non-explicit adult mood' }
 ];
 
+
+const GENERAL_IMAGE_TO_VIDEO_PROMPTS = [
+  { score: 1, zh: '自然微動：眨眼、呼吸、髮絲與衣料輕微動態', en: 'natural micro-motion with blinking, breathing, subtle hair and clothing movement' },
+  { score: 2, zh: '慢速推鏡：依圖片構圖輕推近主體並保留背景', en: 'slow push-in based on the image composition while preserving the background' },
+  { score: 3, zh: '環境氛圍：光影、景深與背景細節輕微漂移', en: 'atmospheric motion with gentle light, depth-of-field, and background detail drift' },
+  { score: 4, zh: '表情反應：自然視線、微笑與小幅轉頭', en: 'natural reaction motion with eye movement, a small smile, and a slight head turn' },
+  { score: 5, zh: '電影循環：短距離平順運鏡，適合循環短片', en: 'smooth short cinematic camera move suitable for a looping clip' }
+];
+
 const IMAGE_TO_VIDEO_UNSAFE_REVISIONS = [
   { pattern: /未成年|幼|蘿莉|正太|學生|校服|child|minor|teen|underage/i, zh: '改成「所有角色皆為明確 18+ 成年人，成熟外觀與成人造型」。', en: 'Change it to clearly 18+ adult characters with mature styling and adult presentation.' },
   { pattern: /強迫|迷姦|下藥|昏迷|睡著|無意識|rape|forced|drugged|unconscious/i, zh: '改成「合意成人互動、清醒、主動回應、可隨時停止」。', en: 'Change it to consenting adult interaction, awake, actively responsive, and able to stop at any time.' },
@@ -1538,6 +1561,19 @@ function buildImageToVideoRevision(input) {
   };
 }
 
+function rewriteDialogueToEnglish(input, label) {
+  const text = normalizeInput(input);
+  if (!text) {
+    return '';
+  }
+
+  if (containsCjk(text)) {
+    return `${label}: translate the user-provided Chinese dialogue into natural English, then animate subtle lip sync and matching reactions`;
+  }
+
+  return `${label}: ${text}`;
+}
+
 function rewriteImageMotionToEnglish(input) {
   let rewritten = normalizeInput(input);
 
@@ -1562,9 +1598,12 @@ function createImageToVideoPrompt({
   desiredMotion = '',
   skinToneRatio = 0,
   durationSeconds = 5,
-  motionStrength = 'medium'
+  motionStrength = 'medium',
+  audienceMode = 'sensual',
+  dialogueToCamera = '',
+  dialogueBetweenCharacters = ''
 } = {}) {
-  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters}`);
   const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(combinedForSafety));
 
   if (blocked) {
@@ -1582,37 +1621,70 @@ function createImageToVideoPrompt({
   }
 
   const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
-  const tier = getImageToVideoTier(explicitnessScore);
-  const promptChoices = getImageToVideoPromptChoices(explicitnessScore);
+  const isDesignerMode = audienceMode === 'designer';
+  const promptChoices = isDesignerMode ? GENERAL_IMAGE_TO_VIDEO_PROMPTS : getImageToVideoPromptChoices(explicitnessScore);
+  const tier = isDesignerMode ? promptChoices[0] : getImageToVideoTier(explicitnessScore);
   const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
+  const dialogueToCameraEn = rewriteDialogueToEnglish(dialogueToCamera, 'dialogue to camera');
+  const dialogueBetweenCharactersEn = rewriteDialogueToEnglish(dialogueBetweenCharacters, 'character-to-character dialogue');
   const safeDuration = Math.min(12, Math.max(3, Number(durationSeconds) || 5));
   const safeMotionStrength = ['subtle', 'medium', 'strong'].includes(motionStrength) ? motionStrength : 'medium';
   const sourceNoteZh = normalizeInput(imageDescription) || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
-  const requestedMotionZh = normalizeInput(desiredMotion) || '未指定額外動態，依成人向強度自動建議安全圖轉影動作';
+  const requestedMotionZh = normalizeInput(desiredMotion) || (isDesignerMode ? '未指定額外動態，依圖片內容提供自然圖轉影建議' : '未指定額外動態，依成人向強度自動建議安全圖轉影動作');
+  const dialogueZh = [
+    normalizeInput(dialogueToCamera) ? `跟鏡頭說：${normalizeInput(dialogueToCamera)}` : '',
+    normalizeInput(dialogueBetweenCharacters) ? `角色間互動對話：${normalizeInput(dialogueBetweenCharacters)}` : ''
+  ].filter(Boolean).join('；') || '未設定對話';
 
-  const chinesePrompt = [
-    `圖轉影成人向強度：${explicitnessScore}/10`,
-    `中文對照詞意：${tier.zh}`,
-    `圖片判定：${sourceNoteZh}`,
-    `用戶希望：${requestedMotionZh}`,
-    `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
-    '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
-  ];
+  const chinesePrompt = isDesignerMode
+    ? [
+      '圖轉影一般建議：依照上傳圖片內容生成 3-5 個自然動態方向',
+      `中文對照詞意：${tier.zh}`,
+      `圖片判定：${sourceNoteZh}`,
+      `用戶希望：${requestedMotionZh}`,
+      `對話：${dialogueZh}`,
+      '安全：維持原圖角色、服裝、背景與構圖，不新增危險、血腥或未成年內容'
+    ]
+    : [
+      `圖轉影成人向強度：${explicitnessScore}/10`,
+      `中文對照詞意：${tier.zh}`,
+      `圖片判定：${sourceNoteZh}`,
+      `用戶希望：${requestedMotionZh}`,
+      `對話：${dialogueZh}`,
+      `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
+      '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
+    ];
 
-  const englishPrompt = [
-    'image-to-video prompt',
-    `adult-only explicitness rating: ${explicitnessScore}/10`,
-    tier.en,
-    'use the uploaded image as the visual reference, preserve identity-agnostic subject appearance, outfit, composition, and background',
-    `duration: ${safeDuration} seconds`,
-    `motion strength: ${safeMotionStrength}`,
-    'add natural micro-movements, breathing, hair motion, fabric motion, cinematic camera easing, no abrupt morphing',
-    'no new explicit nudity beyond the source image, no sexual-act animation, no coercion, no minors, no voyeur framing, no graphic violence',
-    DEFAULT_STYLE.safety
-  ];
+  const englishPrompt = isDesignerMode
+    ? [
+      'image-to-video prompt',
+      `motion suggestion: ${tier.en}`,
+      'use the uploaded image as the visual reference, preserve subject appearance, outfit, composition, and background',
+      `duration: ${safeDuration} seconds`,
+      `motion strength: ${safeMotionStrength}`,
+      'add natural micro-movements based on the source image, cinematic camera easing, no abrupt morphing',
+      'safe general-audience motion, no identity change, no graphic violence'
+    ]
+    : [
+      'image-to-video prompt',
+      `adult-only explicitness rating: ${explicitnessScore}/10`,
+      tier.en,
+      'use the uploaded image as the visual reference, preserve identity-agnostic subject appearance, outfit, composition, and background',
+      `duration: ${safeDuration} seconds`,
+      `motion strength: ${safeMotionStrength}`,
+      'add natural micro-movements, breathing, hair motion, fabric motion, cinematic camera easing, no abrupt morphing',
+      'no new explicit nudity beyond the source image, no sexual-act animation, no coercion, no minors, no voyeur framing, no graphic violence',
+      DEFAULT_STYLE.safety
+    ];
 
   if (requestedMotionEn) {
     englishPrompt.push(`user requested safe motion: ${requestedMotionEn}`);
+  }
+  if (dialogueToCameraEn) {
+    englishPrompt.push(dialogueToCameraEn);
+  }
+  if (dialogueBetweenCharactersEn) {
+    englishPrompt.push(dialogueBetweenCharactersEn);
   }
 
   return {
@@ -1624,7 +1696,8 @@ function createImageToVideoPrompt({
     screened: true,
     explicitnessScore,
     suggestedFix: null,
-    promptChoices
+    promptChoices,
+    audienceMode: isDesignerMode ? 'designer' : 'sensual'
   };
 }
 

@@ -125,6 +125,9 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'daily').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'intimate').length, 50);
   assert.equal(CUSTOMIZATION_OPTIONS.accessories.filter(({ rarity }) => rarity === 'taboo').length, 50);
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.every(({ zh }) => !/祕密道具\d|秘密道具\d/.test(zh)));
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.some(({ zh }) => zh === '古銅鑰匙串'));
+  assert.ok(CUSTOMIZATION_OPTIONS.accessories.some(({ zh }) => zh === '午夜請帖'));
   assert.deepEqual(ACTION_MODE_OPTIONS.map(({ zh }) => zh), [
     '姿態',
     '肩上',
@@ -238,7 +241,7 @@ test('does not append category tag text to browser option labels', () => {
   const appSource = require('node:fs').readFileSync(require('node:path').join(__dirname, '../src/app.js'), 'utf8');
 
   assert.doesNotMatch(appSource, /稀少|少見|（日常）|（情趣）|rarityLabel/);
-  assert.match(appSource, /return typeof optionText === 'string' \? optionText : optionText\.zh/);
+  assert.match(appSource, /split\('｜'\)\.at\(-1\)/);
 });
 
 test('keeps copyable output English-only even when the source has unsupported Chinese terms', () => {
@@ -313,13 +316,21 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
   assert.match(indexSource, /data-text-step="sensual"/);
+  assert.match(indexSource, /data-character-substep="basics"/);
+  assert.match(indexSource, /data-character-substep="outfit"/);
+  assert.match(indexSource, /data-character-substep="multi"/);
+  assert.match(indexSource, /data-scene-substep="place"/);
+  assert.match(indexSource, /data-scene-substep="motion"/);
   assert.match(indexSource, /色友專區/);
   assert.match(indexSource, /sensualOutfit/);
   assert.match(indexSource, /sensualScene/);
   assert.match(indexSource, /sensualActionDetail/);
-  assert.match(indexSource, /登入設友/);
-  assert.match(indexSource, /登入色友/);
+  assert.match(indexSource, /切換為設友/);
+  assert.match(indexSource, /切換為色友/);
   assert.match(indexSource, /savePromptButton/);
+  assert.match(indexSource, /saveTitleInput/);
+  assert.match(indexSource, /dialogueToCamera/);
+  assert.match(indexSource, /dialogueBetweenCharacters/);
   assert.match(indexSource, /resultImageInput/);
   assert.match(indexSource, /data-text-step-panel="visual"/);
   assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
@@ -328,6 +339,10 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
   assert.match(appSource, /function setTextStep/);
   assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfits\)/);
+  assert.match(appSource, /getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
+  assert.match(appSource, /function setCharacterSubstep/);
+  assert.match(appSource, /function setSceneSubstep/);
+  assert.match(appSource, /function updateAdultOnlyControls/);
   assert.match(appSource, /populateSelect\(sensualOutfit, getSensualOnlyOptions\(CUSTOMIZATION_OPTIONS\.outfits\)\)/);
   assert.match(appSource, /getSensualOverride/);
   assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
@@ -342,13 +357,15 @@ test('all customization selectors include AI judgment in the browser', () => {
 
   assert.match(appSource, /aiOption\.textContent = 'AI判斷'/);
   assert.match(appSource, /populateSelect\(composition, COMPOSITION_STRUCTURES\)/);
-  assert.match(appSource, /populateSelect\(outfitMaterial, CUSTOMIZATION_OPTIONS\.outfitMaterials\)/);
+  assert.match(appSource, /populateSelect\(outfitMaterial, getDesignerOptions\(CUSTOMIZATION_OPTIONS\.outfitMaterials\)\)/);
   assert.match(appSource, /populateSelect\(actionMode, ACTION_MODE_OPTIONS\)/);
   assert.match(appSource, /getTextRewriteSource/);
   assert.match(appSource, /cosplayPrompt\.value\.trim\(\)/);
   assert.doesNotMatch(appSource, /sourcePrompt/);
   assert.match(appSource, /selected customization controls/);
   assert.match(appSource, /buildAutoVideoChoices/);
+  assert.match(appSource, /getDialogueForVideo/);
+  assert.match(appSource, /refreshAutoVideoFromDialogue/);
   assert.match(appSource, /autoVideoChoice/);
   assert.match(appSource, /autoVideoConfirmation/);
   assert.match(appSource, /中文說明：/);
@@ -362,8 +379,11 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(indexSource, /data-autovideo-count="5"/);
   assert.match(indexSource, /autoVideoConfirmation/);
   assert.match(indexSource, /中文圖轉影說明/);
+  assert.match(indexSource, /儲存標題/);
+  assert.match(indexSource, /跟鏡頭說/);
+  assert.match(indexSource, /角色間互動對話/);
   assert.match(indexSource, /character1Race/);
-  assert.match(indexSource, /character1OutfitIntegrity/);
+  assert.match(indexSource, /adult-only-control[^>]*for="character1OutfitIntegrity"/);
   assert.match(indexSource, /動作和姿態共用這一欄/);
   assert.doesNotMatch(indexSource, /好設之圖NIAI|圖轉影色情程度/);
 });
@@ -416,6 +436,28 @@ test('creates safe image-to-video prompts with Chinese meaning confirmation and 
   assert.ok(result.promptChoices.length >= 2);
   assert.ok(result.promptChoices.every((choice) => choice.score >= 1 && choice.score <= 10));
   assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|成人向強度|中文對照/);
+});
+
+
+test('designer image-to-video prompts avoid adult framing and include dialogue', () => {
+  const result = createImageToVideoPrompt({
+    audienceMode: 'designer',
+    imageDescription: '產品展示照、桌面、植物背景',
+    desiredMotion: 'slow orbit around the product',
+    dialogueToCamera: 'Welcome to our studio.',
+    dialogueBetweenCharacters: 'Designer explains the material choice.',
+    skinToneRatio: 0.05,
+    durationSeconds: 5
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.audienceMode, 'designer');
+  assert.equal(result.promptChoices.length, 5);
+  assert.match(result.chineseConfirmation, /圖轉影一般建議/);
+  assert.match(result.chineseConfirmation, /跟鏡頭說：Welcome to our studio/);
+  assert.match(result.englishPrompt, /motion suggestion:/);
+  assert.match(result.englishPrompt, /dialogue to camera: Welcome to our studio/);
+  assert.doesNotMatch(result.englishPrompt, /adult-only explicitness|new explicit nudity|露點|adult-only consenting subject/);
 });
 
 test('rejects unsafe image-to-video wishes and returns revision advice', () => {

@@ -50,6 +50,8 @@ const copyVideoButton = document.querySelector('#copyVideoButton');
 const imageInput = document.querySelector('#imageInput');
 const imageDescription = document.querySelector('#imageDescription');
 const desiredMotion = document.querySelector('#desiredMotion');
+const dialogueToCamera = document.querySelector('#dialogueToCamera');
+const dialogueBetweenCharacters = document.querySelector('#dialogueBetweenCharacters');
 const videoDuration = document.querySelector('#videoDuration');
 const motionStrength = document.querySelector('#motionStrength');
 const imageVideoButton = document.querySelector('#imageVideoButton');
@@ -65,11 +67,15 @@ const sensualLoginButton = document.querySelector('#sensualLoginButton');
 const sensualConfirm = document.querySelector('#sensualConfirm');
 const authStatus = document.querySelector('#authStatus');
 const savePromptButton = document.querySelector('#savePromptButton');
+const saveTitleInput = document.querySelector('#saveTitleInput');
 const resultImageInput = document.querySelector('#resultImageInput');
 const savedPromptList = document.querySelector('#savedPromptList');
 const sensualOnlyElements = Array.from(document.querySelectorAll('.sensual-only'));
 const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
 const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
+const characterSubstepButtons = Array.from(document.querySelectorAll('[data-character-substep]'));
+const sceneSubstepButtons = Array.from(document.querySelectorAll('[data-scene-substep]'));
+const adultOnlyControls = Array.from(document.querySelectorAll('.adult-only-control'));
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
@@ -97,6 +103,67 @@ function setTextStep(stepName) {
 }
 
 
+
+function setSubstep(buttons, activeName, dataKey) {
+  for (const button of buttons) {
+    const isActive = button.dataset[dataKey] === activeName;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', String(isActive));
+  }
+}
+
+function setFieldVisibilityByControlId(id, isVisible) {
+  const element = document.querySelector(`#${id}`);
+  const field = element?.closest('.field') || element;
+  if (field) {
+    field.hidden = !isVisible;
+  }
+}
+
+function setCharacterSubstep(stepName) {
+  setSubstep(characterSubstepButtons, stepName, 'characterSubstep');
+  const groups = {
+    basics: ['gender', 'race', 'emotion', 'timePoint', 'ageBracket', 'occupation', 'bodyProportion', 'face', 'count'],
+    outfit: ['outfit', 'outfitColor', 'outfitMaterial', 'bodyFeature', 'outfitIntegrity'],
+    multi: ['characterControls']
+  };
+  const allIds = Object.values(groups).flat();
+
+  for (const id of allIds) {
+    setFieldVisibilityByControlId(id, groups[stepName]?.includes(id));
+  }
+
+  updateAdultOnlyControls();
+}
+
+function setSceneSubstep(stepName) {
+  setSubstep(sceneSubstepButtons, stepName, 'sceneSubstep');
+  const groups = {
+    place: ['scene', 'accessory'],
+    motion: ['actionMode', 'actionDetail']
+  };
+  const allIds = Object.values(groups).flat();
+
+  for (const id of allIds) {
+    setFieldVisibilityByControlId(id, groups[stepName]?.includes(id));
+  }
+}
+
+function updateAdultOnlyControls() {
+  const showAdultOnly = activeAudienceMode === 'sensual';
+  for (const element of adultOnlyControls) {
+    element.hidden = !showAdultOnly;
+  }
+
+  if (!showAdultOnly) {
+    if (outfitIntegrity) outfitIntegrity.value = 'AI判斷';
+    for (let index = 1; index <= 3; index += 1) {
+      const characterIntegrity = document.querySelector(`#character${index}OutfitIntegrity`);
+      if (characterIntegrity) characterIntegrity.value = 'AI判斷';
+    }
+  }
+}
+
 function setAppPage(pageName) {
   for (const button of appPageButtons) {
     button.classList.toggle('active', button.dataset.appPage === pageName);
@@ -122,6 +189,9 @@ function updateAudienceMode(mode, gmail) {
     ? `已用 ${gmail || 'Gmail'} 登入色友；獨立成人向專區與合意規範已啟用。`
     : `已用 ${gmail || 'Gmail'} 登入設友；目前只顯示一般設計素材。`;
   setupCustomizationControls();
+  setCharacterSubstep(document.querySelector('[data-character-substep].active')?.dataset.characterSubstep || 'basics');
+  setSceneSubstep(document.querySelector('[data-scene-substep].active')?.dataset.sceneSubstep || 'place');
+  updateAdultOnlyControls();
   authStatus.dataset.state = 'success';
 }
 
@@ -137,6 +207,21 @@ function setSavedPrompts(items) {
   localStorage.setItem('niaiSavedPrompts', JSON.stringify(items));
 }
 
+function makeReadonlyTextarea(value, rows = 4) {
+  const textarea = document.createElement('textarea');
+  textarea.rows = rows;
+  textarea.readOnly = true;
+  textarea.value = value || '';
+  return textarea;
+}
+
+function makeSavedLabel(text) {
+  const label = document.createElement('p');
+  label.className = 'saved-label';
+  label.textContent = text;
+  return label;
+}
+
 function renderSavedPrompts() {
   const items = getSavedPrompts();
   savedPromptList.replaceChildren();
@@ -149,17 +234,26 @@ function renderSavedPrompts() {
   }
   for (const item of items) {
     const article = document.createElement('article');
-    article.className = 'saved-item';
+    article.className = 'saved-item panel';
     article.dataset.active = String(item.id === activeSavedPromptId);
     const title = document.createElement('h3');
-    title.textContent = item.cosplay || '未命名提示詞';
+    title.textContent = item.title || item.cosplay || '未命名提示詞';
     const meta = document.createElement('p');
-    meta.className = 'status';
+    meta.className = 'status saved-meta';
     meta.textContent = `${item.gmail || 'local'}｜${item.mode === 'sensual' ? '色友' : '設友'}｜${new Date(item.createdAt).toLocaleString()}`;
-    const prompt = document.createElement('textarea');
-    prompt.rows = 4;
-    prompt.readOnly = true;
-    prompt.value = item.englishPrompt;
+
+    const dialogueSummary = document.createElement('p');
+    dialogueSummary.className = 'status';
+    dialogueSummary.textContent = [
+      item.dialogueToCamera ? `跟鏡頭說：${item.dialogueToCamera}` : '',
+      item.dialogueBetweenCharacters ? `角色間互動：${item.dialogueBetweenCharacters}` : ''
+    ].filter(Boolean).join('｜') || '未設定對話。';
+
+    const chinesePrompt = makeReadonlyTextarea(item.chineseConfirmation, 5);
+    const englishPrompt = makeReadonlyTextarea(item.englishPrompt, 6);
+    const videoZh = makeReadonlyTextarea(item.autoVideoZh, 4);
+    const videoEn = makeReadonlyTextarea(item.autoVideoPrompt, 5);
+
     const choose = document.createElement('button');
     choose.type = 'button';
     choose.className = 'secondary-button';
@@ -177,6 +271,10 @@ function renderSavedPrompts() {
       if (activeSavedPromptId === item.id) activeSavedPromptId = null;
       renderSavedPrompts();
     });
+    const actions = document.createElement('div');
+    actions.className = 'saved-actions-row';
+    actions.append(choose, remove);
+
     const images = document.createElement('div');
     images.className = 'saved-images';
     for (const image of item.images || []) {
@@ -185,7 +283,17 @@ function renderSavedPrompts() {
       img.alt = '壓縮儲存的成果圖，僅供對照不可下載';
       images.append(img);
     }
-    article.append(title, meta, prompt, choose, remove, images);
+    article.append(
+      title,
+      meta,
+      dialogueSummary,
+      makeSavedLabel('文生圖中文對照'), chinesePrompt,
+      makeSavedLabel('Text-to-image English prompt'), englishPrompt,
+      makeSavedLabel('圖轉影中文對照'), videoZh,
+      makeSavedLabel('Image-to-video English prompt'), videoEn,
+      actions,
+      images
+    );
     savedPromptList.append(article);
   }
 }
@@ -199,7 +307,10 @@ function saveCurrentPrompt() {
     id: `prompt-${Date.now()}`,
     gmail: localStorage.getItem('niaiGmail') || gmailInput.value.trim(),
     mode: activeAudienceMode,
+    title: saveTitleInput.value.trim() || cosplayPrompt.value.trim() || '未命名提示詞',
     cosplay: cosplayPrompt.value.trim(),
+    dialogueToCamera: dialogueToCamera.value.trim(),
+    dialogueBetweenCharacters: dialogueBetweenCharacters.value.trim(),
     chineseConfirmation: textConfirmationPrompt.value,
     englishPrompt: textResultPrompt.value,
     autoVideoZh: autoVideoConfirmation.value,
@@ -211,6 +322,7 @@ function saveCurrentPrompt() {
   setSavedPrompts(items);
   activeSavedPromptId = item.id;
   renderSavedPrompts();
+  saveTitleInput.value = '';
   setAppPage('library');
 }
 
@@ -261,7 +373,7 @@ function setOutputVisibility(kind, isVisible) {
   }
 }
 
-const DESIGNER_BLOCKED_OPTION_PATTERN = /情慾|色情|性感|誘惑|貼身|私房|夜色|裸|近乎未著|滑落|半透明|透明|吊襪|束縛|手銬|harness|胸鏈|腰鏈|身體鏈|adult sensual|sensual|seduction|alluring|body-hugging|nude|unclothed|garter|restraint|cuff|chest-chain|body chain|transparent/i;
+const DESIGNER_BLOCKED_OPTION_PATTERN = /情慾|色情|性感|誘惑|貼身|私房|夜色|裸|近乎未著|滑落|半透明|透明|吊襪|束縛|手銬|蕾絲|薄紗|網紗|乳膠|PVC|漆皮|蛇紋|身體鏈|胸鏈|腰鏈|透明薄膜|harness|adult sensual|sensual|seduction|alluring|body-hugging|nude|unclothed|garter|restraint|cuff|lace|tulle|mesh|latex|PVC|patent|transparent|chest-chain|body chain/i;
 
 function isDesignerSafeOption(optionText) {
   const optionObject = typeof optionText === 'string' ? { zh: optionText, en: optionText } : optionText;
@@ -286,10 +398,12 @@ function getSensualOnlyOptions(options) {
 }
 
 function getOptionLabel(optionText) {
-  return typeof optionText === 'string' ? optionText : optionText.zh;
+  const label = typeof optionText === 'string' ? optionText : optionText.zh;
+  return String(label).split('｜').at(-1);
 }
 
 function populateSelect(select, options, { includeAi = true } = {}) {
+  const previousValue = select.value;
   const fragment = document.createDocumentFragment();
 
   if (includeAi) {
@@ -308,6 +422,9 @@ function populateSelect(select, options, { includeAi = true } = {}) {
   }
 
   select.replaceChildren(fragment);
+  if (Array.from(select.options).some((option) => option.value === previousValue)) {
+    select.value = previousValue;
+  }
 }
 
 function getCountGroup() {
@@ -372,7 +489,7 @@ function setupCharacterControls() {
     populateSelect(document.querySelector(`#character${index}Face`), CUSTOMIZATION_OPTIONS.faces);
     populateSelect(document.querySelector(`#character${index}Outfit`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
     populateSelect(document.querySelector(`#character${index}OutfitColor`), CUSTOMIZATION_OPTIONS.outfitColors);
-    populateSelect(document.querySelector(`#character${index}OutfitMaterial`), CUSTOMIZATION_OPTIONS.outfitMaterials);
+    populateSelect(document.querySelector(`#character${index}OutfitMaterial`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
     populateSelect(document.querySelector(`#character${index}BodyFeature`), getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
     populateSelect(document.querySelector(`#character${index}OutfitIntegrity`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   }
@@ -406,6 +523,9 @@ function collectCharacterDetails() {
     const enParts = [];
 
     for (const [idSuffix, zhLabel, enLabel, options] of fields) {
+      if (idSuffix === 'OutfitIntegrity' && activeAudienceMode !== 'sensual') {
+        continue;
+      }
       const value = document.querySelector(`#character${index}${idSuffix}`).value;
       if (!value || value === 'AI判斷') {
         continue;
@@ -445,7 +565,7 @@ function setupCustomizationControls() {
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
-  populateSelect(outfitMaterial, CUSTOMIZATION_OPTIONS.outfitMaterials);
+  populateSelect(outfitMaterial, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
   populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
   populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
@@ -460,6 +580,7 @@ function setupCustomizationControls() {
   updateActionDetailOptions();
   updateSensualActionDetailOptions();
   updateCharacterCards();
+  updateAdultOnlyControls();
 }
 
 function getSkinToneRatioFromImage(imageElement) {
@@ -531,20 +652,58 @@ function loadImageAnalysis(file) {
 }
 
 
+function getDialogueForVideo() {
+  const cameraLine = dialogueToCamera.value.trim();
+  const interactionLine = dialogueBetweenCharacters.value.trim();
+  const zhParts = [];
+  const enParts = [];
+
+  if (cameraLine) {
+    zhParts.push(`跟鏡頭說：${cameraLine}`);
+    enParts.push(containsCjk(cameraLine)
+      ? 'dialogue to camera: translate the user-provided camera-facing line into natural English, then animate subtle lip sync and eye contact'
+      : `dialogue to camera: ${cameraLine}`);
+  }
+
+  if (interactionLine) {
+    zhParts.push(`角色間互動對話：${interactionLine}`);
+    enParts.push(containsCjk(interactionLine)
+      ? 'character-to-character dialogue: translate the user-provided interaction line into natural English, then animate conversational timing and reactions'
+      : `character-to-character dialogue: ${interactionLine}`);
+  }
+
+  return {
+    zh: zhParts.join('；'),
+    en: enParts.join(', ')
+  };
+}
+
 function buildAutoVideoChoices(textPrompt) {
   const base = textPrompt.replace(/\s+/g, ' ').trim();
-  const variants = [
+  const dialogue = getDialogueForVideo();
+  const designerVariants = [
+    ['AI 1｜自然微動', '依照圖片內容加入眨眼、呼吸、髮絲與衣料自然微動。', 'natural blinking, breathing, subtle hair and clothing motion based on the uploaded or generated image'],
+    ['AI 2｜慢速推鏡', '鏡頭慢慢推近主體，保持原本構圖與角色造型。', 'slow push-in toward the subject, preserving original composition and styling'],
+    ['AI 3｜環境氛圍', '背景光影與景深輕微漂移，主體保持穩定。', 'gentle background light and depth-of-field drift while keeping the subject stable'],
+    ['AI 4｜表情反應', '加入自然表情變化、視線移動與小幅轉頭。', 'natural expression change, eye movement, and a slight head turn'],
+    ['AI 5｜電影循環', '短距離電影感運鏡，適合做平順循環短片。', 'short cinematic camera move designed as a smooth loop']
+  ];
+  const sensualVariants = [
     ['AI 1｜柔和呼吸運鏡', '柔和呼吸與慢推鏡；髮絲、布料輕微晃動，保持原本構圖。', 'subtle breathing, gentle hair and fabric motion, slow cinematic push-in, preserve the source composition'],
     ['AI 2｜眼神與唇部微動', '眼神慢慢移動、唇部微表情與輕微轉頭，不加入露骨行為動畫。', 'slow eye movement, soft lip micro-expression, slight head turn, elegant camera easing, no explicit act animation'],
     ['AI 3｜手部與服裝細節', '手部整理造型、布料自然位移、配件閃光，維持精緻畫面張力。', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled elegant visual tension'],
     ['AI 4｜姿態重心變化', '姿態重心慢慢轉移、身體線條有優雅動勢，維持藝術遮擋。', 'slow posture weight shift, graceful body-line motion, light parallax, keep tasteful artistic coverage'],
     ['AI 5｜電影感環繞鏡頭', '短距離電影感環繞鏡頭、景深層次與氛圍光漂移，適合循環。', 'short cinematic orbit, layered depth, atmospheric light drift, smooth loop-ready motion']
   ];
+  const variants = activeAudienceMode === 'sensual' ? sensualVariants : designerVariants;
+  const safety = activeAudienceMode === 'sensual'
+    ? 'no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame'
+    : 'safe general-audience motion, no identity change, no abrupt morphing, no graphic violence';
 
   return variants.map(([label, zh, motion], index) => ({
     label,
-    zh: `中文說明：${zh}`,
-    prompt: `image-to-video prompt option ${index + 1}, adult-only consenting subject, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, duration: 5 seconds, motion strength: medium, preserve identity-agnostic appearance, outfit, scene, camera angle, and art style, no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame`
+    zh: `中文說明：${zh}${dialogue.zh ? `；對話：${dialogue.zh}` : ''}`,
+    prompt: `image-to-video prompt option ${index + 1}, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, ${dialogue.en || 'no spoken dialogue requested'}, duration: 5 seconds, motion strength: medium, preserve subject appearance, outfit, scene, camera angle, and art style, ${safety}`
   }));
 }
 
@@ -617,7 +776,7 @@ function renderImageVideoChoice(result, selectedScore = result.explicitnessScore
   for (const choice of result.promptChoices || []) {
     const option = document.createElement('option');
     option.value = String(choice.score);
-    option.textContent = `${choice.score}/10：${choice.zh}`;
+    option.textContent = result.audienceMode === 'designer' ? `建議 ${choice.score}：${choice.zh}` : `${choice.score}/10：${choice.zh}`;
     imageVideoPromptChoice.append(option);
   }
 
@@ -636,11 +795,17 @@ function applyImageVideoChoice(score) {
   }
 
   videoConfirmationPrompt.value = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
-  videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
+  if (lastImageVideoResult.audienceMode === 'designer') {
+    videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/motion suggestion: [^,]+/, `motion suggestion: ${choice.en}`);
+  } else {
+    videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/adult-only explicitness rating: \d+\/10, [^,]+/, `adult-only explicitness rating: ${choice.score}/10, ${choice.en}`);
+  }
   setOutputVisibility('video', true);
 }
 
 setupCustomizationControls();
+setCharacterSubstep('basics');
+setSceneSubstep('place');
 setTextStep('visual');
 setMode('text');
 setOutputVisibility('text', false);
@@ -655,23 +820,36 @@ for (const button of textStepButtons) {
   button.addEventListener('click', () => setTextStep(button.dataset.textStep));
 }
 
+for (const button of characterSubstepButtons) {
+  button.addEventListener('click', () => setCharacterSubstep(button.dataset.characterSubstep));
+}
+
+for (const button of sceneSubstepButtons) {
+  button.addEventListener('click', () => setSceneSubstep(button.dataset.sceneSubstep));
+}
+
 for (const button of appPageButtons) {
   button.addEventListener('click', () => setAppPage(button.dataset.appPage));
 }
 
+function getCurrentGmail() {
+  return gmailInput.value.trim() || localStorage.getItem('niaiGmail') || '';
+}
+
 designerLoginButton.addEventListener('click', () => {
-  const gmail = gmailInput.value.trim();
+  const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
     return;
   }
+  sensualConfirm.checked = false;
   updateAudienceMode('designer', gmail);
 });
 
 sensualLoginButton.addEventListener('click', () => {
-  const gmail = gmailInput.value.trim();
+  const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
     return;
   }
   if (!sensualConfirm.checked) {
@@ -704,12 +882,18 @@ count.addEventListener('change', () => {
 actionMode.addEventListener('change', updateActionDetailOptions);
 sensualActionMode.addEventListener('change', updateSensualActionDetailOptions);
 
-autoVideoChoice.addEventListener('change', () => {
+function refreshAutoVideoFromDialogue() {
+  if (!textResultPrompt.value || autoVideoPanel.hidden) return;
   const choices = buildAutoVideoChoices(textResultPrompt.value);
-  const choice = choices[Number(autoVideoChoice.value)] || choices[0];
+  const selectedIndex = Number(autoVideoChoice.value) || 0;
+  const choice = choices[selectedIndex] || choices[0];
   autoVideoConfirmation.value = choice.zh;
   autoVideoPrompt.value = choice.prompt;
-});
+}
+
+autoVideoChoice.addEventListener('change', refreshAutoVideoFromDialogue);
+dialogueToCamera.addEventListener('input', refreshAutoVideoFromDialogue);
+dialogueBetweenCharacters.addEventListener('input', refreshAutoVideoFromDialogue);
 
 imageInput.addEventListener('change', async () => {
   const [file] = imageInput.files;
@@ -736,7 +920,9 @@ imageInput.addEventListener('change', async () => {
       imageDescription: imageDescription.value,
       desiredMotion: desiredMotion.value
     });
-    setStatus(imageVideoStatus, `已讀取圖片，初步成人向強度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`, 'success');
+    setStatus(imageVideoStatus, activeAudienceMode === 'sensual'
+      ? `已讀取圖片，初步成人向強度約 ${roughScore}/10；可補充描述或希望動態後產生提示詞。`
+      : '已讀取圖片；可補充描述、動態或對話後產生 3-5 個一般圖轉影建議。', 'success');
   } catch (error) {
     setStatus(imageVideoStatus, error.message, 'error');
   }
@@ -770,7 +956,7 @@ rewriteButton.addEventListener('click', () => {
     outfitColor: outfitColor.value,
     outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
-    outfitIntegrity: outfitIntegrity.value,
+    outfitIntegrity: activeAudienceMode === 'sensual' ? outfitIntegrity.value : 'AI判斷',
     count: count.value,
     cosplayPrompt: cosplayPrompt.value,
     characterDetails: collectCharacterDetails(),
@@ -795,11 +981,16 @@ imageVideoButton.addEventListener('click', () => {
     imageDescription: imageDescription.value,
     desiredMotion: desiredMotion.value,
     durationSeconds: videoDuration.value,
-    motionStrength: motionStrength.value
+    motionStrength: motionStrength.value,
+    audienceMode: activeAudienceMode,
+    dialogueToCamera: dialogueToCamera.value,
+    dialogueBetweenCharacters: dialogueBetweenCharacters.value
   });
 
   if (!result.ok) {
-    setStatus(imageVideoStatus, `未通過安全篩選，成人向強度估計 ${result.explicitnessScore}/10；請查看修正建議。`, 'error');
+    setStatus(imageVideoStatus, activeAudienceMode === 'sensual'
+      ? `未通過安全篩選，成人向強度估計 ${result.explicitnessScore}/10；請查看修正建議。`
+      : '未通過安全篩選；請查看修正建議。', 'error');
     lastImageVideoResult = null;
     setImageVideoChoiceVisibility(false);
     renderVideoResult(result, result.reason);
@@ -808,7 +999,9 @@ imageVideoButton.addEventListener('click', () => {
 
   lastImageVideoResult = result;
   renderImageVideoChoice(result);
-  renderVideoResult(result, `圖轉影提示詞已產生，AI 估計成人向強度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`);
+  renderVideoResult(result, activeAudienceMode === 'sensual'
+    ? `圖轉影提示詞已產生，AI 估計成人向強度 ${result.explicitnessScore}/10；可挑選相鄰程度，中文僅供對照，下方可複製英文。`
+    : '圖轉影提示詞已產生；可挑選 3-5 個依圖片內容生成的一般動態建議，中文僅供對照，下方可複製英文。');
   setStatus(imageVideoStatus, '圖轉影提示詞已通過安全篩選。', 'success');
 });
 
