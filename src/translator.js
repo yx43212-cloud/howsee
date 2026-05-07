@@ -1299,6 +1299,32 @@ function checkElementBoundaries() {
   };
 }
 
+function normalizeSponsorSettings(settings = {}) {
+  const text = normalizeInput(settings.text);
+  const imageName = normalizeInput(settings.imageName);
+  const hasSponsor = Boolean(text || imageName || (settings.goalZh && settings.goalZh !== 'AI判斷'));
+  return {
+    hasSponsor,
+    zh: [
+      `內容：${text || imageName || 'AI判斷'}`,
+      `受眾：${settings.audienceAgeZh || 'AI判斷'}／${settings.audienceIdentityZh || 'AI判斷'}`,
+      `目標成果：${settings.goalZh || 'AI判斷'}`,
+      `置入類型：${settings.itemTypeZh || 'AI判斷'}`,
+      `露出時刻：${settings.timingZh || 'AI判斷'}`,
+      `露出形式：${settings.formZh || 'AI判斷'}`
+    ].join('，'),
+    en: [
+      `sponsored content: ${text || imageName || 'AI decides'}`,
+      `target audience: ${settings.audienceAgeEn || 'AI decides'} ${settings.audienceIdentityEn || ''}`.trim(),
+      `campaign goal: ${settings.goalEn || 'AI decides'}`,
+      `placement type: ${settings.itemTypeEn || 'AI decides'}`,
+      `video exposure timing: ${settings.timingEn || 'AI decides'}`,
+      `exposure form: ${settings.formEn || 'AI decides'}`,
+      'include the sponsored placement naturally in the final prompt without over-explaining it'
+    ].join(', ')
+  };
+}
+
 function rewritePrompt(input, options = {}) {
   const validation = validatePrompt(input);
   if (!validation.ok) {
@@ -1360,6 +1386,7 @@ function rewritePrompt(input, options = {}) {
   const accessory = getCustomizationOption('accessories', options.accessory);
   const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
   const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
+  const sponsor = normalizeSponsorSettings(options.sponsorSettings);
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1431,6 +1458,10 @@ function rewritePrompt(input, options = {}) {
     '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
   ];
 
+  if (sponsor.hasSponsor) {
+    chinesePrompt.push(`業配設定：${sponsor.zh}`);
+  }
+
   if (cosplayValidation.details) {
     chinesePrompt.push(`Cosplay：${cosplayValidation.details}`);
   }
@@ -1461,6 +1492,10 @@ function rewritePrompt(input, options = {}) {
     'priority: if the Cosplay input conflicts with or duplicates global preset options, the Cosplay input takes precedence; per-character detail lines override only that specific character and omit AI-decide fields to avoid duplicate settings',
     `safety: ${DEFAULT_STYLE.safety}`
   ];
+
+  if (sponsor.hasSponsor) {
+    englishPrompt.push(`sponsored placement settings: ${sponsor.en}`);
+  }
 
   if (cosplayValidation.details) {
     englishPrompt.push(`cosplay/character direction: ${cosplayValidation.englishDetails}`);
@@ -1637,9 +1672,11 @@ function createImageToVideoPrompt({
   motionStrength = 'medium',
   audienceMode = 'sensual',
   dialogueToCamera = '',
-  dialogueBetweenCharacters = ''
+  dialogueBetweenCharacters = '',
+  sponsorSettings = {}
 } = {}) {
-  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters}`);
+  const sponsor = normalizeSponsorSettings(sponsorSettings);
+  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters} ${sponsorSettings.text || ''}`);
   const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(combinedForSafety));
 
   if (blocked) {
@@ -1658,7 +1695,7 @@ function createImageToVideoPrompt({
 
   const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
   const isDesignerMode = audienceMode === 'designer';
-  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription, desiredMotion }) : getImageToVideoPromptChoices(explicitnessScore);
+  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription: `${imageDescription} ${sponsorSettings.text || ''} ${sponsorSettings.itemTypeZh || ''}`, desiredMotion }) : getImageToVideoPromptChoices(explicitnessScore);
   const tier = isDesignerMode ? promptChoices[0] : getImageToVideoTier(explicitnessScore);
   const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
   const dialogueToCameraEn = rewriteDialogueToEnglish(dialogueToCamera, 'dialogue to camera');
@@ -1671,6 +1708,7 @@ function createImageToVideoPrompt({
     normalizeInput(dialogueToCamera) ? `跟鏡頭說：${normalizeInput(dialogueToCamera)}` : '',
     normalizeInput(dialogueBetweenCharacters) ? `角色間互動對話：${normalizeInput(dialogueBetweenCharacters)}` : ''
   ].filter(Boolean).join('；') || '未設定對話';
+  const sponsorZh = sponsor.hasSponsor ? sponsor.zh : '未設定業配';
 
   const chinesePrompt = isDesignerMode
     ? [
@@ -1679,6 +1717,7 @@ function createImageToVideoPrompt({
       `圖片判定：${sourceNoteZh}`,
       `用戶希望：${requestedMotionZh}`,
       `對話：${dialogueZh}`,
+      `業配設定：${sponsorZh}`,
       '安全：維持原圖角色、服裝、背景與構圖，不新增危險、血腥或未成年內容'
     ]
     : [
@@ -1687,6 +1726,7 @@ function createImageToVideoPrompt({
       `圖片判定：${sourceNoteZh}`,
       `用戶希望：${requestedMotionZh}`,
       `對話：${dialogueZh}`,
+      `業配設定：${sponsorZh}`,
       `修正策略：若希望內容過於露骨，改為合意成人、慢速運鏡、情緒張力、布料與髮絲自然動態`,
       '安全：所有角色皆為明確 18+ 且合意的成年人，無未成年、無非合意、無偷拍、無血腥暴力'
     ];
@@ -1721,6 +1761,9 @@ function createImageToVideoPrompt({
   }
   if (dialogueBetweenCharactersEn) {
     englishPrompt.push(dialogueBetweenCharactersEn);
+  }
+  if (sponsor.hasSponsor) {
+    englishPrompt.push(`sponsored placement settings: ${sponsor.en}`);
   }
 
   return {

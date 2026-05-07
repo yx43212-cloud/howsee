@@ -6,12 +6,19 @@
     <title>擬愛 NIAI</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
-  <body>
+  <body data-theme="pure-love">
     <main class="app-shell">
       <section class="hero">
         <p class="eyebrow">NIAI prompt atelier</p>
         <h1>擬愛 NIAI</h1>
-        <p>設計你愛的提示詞，把想像都變現實</p>
+        <p>4種設計配色/字體/排版呈現：粉白混搭的清純戀愛、霧藍漸層的神秘曖昧、暖黃溫潤的陽光熱戀、黑紅混搭的禁忌戀情</p>
+      </section>
+
+      <section class="theme-panel" aria-label="戀愛感主題切換">
+        <button class="theme-button active" type="button" data-theme-choice="pure-love">清純戀愛</button>
+        <button class="theme-button" type="button" data-theme-choice="misty-flirt">神秘曖昧</button>
+        <button class="theme-button" type="button" data-theme-choice="sunny-passion">陽光熱戀</button>
+        <button class="theme-button" type="button" data-theme-choice="forbidden-love">禁忌戀情</button>
       </section>
 
       <section class="panel auth-panel" aria-labelledby="auth-title">
@@ -65,7 +72,8 @@
           <button class="text-step-button active" type="button" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
           <button class="text-step-button" type="button" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
           <button class="text-step-button" type="button" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
-          <button id="sensualStepButton" class="text-step-button sensual-only" type="button" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>4 色友專區</button>
+          <button class="text-step-button" type="button" data-text-step="sponsor" aria-controls="sponsorStepPanel" aria-selected="false">4 業配</button>
+          <button id="sensualStepButton" class="text-step-button sensual-only" type="button" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>5 色友專區</button>
         </nav>
 
         <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
@@ -244,6 +252,48 @@
               <label for="actionDetail">動作或姿態細項</label>
               <select id="actionDetail"></select>
               <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="sponsorStepPanel" class="text-step-panel" data-text-step-panel="sponsor" aria-labelledby="sponsor-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Promotion</p>
+            <h2 id="sponsor-step-title">業配</h2>
+            <p>規劃置入內容、受眾、成果與露出方式；這些設定會寫入文生圖與圖轉影提示詞，讓畫面知道要推什麼、給誰看、何時露出。</p>
+          </div>
+          <div class="custom-grid">
+            <div class="field upload-field">
+              <label for="sponsorImageInput">業配圖片</label>
+              <input id="sponsorImageInput" type="file" accept="image/*" />
+            </div>
+            <div class="field wide-field">
+              <label for="sponsorText">業配文字</label>
+              <textarea id="sponsorText" rows="3" placeholder="例如：新品香氛、品牌名稱、活動主題、需要被看到的賣點"></textarea>
+            </div>
+            <div class="field">
+              <label for="sponsorAudienceAge">受眾年齡</label>
+              <select id="sponsorAudienceAge"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorAudienceIdentity">受眾身分</label>
+              <select id="sponsorAudienceIdentity"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorGoal">目標成果</label>
+              <select id="sponsorGoal"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorItemType">置入類型</label>
+              <select id="sponsorItemType"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorExposureTiming">露出時刻</label>
+              <select id="sponsorExposureTiming"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorExposureForm">露出形式</label>
+              <select id="sponsorExposureForm"></select>
             </div>
           </div>
         </section>

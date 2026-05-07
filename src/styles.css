@@ -667,3 +667,80 @@ input[type='file']::file-selector-button {
   font: inherit;
   font-weight: 900;
 }
+
+.theme-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.theme-button {
+  min-height: 48px;
+  border-radius: 18px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.theme-button.active {
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent), var(--gold));
+}
+
+body[data-theme='pure-love'] {
+  --page: #fff4f8;
+  --page-soft: #ffe3ee;
+  --card: #fff9fc;
+  --card-strong: #fff0f6;
+  --field: #fffafe;
+  --text: #4a2437;
+  --muted: #80566a;
+  --soft: #a4768d;
+  --accent: #ff8db8;
+  --accent-strong: #ff5f9f;
+  --gold: #d99a7a;
+  color-scheme: light;
+}
+
+body[data-theme='misty-flirt'] {
+  --page: #0c1626;
+  --page-soft: #203453;
+  --card: #182743;
+  --card-strong: #243b61;
+  --field: #0f1c31;
+  --text: #edf7ff;
+  --muted: #c6d8ec;
+  --accent: #8fb8ff;
+  --accent-strong: #6b8dff;
+  --gold: #b9d5ff;
+}
+
+body[data-theme='sunny-passion'] {
+  --page: #fff7db;
+  --page-soft: #ffd99b;
+  --card: #fff3cf;
+  --card-strong: #ffe5ad;
+  --field: #fffaf0;
+  --text: #513819;
+  --muted: #85612c;
+  --accent: #ff9c57;
+  --accent-strong: #ff773d;
+  --gold: #bb7418;
+  color-scheme: light;
+}
+
+body[data-theme='forbidden-love'] {
+  --page: #070308;
+  --page-soft: #23040b;
+  --card: #170910;
+  --card-strong: #2a0710;
+  --field: #0d0508;
+  --text: #fff2f4;
+  --muted: #efb7bf;
+  --accent: #d40f3f;
+  --accent-strong: #ff174d;
+  --gold: #ffbd9a;
+}

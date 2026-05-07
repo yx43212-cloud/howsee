@@ -216,6 +216,41 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
 
 
 
+
+test('includes sponsor placement settings in text and image-to-video prompts', () => {
+  const sponsorSettings = {
+    text: '新品香氛 Serenity Mist',
+    imageName: 'serenity-bottle.png',
+    audienceAgeZh: '25-29',
+    audienceAgeEn: '25-29',
+    audienceIdentityZh: '香氛控',
+    audienceIdentityEn: 'fragrance fans',
+    goalZh: '記住品名',
+    goalEn: 'name recall',
+    itemTypeZh: '小物品',
+    itemTypeEn: 'small item',
+    timingZh: '中段 3-5 秒',
+    timingEn: 'middle 3-5s',
+    formZh: '操作',
+    formEn: 'hands-on operation'
+  };
+  const textResult = rewritePrompt('香氛少女', { sponsorSettings });
+  assert.equal(textResult.ok, true);
+  assert.match(textResult.chineseConfirmation, /業配設定/);
+  assert.match(textResult.englishPrompt, /sponsored placement settings/);
+  assert.match(textResult.englishPrompt, /Serenity Mist/);
+
+  const videoResult = createImageToVideoPrompt({
+    audienceMode: 'designer',
+    imageDescription: '香水瓶產品展示照',
+    sponsorSettings
+  });
+  assert.equal(videoResult.ok, true);
+  assert.match(videoResult.chineseConfirmation, /業配設定/);
+  assert.match(videoResult.englishPrompt, /sponsored placement settings/);
+  assert.match(videoResult.englishPrompt, /middle 3-5s/);
+});
+
 test('per-character detail objects can override each adult character without duplicating global defaults', () => {
   const result = rewritePrompt('吸血鬼女王', {
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
@@ -315,6 +350,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
+  assert.match(indexSource, /data-text-step="sponsor"/);
   assert.match(indexSource, /data-text-step="sensual"/);
   assert.match(indexSource, /data-character-substep="basics"/);
   assert.match(indexSource, /data-character-substep="outfit"/);
@@ -324,6 +360,15 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /wizardPrevButton/);
   assert.match(indexSource, /wizardNextButton/);
   assert.match(indexSource, /wizardProgress/);
+  assert.match(indexSource, /sponsorAudienceAge/);
+  assert.match(indexSource, /sponsorAudienceIdentity/);
+  assert.match(indexSource, /sponsorGoal/);
+  assert.match(indexSource, /sponsorExposureTiming/);
+  assert.match(indexSource, /sponsorExposureForm/);
+  assert.match(indexSource, /清純戀愛/);
+  assert.match(indexSource, /神秘曖昧/);
+  assert.match(indexSource, /陽光熱戀/);
+  assert.match(indexSource, /禁忌戀情/);
   assert.match(indexSource, /色友專區/);
   assert.match(indexSource, /sensualOutfit/);
   assert.match(indexSource, /sensualScene/);
@@ -357,6 +402,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(styleSource, /flex: 0 0 min\(46vw, 168px\)/);
   assert.match(styleSource, /\.wizard-actions/);
   assert.match(styleSource, /file-selector-button/);
+  assert.match(styleSource, /body\[data-theme='pure-love'\]/);
+  assert.match(styleSource, /body\[data-theme='forbidden-love'\]/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {
