@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>擬愛 NIAI</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-theme="pure-love">
+    <section id="landingPage" class="landing-page">
+      <div class="app-shell landing-shell">
+      <section class="hero">
+        <p class="eyebrow">NIAI prompt atelier</p>
+        <h1>擬愛 NIAI</h1>
+        <p>4種設計配色/字體/排版呈現<br />有粉白混搭的 清純戀愛<br />或是霧藍漸層的 神秘曖昧<br />或是暖黃溫潤的 陽光熱戀<br />又或者是黑紅混搭的 禁忌戀情</p>
+      </section>
+
+      <section class="theme-panel" aria-label="戀愛感主題切換">
+        <button class="theme-button active" type="button" data-theme-choice="pure-love">清純戀愛</button>
+        <button class="theme-button" type="button" data-theme-choice="misty-flirt">神秘曖昧</button>
+        <button class="theme-button" type="button" data-theme-choice="sunny-passion">陽光熱戀</button>
+        <button class="theme-button" type="button" data-theme-choice="forbidden-love">禁忌戀情</button>
+      </section>
+
+      <section class="language-panel" aria-label="語言切換">
+        <button class="language-button active" type="button" data-language-choice="zh">中文</button>
+        <button class="language-button" type="button" data-language-choice="en">English</button>
+        <button class="language-button" type="button" data-language-choice="hk">港語</button>
+        <button class="language-button" type="button" data-language-choice="ja">日本語</button>
+      </section>
+
+      <section class="panel auth-panel" aria-labelledby="auth-title">
+        <div class="section-heading compact">
+          <p class="section-kicker">Login</p>
+          <h2 id="auth-title">選擇功能身份</h2>
+          <p>入口先選設友或色友；進入後 APP 只保留該模式，避免操作過程混淆。</p>
+        </div>
+        <label for="gmailInput">Gmail</label>
+        <input id="gmailInput" type="email" placeholder="yourname@gmail.com" autocomplete="email" />
+        <div class="auth-actions">
+          <button id="designerLoginButton" type="button" class="secondary-button icon-button" data-icon="🎨" data-i18n="enterDesigner">進入設友</button>
+          <button id="sensualLoginButton" type="button" class="secondary-button icon-button" data-icon="🌹" data-i18n="enterSensual">進入色友</button>
+        </div>
+        <label class="confirm-row"><input id="sensualConfirm" type="checkbox" /> 我確認以成年人合意創作使用色友模式</label>
+        <p id="authStatus" class="status">尚未進入；請先選擇本次使用身份。</p>
+      </section>
+      </div>
+    </section>
+
+    <main id="appShell" class="app-shell" hidden>
+      <nav class="app-page-tabs" aria-label="功能頁面切換">
+        <button class="app-page-button active icon-button" type="button" data-app-page="generator" data-icon="✨" data-i18n="generator">提示詞生成</button>
+        <button class="app-page-button icon-button" type="button" data-app-page="library" data-icon="💓" data-i18n="library">悸動瞬間</button>
+        <button class="app-page-button icon-button" type="button" data-app-page="matchmaking" data-icon="💘" data-i18n="matchmaking">配對所</button>
+        <button id="backToLoginButton" class="app-page-button icon-button" type="button" data-icon="🚪">回登入頁</button>
+      </nav>
+
+      <section id="generatorPage" data-app-page-panel="generator">
+      <nav class="mode-switch" aria-label="提示詞模式切換">
+        <button id="textModeButton" type="button" class="mode-button active icon-button" data-icon="🖼️" data-i18n="textMode">文生圖提示詞</button>
+        <button id="videoModeButton" type="button" class="mode-button icon-button" data-icon="🎞️" data-i18n="videoMode">圖轉影提示詞</button>
+      </nav>
+
+      <section id="textPromptPanel" class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <p class="section-kicker">Step 01</p>
+          <h2 id="input-title">Cosplay</h2>
+          <p>只要輸入角色、人設或作品風格即可，中文也可以；英文可複製提示詞會自動轉成安全的英文描述。</p>
+        </div>
+
+        <label for="cosplayPrompt">Cosplay（主要輸入：角色／人設／作品風格）</label>
+        <textarea id="cosplayPrompt" rows="4" required aria-required="true" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
+        <p class="field-help">第一分頁 Cosplay 是唯一必填欄位；其他配置分頁全部可跳過，沒填就維持 AI 判定。不要填未成年、偷拍、強迫或血腥內容。</p>
+
+        <div class="quick-guide" aria-label="操作提示">
+          <p class="section-kicker">Easy Flow</p>
+          <ol>
+            <li><strong>先填 Cosplay：</strong>中文角色、人設或作品風格都可以。</li>
+            <li><strong>用分頁慢慢補設定：</strong>第一分頁以外全部非必填；直接下一步或跳過時，每個下拉都可維持 AI 判斷。</li>
+            <li><strong>產生後直接複製：</strong>右側會出英文文生圖提示詞，並自動附 5 種可選圖轉影提示詞。</li>
+          </ol>
+        </div>
+
+        <div class="love-mode-panel" aria-label="輸入模式">
+          <button class="love-mode-button active icon-button" type="button" data-input-complexity="simple" data-icon="💗" data-i18n="simpleLove">簡單愛</button>
+          <button class="love-mode-button icon-button" type="button" data-input-complexity="complex" data-icon="💞" data-i18n="complexLove">複雜愛</button>
+          <label class="confirm-row ai-suggestion-row"><input id="aiSuggestionToggle" type="checkbox" checked /> AI建議</label>
+          <p class="field-help">可自選是否讓 AI 判定適合的服裝、地點、光感、動作、構圖與視角；新手建議先開啟。</p>
+        </div>
+
+        <nav class="text-step-tabs" aria-label="文生圖設定分頁">
+          <button class="text-step-button active icon-button" type="button" data-icon="🧑" data-text-step="character" aria-controls="characterStepPanel" aria-selected="true">1 人物指標</button>
+          <button class="text-step-button icon-button" type="button" data-icon="👗" data-text-step="outfit" aria-controls="characterStepPanel" aria-selected="false">2 服裝配件</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🕺" data-text-step="motion" aria-controls="sceneStepPanel" aria-selected="false">3 動作眼神</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🏞️" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">4 場景光感</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🎥" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="false">5 構圖視角</button>
+          <button class="text-step-button complex-only icon-button" type="button" data-icon="💼" data-text-step="commercial" aria-controls="sponsorStepPanel" aria-selected="false">6 商用</button>
+          <button id="sensualStepButton" class="text-step-button sensual-only icon-button" type="button" data-icon="🌹" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>7 色友</button>
+        </nav>
+
+        <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 02</p>
+            <h2 id="visual-step-title">構圖與視角</h2>
+            <p>最後確認構圖、視角與畫風；若開啟 AI建議，這些欄位可交給 AI 判定。</p>
+          </div>
+          <div class="control-grid">
+            <div class="field">
+              <label for="lighting">光感描述（50 種）</label>
+              <select id="lighting"></select>
+            </div>
+
+            <div class="field">
+              <label for="camera">鏡位視角（50 種）</label>
+              <select id="camera"></select>
+            </div>
+
+            <div class="field">
+              <label for="composition">構圖結構（20 種）</label>
+              <select id="composition"></select>
+            </div>
+
+            <div class="field">
+              <label for="artStyle">畫風（100 種）</label>
+              <select id="artStyle"></select>
+            </div>
+          </div>
+        </section>
+
+        <section id="characterStepPanel" class="text-step-panel" data-text-step-panel="character" aria-labelledby="character-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 03</p>
+            <h2 id="character-step-title">人物指標</h2>
+            <p>先輸入人物種族、年齡、性別，再補特徵與毛色；後續服裝、地點、光感、動作、構圖與視角可交給 AI建議。</p>
+          </div>
+          <nav class="setup-subtabs" aria-label="角色設定小步驟">
+            <button class="setup-subtab active" type="button" data-character-substep="basics" aria-selected="true">人物基本</button>
+            <button class="setup-subtab" type="button" data-character-substep="outfit" aria-selected="false">服裝外觀</button>
+            <button class="setup-subtab" type="button" data-character-substep="multi" aria-selected="false">多人細節</button>
+          </nav>
+          <div class="custom-grid">
+            <div class="field">
+              <label for="gender">性別</label>
+              <select id="gender"></select>
+            </div>
+            <div class="field">
+              <label for="race">種族（100 種，後 50 非自然）</label>
+              <select id="race"></select>
+            </div>
+            <div class="field">
+              <label for="emotion">情緒（50 種）</label>
+              <select id="emotion"></select>
+            </div>
+            <div class="field">
+              <label for="timePoint">時間點／光色質感（20 種）</label>
+              <select id="timePoint"></select>
+            </div>
+            <div class="field">
+              <label for="ageBracket">年齡級距（5 歲級距至 60）</label>
+              <select id="ageBracket"></select>
+              <p class="field-help">只提供成年級距，避免未成年內容。</p>
+            </div>
+            <div class="field">
+              <label for="occupation">職業（50 種）</label>
+              <select id="occupation"></select>
+            </div>
+            <div class="field">
+              <label for="bodyProportion">身材比例（50 種）</label>
+              <select id="bodyProportion"></select>
+            </div>
+            <div class="field">
+              <label for="face">臉蛋</label>
+              <select id="face"></select>
+            </div>
+            <div class="field">
+              <label for="outfit">服裝穿搭（男200／女200）</label>
+              <select id="outfit"></select>
+            </div>
+            <div class="field">
+              <label for="outfitColor">服裝顏色（50 種）</label>
+              <select id="outfitColor"></select>
+            </div>
+            <div class="field">
+              <label for="outfitMaterial">服裝材質（50 種）</label>
+              <select id="outfitMaterial"></select>
+            </div>
+            <div class="field">
+              <label for="accessory">配件與道具（150 種）</label>
+              <select id="accessory"></select>
+            </div>
+            <div class="field">
+              <label for="bodyFeature">特徵</label>
+              <select id="bodyFeature"></select>
+            </div>
+            <div class="field">
+              <label for="hairFurColor">毛色／髮色</label>
+              <select id="hairFurColor"></select>
+            </div>
+            <div class="field adult-only-control">
+              <label for="outfitIntegrity">服裝完整度</label>
+              <select id="outfitIntegrity"></select>
+            </div>
+            <div class="field">
+              <label for="count">人數</label>
+              <select id="count"></select>
+            </div>
+            <div class="field wide-field character-grid" id="characterControls" aria-label="角色分別客製化">
+              <article class="character-card" data-character-card="1">
+                <h3>角色 1</h3>
+                <label for="character1Gender">性別</label><select id="character1Gender"></select>
+                <label for="character1Race">種族</label><select id="character1Race"></select>
+                <label for="character1Emotion">情緒</label><select id="character1Emotion"></select>
+                <label for="character1Occupation">職業</label><select id="character1Occupation"></select>
+                <label for="character1Age">年齡</label><select id="character1Age"></select>
+                <label for="character1Body">身材比例</label><select id="character1Body"></select>
+                <label for="character1Face">臉蛋</label><select id="character1Face"></select>
+                <label for="character1Outfit">服裝</label><select id="character1Outfit"></select>
+                <label for="character1OutfitColor">服裝顏色</label><select id="character1OutfitColor"></select>
+                <label for="character1OutfitMaterial">服裝材質</label><select id="character1OutfitMaterial"></select>
+                <label for="character1BodyFeature">身上特徵</label><select id="character1BodyFeature"></select>
+                <label class="adult-only-control" for="character1OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character1OutfitIntegrity"></select>
+              </article>
+              <article class="character-card" data-character-card="2" hidden>
+                <h3>角色 2</h3>
+                <label for="character2Gender">性別</label><select id="character2Gender"></select>
+                <label for="character2Race">種族</label><select id="character2Race"></select>
+                <label for="character2Emotion">情緒</label><select id="character2Emotion"></select>
+                <label for="character2Occupation">職業</label><select id="character2Occupation"></select>
+                <label for="character2Age">年齡</label><select id="character2Age"></select>
+                <label for="character2Body">身材比例</label><select id="character2Body"></select>
+                <label for="character2Face">臉蛋</label><select id="character2Face"></select>
+                <label for="character2Outfit">服裝</label><select id="character2Outfit"></select>
+                <label for="character2OutfitColor">服裝顏色</label><select id="character2OutfitColor"></select>
+                <label for="character2OutfitMaterial">服裝材質</label><select id="character2OutfitMaterial"></select>
+                <label for="character2BodyFeature">身上特徵</label><select id="character2BodyFeature"></select>
+                <label class="adult-only-control" for="character2OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character2OutfitIntegrity"></select>
+              </article>
+              <article class="character-card" data-character-card="3" hidden>
+                <h3>角色 3</h3>
+                <label for="character3Gender">性別</label><select id="character3Gender"></select>
+                <label for="character3Race">種族</label><select id="character3Race"></select>
+                <label for="character3Emotion">情緒</label><select id="character3Emotion"></select>
+                <label for="character3Occupation">職業</label><select id="character3Occupation"></select>
+                <label for="character3Age">年齡</label><select id="character3Age"></select>
+                <label for="character3Body">身材比例</label><select id="character3Body"></select>
+                <label for="character3Face">臉蛋</label><select id="character3Face"></select>
+                <label for="character3Outfit">服裝</label><select id="character3Outfit"></select>
+                <label for="character3OutfitColor">服裝顏色</label><select id="character3OutfitColor"></select>
+                <label for="character3OutfitMaterial">服裝材質</label><select id="character3OutfitMaterial"></select>
+                <label for="character3BodyFeature">身上特徵</label><select id="character3BodyFeature"></select>
+                <label class="adult-only-control" for="character3OutfitIntegrity">服裝完整度</label><select class="adult-only-control" id="character3OutfitIntegrity"></select>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="sceneStepPanel" class="text-step-panel" data-text-step-panel="scene" aria-labelledby="scene-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 04</p>
+            <h2 id="scene-step-title">動作、眼神與場景</h2>
+            <p>依序整理動作配置、眼神位置、場景與光感；新手可開啟 AI建議讓系統判定。</p>
+          </div>
+          <nav class="setup-subtabs" aria-label="場景動作小步驟">
+            <button class="setup-subtab active" type="button" data-scene-substep="place" aria-selected="true">地點道具</button>
+            <button class="setup-subtab" type="button" data-scene-substep="motion" aria-selected="false">動作姿態</button>
+          </nav>
+          <div class="custom-grid">
+            <div class="field">
+              <label for="scene">場景配置（100 日常／100 祕境）</label>
+              <select id="scene"></select>
+            </div>
+
+            <div class="field">
+              <label for="actionMode">動作／姿態類型（4 類）</label>
+              <select id="actionMode"></select>
+              <p class="field-help">肩膀以上、手部動作、下半身屬於動作；不同姿態屬於姿態。</p>
+            </div>
+            <div class="field wide-field">
+              <label for="actionDetail">動作或姿態細項</label>
+              <select id="actionDetail"></select>
+              <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
+            </div>
+            <div class="field">
+              <label for="gazeDirection">眼神位置</label>
+              <select id="gazeDirection"></select>
+            </div>
+          </div>
+        </section>
+
+        
+
+        <section id="sponsorStepPanel" class="text-step-panel" data-text-step-panel="commercial" aria-labelledby="sponsor-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Commercial</p>
+            <h2 id="sponsor-step-title">商用加選</h2>
+            <p>寵物、置入、對話、DeepFace 等非必要或商用語言集中在這裡；需要時再打開設定。</p>
+          </div>
+          <div class="custom-grid">
+            <div class="field">
+              <label for="pet">寵物</label>
+              <select id="pet"></select>
+              <p class="field-help">非必要項目，可選「無」。</p>
+            </div>
+            <div class="field">
+              <label for="dialogueMode">對話方式</label>
+              <select id="dialogueMode">
+                <option value="none">不使用</option>
+                <option value="to-camera">對鏡頭說</option>
+                <option value="between-characters">角色間對話</option>
+                <option value="both">兩者</option>
+              </select>
+            </div>
+            <div class="field wide-field">
+              <label for="dialogueToCamera">對鏡頭說</label>
+              <textarea id="dialogueToCamera" rows="3" placeholder="例如：今晚只想和你一起完成這個畫面"></textarea>
+            </div>
+            <div class="field wide-field">
+              <label for="dialogueBetweenCharacters">角色間對話</label>
+              <textarea id="dialogueBetweenCharacters" rows="3" placeholder="例如：角色1低聲邀請，角色2在右側回應並微笑"></textarea>
+              <p class="field-help">兩人以上才啟用；提示詞會標明角色1、角色2與位置。</p>
+            </div>
+            <div class="field">
+              <label>DeepFace</label>
+              <button id="deepfaceButton" type="button" class="secondary-button icon-button" data-icon="🪞" aria-pressed="false">DeepFace</button>
+              <p class="field-help">套用參考照的人物辨識特徵。</p>
+            </div>
+            <div class="field">
+              <label>WITH ME</label>
+              <button id="withMeButton" type="button" class="secondary-button icon-button" data-icon="🤝" aria-pressed="false">WITH ME</button>
+              <p class="field-help">提示詞會預留你上傳自己的照片，與角色依服裝、動作、畫風合成。</p>
+            </div>
+            <div class="field upload-field">
+              <label for="sponsorImageInput">業配圖片</label>
+              <input id="sponsorImageInput" type="file" accept="image/*" />
+            </div>
+            <div class="field wide-field">
+              <label for="sponsorText">業配文字</label>
+              <textarea id="sponsorText" rows="3" placeholder="例如：新品香氛、品牌名稱、活動主題、需要被看到的賣點"></textarea>
+            </div>
+            <div class="field">
+              <label for="sponsorAudienceAge">受眾年齡</label>
+              <select id="sponsorAudienceAge"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorAudienceIdentity">受眾身分</label>
+              <select id="sponsorAudienceIdentity"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorGoal">目標成果</label>
+              <select id="sponsorGoal"></select>
+              <p class="field-help">依屬性分組，選項保持短字句。</p>
+            </div>
+            <div class="field">
+              <label for="sponsorItemType">置入類型</label>
+              <select id="sponsorItemType"></select>
+            </div>
+            <div class="field">
+              <label for="sponsorExposureTiming">露出時刻</label>
+              <select id="sponsorExposureTiming"></select>
+              <p class="field-help">只寫入圖轉影，用來排時間點。</p>
+            </div>
+            <div class="field">
+              <label for="sponsorExposureForm">露出形式</label>
+              <select id="sponsorExposureForm"></select>
+            </div>
+          </div>
+        </section>
+
+        <section id="sensualStepPanel" class="text-step-panel sensual-only" data-text-step-panel="sensual" aria-labelledby="sensual-step-title" hidden>
+          <div class="section-heading compact">
+            <p class="section-kicker">Step 05</p>
+            <h2 id="sensual-step-title">色友專區</h2>
+            <p>僅色友模式顯示；成人向服裝、地點、道具與動作全部集中在此區，設友介面不顯示這些內容。</p>
+          </div>
+          <div class="control-grid">
+            <div class="field">
+              <label for="intensity">成人向氛圍強度</label>
+              <select id="intensity">
+                <option value="soft">柔和</option>
+                <option value="medium" selected>中等</option>
+                <option value="strong">強烈</option>
+              </select>
+              <p class="field-help">柔和、強烈會套用不同鏡頭距離、肢體語言與張力，並維持成年人合意與非露骨界線。</p>
+            </div>
+            <div class="field">
+              <label for="sensualOutfit">成人向服裝</label>
+              <select id="sensualOutfit"></select>
+            </div>
+            <div class="field">
+              <label for="sensualScene">成人向地點</label>
+              <select id="sensualScene"></select>
+            </div>
+            <div class="field">
+              <label for="sensualAccessory">成人向道具</label>
+              <select id="sensualAccessory"></select>
+            </div>
+            <div class="field">
+              <label for="sensualActionMode">成人向動作類型</label>
+              <select id="sensualActionMode"></select>
+            </div>
+            <div class="field wide-field">
+              <label for="sensualActionDetail">成人向動作細項</label>
+              <select id="sensualActionDetail"></select>
+            </div>
+          </div>
+        </section>
+
+        <div class="wizard-actions" aria-label="設定步驟導覽">
+          <button id="wizardPrevButton" type="button" class="secondary-button icon-button" data-icon="⬅️">上一步</button>
+          <p id="wizardProgress" class="status">步驟 1</p>
+          <button id="wizardNextButton" type="button" class="secondary-button icon-button" data-icon="➡️">跳過／下一步</button>
+        </div>
+
+        <div class="prompt-actions">
+          <button id="rewriteButton" type="button" class="icon-button" data-icon="⚡" data-i18n="rewrite">轉譯提示詞</button>
+        </div>
+      </section>
+
+
+      <section id="imageVideoPanel" class="panel image-panel" aria-labelledby="image-title" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Image to Video</p>
+          <h2 id="image-title">圖轉影提示詞建議</h2>
+          <p>上傳圖片後，瀏覽器會在本機估算成人向強度 1-10 分，並提供相鄰強度的圖轉影提示詞供挑選複製。中文提示詞只供對照詞意，英文提示詞才是可複製貼上的成果。</p>
+        </div>
+
+        <div class="image-upload-grid">
+          <div class="field wide-field upload-field">
+            <label for="imageInput">上傳參考圖片</label>
+            <input id="imageInput" type="file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label for="videoDuration">影片秒數</label>
+            <select id="videoDuration">
+              <option value="3">3 秒</option>
+              <option value="5" selected>5 秒</option>
+              <option value="8">8 秒</option>
+              <option value="12">12 秒</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="motionStrength">動態強度</label>
+            <select id="motionStrength">
+              <option value="subtle">細微</option>
+              <option value="medium" selected>中等</option>
+              <option value="strong">較強</option>
+            </select>
+          </div>
+        </div>
+        <label for="imageDescription">圖片輔助描述（選填，協助判定）</label>
+        <textarea id="imageDescription" rows="3" placeholder="例如：成人女性、黑色連身裙、室內寫真、未露點"></textarea>
+
+        <label for="desiredMotion">希望圖轉影怎麼動（選填）</label>
+        <textarea id="desiredMotion" rows="4" placeholder="例如：slow push-in, hair and fabric gently moving, confident gaze to camera"></textarea>
+
+        <button id="imageVideoButton" type="button" class="icon-button" data-icon="🎬" data-i18n="makeVideo">產生圖轉影提示詞</button>
+        <div class="field" id="imageVideoChoiceField" hidden>
+          <label for="imageVideoPromptChoice">圖轉影建議（可挑選）</label>
+          <select id="imageVideoPromptChoice"></select>
+        </div>
+        <p id="imageVideoStatus" class="status">尚未上傳圖片；圖片分析只在本機瀏覽器進行。</p>
+      </section>
+
+      <section class="panel output-panel" aria-live="polite">
+        <div id="textOutputArea" class="output-mode-area">
+          <div class="section-heading">
+            <p class="section-kicker">Text Output</p>
+            <h2>文生圖：中文對照＋英文可複製</h2>
+          </div>
+          <p id="textStatus" class="status">填寫 Cosplay 後可直接轉譯；其他分頁都可保持 AI 判斷。</p>
+          <label for="textConfirmationPrompt" class="text-output-label" hidden>中文提示詞（對照用）</label>
+          <textarea id="textConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="textResultPrompt" class="text-output-label" hidden>English text-to-image prompt（可複製）</label>
+          <textarea id="textResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyTextButton" type="button" class="secondary-button icon-button" data-icon="📋" hidden>複製文生圖英文提示詞</button>
+
+          <div id="autoVideoPanel" class="auto-video-panel" data-autovideo-count="5" hidden>
+            <div class="section-heading compact">
+              <p class="section-kicker">Auto Video</p>
+              <h2>AI 判定圖轉影提示詞（5 種）</h2>
+              <p>文生圖提示詞產生後自動建立 5 種 AI 判定版本；下拉自選一種後，可直接複製英文圖轉影提示詞。</p>
+            </div>
+            <label for="autoVideoChoice">選擇圖轉影版本</label>
+            <select id="autoVideoChoice"></select>
+            <label for="autoVideoConfirmation" class="text-output-label">中文圖轉影說明（對照用）</label>
+            <textarea id="autoVideoConfirmation" rows="5" readonly></textarea>
+            <label for="autoVideoPrompt" class="text-output-label">English image-to-video prompt（可複製）</label>
+            <textarea id="autoVideoPrompt" rows="8" readonly></textarea>
+            <button id="copyAutoVideoButton" type="button" class="secondary-button icon-button" data-icon="📋">複製自動圖轉影英文提示詞</button>
+          </div>
+        </div>
+
+        <div id="videoOutputArea" class="output-mode-area" hidden>
+          <div class="section-heading">
+            <p class="section-kicker">Video Output</p>
+            <h2>圖轉影：中文對照＋英文可複製</h2>
+          </div>
+          <p id="videoStatus" class="status">等待上傳圖片並產生圖轉影提示詞。</p>
+          <label for="videoConfirmationPrompt" class="video-output-label" hidden>中文圖轉影提示詞（對照用）</label>
+          <textarea id="videoConfirmationPrompt" rows="8" readonly hidden></textarea>
+          <label for="videoResultPrompt" class="video-output-label" hidden>English image-to-video prompt（可複製）</label>
+          <textarea id="videoResultPrompt" rows="12" readonly hidden></textarea>
+          <button id="copyVideoButton" type="button" class="secondary-button icon-button" data-icon="📋" hidden>複製圖轉影英文提示詞</button>
+        </div>
+      </section>
+
+      </section>
+
+      <section id="libraryPage" class="panel saved-panel heartbeat-panel" data-app-page-panel="library" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Heartbeat Moment</p>
+          <h2>悸動瞬間</h2>
+          <p>記錄自己當次或先前正式輸出的完整提示詞，可上傳一張文轉圖縮圖；選取後可匿名上傳成配對所的心動卡，也可刪除。</p>
+        </div>
+        <label for="saveTitleInput">悸動標題／儲存標題</label>
+        <input id="saveTitleInput" type="text" placeholder="例如：月光玻璃屋伴侶、雨夜書店朋友、品牌模特心動版" />
+        <div class="save-actions">
+          <button id="savePromptButton" type="button" class="secondary-button icon-button" data-icon="💾">記錄這次悸動瞬間</button>
+          <label for="resultImageInput" class="secondary-button upload-button">上傳文轉圖縮圖</label>
+          <input id="resultImageInput" type="file" accept="image/*" hidden />
+          <button id="publishMomentButton" type="button" class="secondary-button icon-button" data-icon="💌">匿名上傳成心動卡</button>
+        </div>
+        <p class="status">縮圖只會以壓縮資料保留在本機；上傳成心動卡時會保留該縮圖供配對所翻卡預覽。</p>
+        <div id="savedPromptList" class="saved-list"></div>
+      </section>
+
+
+
+      <section id="matchmakingPage" class="panel matchmaking-panel" data-app-page-panel="matchmaking" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Matchmaking Studio</p>
+          <h2>配對所</h2>
+          <p>先輸入你想找的性質、性別與成年年齡範圍；系統會出現 3 張符合範圍的心動卡。選擇一張翻開後，可看到匿名用戶留下的完整英文設定提示詞、你的介面語言對照版，以及對方保留的文轉圖縮圖。</p>
+        </div>
+
+        <div class="matchmaking-score-card">
+          <div>
+            <p class="section-kicker">Anonymous Heart Cards</p>
+            <h3 id="matchmakingTitleText">今天想遇見誰？</h3>
+            <p id="matchmakingStatus" class="status">所有心動卡都不具名；請先設定範圍，再翻開其中一張。</p>
+          </div>
+        </div>
+
+        <div class="matchmaking-draw-panel">
+          <div class="section-heading compact">
+            <p class="section-kicker">Heartbeat Draw</p>
+            <h3>設定想遇見的對象</h3>
+            <p>請先選擇性質屬於設友或色友、想遇見的性別與成年年齡級距，才會出現 3 張心動卡。</p>
+          </div>
+          <div class="custom-grid matchmaking-filter-grid">
+            <div class="field">
+              <label for="heartNature">想找的性質</label>
+              <select id="heartNature">
+                <option value="">請選擇</option>
+                <option value="designer">設友</option>
+                <option value="sensual">色友</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="heartGender">想遇見的性別</label>
+              <select id="heartGender">
+                <option value="">請選擇</option>
+                <option value="female">女性</option>
+                <option value="male">男性</option>
+                <option value="nonbinary">非二元／其他</option>
+                <option value="any">都可以</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="heartAge">想遇見的年齡</label>
+              <select id="heartAge">
+                <option value="">請選擇</option>
+                <option value="18-24">18-24</option>
+                <option value="25-29">25-29</option>
+                <option value="30-34">30-34</option>
+                <option value="35-39">35-39</option>
+                <option value="40-44">40-44</option>
+                <option value="45-49">45-49</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+          </div>
+          <div class="matchmaking-actions">
+            <button id="showHeartCardsButton" type="button" class="icon-button" data-icon="💗">顯示 3 張心動卡</button>
+          </div>
+        </div>
+
+        <div id="heartCardList" class="heart-card-list" aria-live="polite"></div>
+      </section>
+
+      <section class="guardrails">
+        <div class="section-heading">
+          <p class="section-kicker">Safety</p>
+          <h2>安全邊界</h2>
+        </div>
+        <ul>
+          <li>只允許明確成年且合意的角色與情境。</li>
+          <li>拒絕未成年、非合意、偷拍、血腥暴力等內容。</li>
+          <li>輸出以氛圍、構圖、姿態、光影與情緒描述為主。</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="src/translator.js"></script>
+    <script src="src/matchmaking.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
