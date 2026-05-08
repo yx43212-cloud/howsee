@@ -322,10 +322,11 @@ test('dialogue settings label numbered multi-character positions and single char
   assert.doesNotMatch(single.englishPrompt, /character-to-character dialogue/);
 });
 
-test('DeepFace and simple love mode produce targeted prompt instructions', () => {
+test('DeepFace, WITH ME, and simple love mode produce targeted prompt instructions', () => {
   const result = rewritePrompt('日常穿搭人像', {
     inputMode: 'simple',
     deepfaceEnabled: true,
+    withMeEnabled: true,
     scene: CUSTOMIZATION_OPTIONS.scenes[17].zh,
     lighting: LIGHTING_DESCRIPTIONS[1].zh,
     actionMode: ACTION_MODE_OPTIONS[1].zh,
@@ -336,8 +337,10 @@ test('DeepFace and simple love mode produce targeted prompt instructions', () =>
   assert.equal(result.ok, true);
   assert.match(result.chineseConfirmation, /輸入模式：簡單愛/);
   assert.match(result.chineseConfirmation, /DeepFace：請套用附圖的人物設定/);
+  assert.match(result.chineseConfirmation, /WITH ME：提示詞完成後/);
   assert.match(result.englishPrompt, /input mode: simple love/);
   assert.match(result.englishPrompt, /DeepFace reference application/);
+  assert.match(result.englishPrompt, /WITH ME companion-composite plan/);
   assert.match(result.chineseConfirmation, /寵物：星際小獸/);
   assert.match(result.englishPrompt, /pet\/companion: small star beast/);
   assert.doesNotMatch(result.englishPrompt, /lighting:/);
@@ -464,6 +467,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /簡單愛/);
   assert.match(indexSource, /複雜愛/);
   assert.match(indexSource, /DeepFace/);
+  assert.match(indexSource, /WITH ME/);
   assert.match(indexSource, /data-text-step="commercial"/);
   assert.match(indexSource, /dialogueMode/);
   assert.match(indexSource, /savePromptButton/);
@@ -495,6 +499,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(appSource, /populateSelect\(pet, CUSTOMIZATION_OPTIONS\.pets, \{ includeAi: false \}\)/);
   assert.match(appSource, /applyAiSuggestionState/);
   assert.match(appSource, /deepfaceEnabled/);
+  assert.match(appSource, /withMeEnabled/);
   assert.match(appSource, /UI_TRANSLATIONS/);
   assert.match(appSource, /setInterfaceLanguage/);
   assert.match(appSource, /buildPromptThreadInsights/);

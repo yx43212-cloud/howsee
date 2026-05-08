@@ -86,15 +86,14 @@ const savePromptButton = document.querySelector('#savePromptButton');
 const saveTitleInput = document.querySelector('#saveTitleInput');
 const resultImageInput = document.querySelector('#resultImageInput');
 const savedPromptList = document.querySelector('#savedPromptList');
-const shareRedlineButton = document.querySelector('#shareRedlineButton');
-const redlinePointText = document.querySelector('#redlinePointText');
-const redlineStatus = document.querySelector('#redlineStatus');
-const redlineGender = document.querySelector('#redlineGender');
-const redlineAge = document.querySelector('#redlineAge');
-const redlineNature = document.querySelector('#redlineNature');
-const drawOneRedlineButton = document.querySelector('#drawOneRedlineButton');
-const drawTwoRedlineButton = document.querySelector('#drawTwoRedlineButton');
-const redlineResultList = document.querySelector('#redlineResultList');
+const publishMomentButton = document.querySelector('#publishMomentButton');
+const matchmakingTitleText = document.querySelector('#matchmakingTitleText');
+const matchmakingStatus = document.querySelector('#matchmakingStatus');
+const heartGender = document.querySelector('#heartGender');
+const heartAge = document.querySelector('#heartAge');
+const heartNature = document.querySelector('#heartNature');
+const showHeartCardsButton = document.querySelector('#showHeartCardsButton');
+const heartCardList = document.querySelector('#heartCardList');
 const sensualOnlyElements = Array.from(document.querySelectorAll('.sensual-only'));
 const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
 const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
@@ -109,12 +108,14 @@ const authPanel = document.querySelector('.auth-panel');
 const landingPage = document.querySelector('#landingPage');
 const appShell = document.querySelector('#appShell');
 const deepfaceButton = document.querySelector('#deepfaceButton');
+const withMeButton = document.querySelector('#withMeButton');
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
 let activeAudienceMode = localStorage.getItem('niaiAudienceMode') || 'designer';
 let activeInputComplexity = 'simple';
 let deepfaceEnabled = false;
+let withMeEnabled = false;
 let activeSavedPromptId = null;
 let sponsorImageName = '';
 let activeInterfaceLanguage = localStorage.getItem('niaiLanguage') || 'zh';
@@ -128,29 +129,29 @@ function simpleOption(zh, en = zh, group = '') {
 
 const UI_TRANSLATIONS = {
   zh: {
-    enterDesigner: '進入設友', enterSensual: '進入色友', generator: '提示詞生成', library: '儲存紀錄', redline: '紅線公寓',
+    enterDesigner: '進入設友', enterSensual: '進入色友', generator: '提示詞生成', library: '悸動瞬間', matchmaking: '配對所',
     textMode: '文生圖提示詞', videoMode: '圖轉影提示詞', simpleLove: '簡單愛', complexLove: '複雜愛',
     rewrite: '轉譯提示詞', makeVideo: '產生圖轉影提示詞', langStatus: '介面語言已切換為中文。'
   },
   en: {
-    enterDesigner: 'Designer', enterSensual: 'Sensual', generator: 'Generator', library: 'Library', redline: 'Redline Apt.',
+    enterDesigner: 'Designer', enterSensual: 'Sensual', generator: 'Generator', library: 'Heartbeat Moments', matchmaking: 'Matchmaking',
     textMode: 'Text prompt', videoMode: 'Image to video', simpleLove: 'Simple Love', complexLove: 'Complex Love',
     rewrite: 'Rewrite', makeVideo: 'Make video prompt', langStatus: 'Interface language switched to English.'
   },
   hk: {
-    enterDesigner: '入設友', enterSensual: '入色友', generator: '提示詞工房', library: '收藏紀錄', redline: '紅線公寓',
+    enterDesigner: '入設友', enterSensual: '入色友', generator: '提示詞工房', library: '悸動瞬間', matchmaking: '配對所',
     textMode: '文生圖提示詞', videoMode: '圖轉片提示詞', simpleLove: '簡單愛', complexLove: '複雜愛',
     rewrite: '轉提示詞', makeVideo: '生成圖轉片提示詞', langStatus: '介面語言已切換成港語。'
   },
   ja: {
-    enterDesigner: '設友へ', enterSensual: '色友へ', generator: 'プロンプト生成', library: '保存履歴', redline: '赤い糸アパート',
+    enterDesigner: '設友へ', enterSensual: '色友へ', generator: 'プロンプト生成', library: 'ときめき瞬間', matchmaking: 'マッチング所',
     textMode: '画像プロンプト', videoMode: '画像から動画', simpleLove: 'シンプル愛', complexLove: '複雑愛',
     rewrite: '変換', makeVideo: '動画プロンプト生成', langStatus: 'UI言語を日本語に切り替えました。'
   }
 };
 
 function setInterfaceLanguage(language) {
-  activeInterfaceLanguage = typeof RedlineApartment !== 'undefined' ? RedlineApartment.normalizeLanguage(language) : language;
+  activeInterfaceLanguage = typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.normalizeLanguage(language) : language;
   const dictionary = UI_TRANSLATIONS[language] || UI_TRANSLATIONS.zh;
   document.documentElement.lang = language === 'ja' ? 'ja' : language === 'en' ? 'en' : 'zh-Hant';
   localStorage.setItem('niaiLanguage', language);
@@ -421,7 +422,6 @@ function updateAudienceMode(mode, gmail) {
     if (authPanel) {
       authPanel.classList.add('is-locked');
     }
-    awardRedlineDailyLogin();
     designerLoginButton.disabled = true;
     sensualLoginButton.disabled = true;
     gmailInput.disabled = true;
@@ -448,75 +448,44 @@ function setSavedPrompts(items) {
   localStorage.setItem('niaiSavedPrompts', JSON.stringify(items));
 }
 
-function getRedlineStorageKey(suffix = '') {
+function getMomentStorageKey(suffix = '') {
   const gmail = localStorage.getItem('niaiGmail') || gmailInput?.value.trim() || 'guest';
-  return `niaiRedline:${gmail}${suffix ? `:${suffix}` : ''}`;
+  return `niaiMatchmaking:${gmail}${suffix ? `:${suffix}` : ''}`;
 }
 
-function getRedlineProfile() {
+function getLocalHeartCardEntries() {
   try {
-    return JSON.parse(localStorage.getItem(getRedlineStorageKey('profile')) || '{"points":0}');
-  } catch {
-    return { points: 0 };
-  }
-}
-
-function setRedlineProfile(profile) {
-  localStorage.setItem(getRedlineStorageKey('profile'), JSON.stringify({
-    ...profile,
-    points: Math.max(0, Number(profile.points || 0))
-  }));
-}
-
-function getLocalRedlineEntries() {
-  try {
-    return JSON.parse(localStorage.getItem('niaiRedlineEntries') || '[]');
+    const currentEntries = JSON.parse(localStorage.getItem('niaiHeartCardEntries') || '[]');
+    return currentEntries;
   } catch {
     return [];
   }
 }
 
-function setLocalRedlineEntries(entries) {
-  localStorage.setItem('niaiRedlineEntries', JSON.stringify(entries));
+function setLocalHeartCardEntries(entries) {
+  localStorage.setItem('niaiHeartCardEntries', JSON.stringify(entries));
 }
 
-function getAllRedlineEntries() {
-  const seedEntries = typeof RedlineApartment !== 'undefined' ? RedlineApartment.SEED_ENTRIES : [];
-  return [...getLocalRedlineEntries(), ...seedEntries];
+function getAllHeartCardEntries() {
+  const seedEntries = typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.SEED_ENTRIES : [];
+  return [...getLocalHeartCardEntries(), ...seedEntries];
 }
 
-function formatRedlinePoints(points) {
-  if (activeInterfaceLanguage === 'en') return `Current points: ${points}`;
-  if (activeInterfaceLanguage === 'ja') return `現在のポイント：${points}`;
-  return `目前積分：${points}`;
-}
-
-function renderRedlineProfile(message = '') {
-  if (!redlinePointText || !redlineStatus) return;
-  const profile = getRedlineProfile();
-  redlinePointText.textContent = formatRedlinePoints(profile.points || 0);
+function renderMatchmakingProfile(message = '') {
+  if (!matchmakingTitleText || !matchmakingStatus) return;
+  matchmakingTitleText.textContent = activeInterfaceLanguage === 'en'
+    ? 'Who do you want to meet today?'
+    : activeInterfaceLanguage === 'ja'
+      ? '今日は誰に出会いたい？'
+      : '今天想遇見誰？';
   if (message) {
-    setStatus(redlineStatus, message, 'success');
+    setStatus(matchmakingStatus, message, 'success');
   }
 }
 
-function awardRedlineDailyLogin() {
-  if (typeof RedlineApartment === 'undefined') return;
-  const profile = RedlineApartment.awardDailyLogin(getRedlineProfile());
-  setRedlineProfile(profile);
-  renderRedlineProfile(profile.awarded ? '每日登入 +1 積分；已放入紅線公寓積分。' : '今日已領取每日登入積分。');
-}
-
-function adjustRedlinePoints(delta, message = '') {
-  const profile = getRedlineProfile();
-  profile.points = Number(profile.points || 0) + delta;
-  setRedlineProfile(profile);
-  renderRedlineProfile(message);
-}
-
 function localizeComparisonText(sourceText) {
-  if (typeof RedlineApartment === 'undefined') return sourceText || '';
-  return RedlineApartment.localizePromptText(sourceText || '', activeInterfaceLanguage);
+  if (typeof MatchmakingStudio === 'undefined') return sourceText || '';
+  return MatchmakingStudio.localizePromptText(sourceText || '', activeInterfaceLanguage);
 }
 
 function refreshLocalizedPromptDisplays() {
@@ -526,26 +495,26 @@ function refreshLocalizedPromptDisplays() {
     }
   }
   renderSavedPrompts();
-  renderRedlineProfile();
-  rerenderRedlineCardsForLanguage();
+  renderMatchmakingProfile();
+  rerenderHeartCardsForLanguage();
 }
 
 function getCurrentPromptCommunityProfile() {
   return {
-    gender: gender.value && gender.value !== 'AI判斷' ? inferRedlineGender(gender.value) : 'any',
-    age: normalizeRedlineAge(ageBracket.value),
+    gender: gender.value && gender.value !== 'AI判斷' ? inferHeartCardGender(gender.value) : 'any',
+    age: normalizeHeartCardAge(ageBracket.value),
     nature: activeAudienceMode === 'sensual' ? 'sensual' : 'designer'
   };
 }
 
-function inferRedlineGender(value) {
+function inferHeartCardGender(value) {
   if (/女|female|woman/i.test(value)) return 'female';
   if (/男|male|man/i.test(value)) return 'male';
   if (/非二元|nonbinary|non-binary/i.test(value)) return 'nonbinary';
   return 'any';
 }
 
-function normalizeRedlineAge(value) {
+function normalizeHeartCardAge(value) {
   const match = String(value || '').match(/(\d{2})/);
   const ageValue = match ? Number(match[1]) : 25;
   if (ageValue < 25) return '18-24';
@@ -557,121 +526,170 @@ function normalizeRedlineAge(value) {
   return '50+';
 }
 
-function shareCurrentPromptToRedline() {
-  if (typeof RedlineApartment === 'undefined') return;
-  if (!textResultPrompt.value || !textConfirmationPrompt.dataset.sourceZh) {
-    setStatus(redlineStatus, '請先產生文生圖提示詞，再分享至紅線公寓。', 'error');
-    return;
-  }
-  const profile = getCurrentPromptCommunityProfile();
-  const entry = RedlineApartment.createCommunityEntry({
-    ...profile,
-    sourceText: textConfirmationPrompt.dataset.sourceZh,
-    englishPrompt: textResultPrompt.value,
-    language: 'zh'
-  });
-  setLocalRedlineEntries([entry, ...getLocalRedlineEntries()]);
-  adjustRedlinePoints(RedlineApartment.SHARE_POINTS, '已匿名分享至紅線公寓，獲得 1 積分。');
-  setAppPage('redline');
+function getSelectedMoment() {
+  return getSavedPrompts().find((candidate) => candidate.id === activeSavedPromptId) || null;
 }
 
-function getRedlineFilters() {
+function buildHeartCardEntryFromMoment(moment) {
+  if (typeof MatchmakingStudio === 'undefined' || !moment?.englishPrompt || !moment?.chineseConfirmation) return null;
+  return MatchmakingStudio.createCommunityEntry({
+    id: `heart-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    gender: moment.communityGender || getCurrentPromptCommunityProfile().gender,
+    age: moment.communityAge || getCurrentPromptCommunityProfile().age,
+    nature: moment.mode === 'sensual' ? 'sensual' : 'designer',
+    sourceText: moment.chineseConfirmation,
+    englishPrompt: moment.englishPrompt,
+    thumbnailDataUrl: moment.images?.[0]?.dataUrl || '',
+    language: 'zh'
+  });
+}
+
+function publishMomentToHeartCards() {
+  const selectedMoment = getSelectedMoment();
+  const currentMoment = textResultPrompt.value ? {
+    id: `current-${Date.now()}`,
+    mode: activeAudienceMode,
+    chineseConfirmation: textConfirmationPrompt.dataset.sourceZh || textConfirmationPrompt.value,
+    englishPrompt: textResultPrompt.value,
+    images: []
+  } : null;
+  const entry = buildHeartCardEntryFromMoment(selectedMoment || currentMoment);
+  if (!entry) {
+    setStatus(textStatus, '請先在「悸動瞬間」選取一筆正式輸出的提示詞，或先產生目前提示詞。', 'error');
+    return;
+  }
+  setLocalHeartCardEntries([entry, ...getLocalHeartCardEntries()]);
+  setAppPage('matchmaking');
+  setStatus(matchmakingStatus, '已匿名上傳成心動卡；配對所只會顯示不具名內容。', 'success');
+}
+
+function getHeartCardFilters() {
   return {
-    gender: redlineGender.value,
-    age: redlineAge.value,
-    nature: redlineNature.value
+    nature: heartNature.value,
+    gender: heartGender.value,
+    age: heartAge.value
   };
 }
 
-function validateRedlineFilters() {
-  const filters = getRedlineFilters();
-  if (!filters.gender || !filters.age || !filters.nature) {
-    setStatus(redlineStatus, '請先選擇想遇見的性別、年齡與設友／色友性質。', 'error');
+function validateHeartCardFilters() {
+  const filters = getHeartCardFilters();
+  if (!filters.nature || !filters.gender || !filters.age) {
+    setStatus(matchmakingStatus, '請先選擇想找的性質、性別與成年年齡範圍。', 'error');
     return null;
   }
   return filters;
 }
 
-function makeRedlineCard(entry, index) {
+function makeHeartCardBack(entry, index) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'heart-card-back icon-button';
+  button.dataset.icon = '💓';
+  button.dataset.heartCardId = entry.id;
+  button.innerHTML = `<span>心動卡 ${index + 1}</span><strong>點我翻開</strong>`;
+  button.addEventListener('click', () => revealHeartCard(entry.id));
+  return button;
+}
+
+function makeHeartCardReveal(entry, index) {
   const article = document.createElement('article');
-  article.className = 'redline-card';
-  article.dataset.redlineEntryId = entry.id;
+  article.className = 'heart-card revealed-card';
+  article.dataset.heartCardId = entry.id;
   const title = document.createElement('h3');
-  title.textContent = activeInterfaceLanguage === 'ja' ? `赤い糸 ${index + 1}` : activeInterfaceLanguage === 'en' ? `Redline card ${index + 1}` : `紅線卡 ${index + 1}`;
+  title.textContent = activeInterfaceLanguage === 'ja' ? `心動カード ${index + 1}` : activeInterfaceLanguage === 'en' ? `Heart card ${index + 1}` : `心動卡 ${index + 1}`;
 
   const meta = document.createElement('div');
-  meta.className = 'redline-meta';
-  for (const label of [entry.anonymous ? '匿名' : 'Anonymous', entry.nature === 'sensual' ? '色友' : '設友', entry.gender || 'any', entry.age]) {
+  meta.className = 'heart-card-meta';
+  for (const label of ['匿名', entry.nature === 'sensual' ? '色友' : '設友', entry.gender || 'any', entry.age]) {
     const pill = document.createElement('span');
-    pill.className = 'redline-pill';
+    pill.className = 'heart-card-pill';
     pill.textContent = label;
     meta.append(pill);
   }
 
+  if (entry.thumbnailDataUrl) {
+    const thumb = document.createElement('img');
+    thumb.className = 'heart-card-thumb';
+    thumb.src = entry.thumbnailDataUrl;
+    thumb.alt = '匿名用戶保留的文轉圖縮圖';
+    article.append(thumb);
+  }
+
   const localizedLabel = makeSavedLabel(activeInterfaceLanguage === 'en' ? 'Localized comparison' : activeInterfaceLanguage === 'ja' ? 'ローカル対照' : '本地語言對照');
-  const localizedPrompt = makeReadonlyTextarea(typeof RedlineApartment !== 'undefined' ? RedlineApartment.getEntryLocalizedText(entry, activeInterfaceLanguage) : entry.sourceText, 5);
-  const englishLabel = makeSavedLabel('English prompt');
-  const englishPrompt = makeReadonlyTextarea(entry.englishPrompt, 6);
+  const localizedPrompt = makeReadonlyTextarea(typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.getEntryLocalizedText(entry, activeInterfaceLanguage) : entry.sourceText, 5);
+  const englishLabel = makeSavedLabel('Complete English text-to-image setting prompt');
+  const englishPrompt = makeReadonlyTextarea(entry.englishPrompt, 8);
   const copy = document.createElement('button');
   copy.type = 'button';
   copy.className = 'secondary-button icon-button';
   copy.dataset.icon = '📋';
-  copy.textContent = '複製英文提示詞';
+  copy.textContent = '複製完整英文設定提示詞';
   copy.addEventListener('click', async () => {
     await navigator.clipboard.writeText(entry.englishPrompt || '');
-    setStatus(redlineStatus, '已複製抽到的英文提示詞。', 'success');
+    setStatus(matchmakingStatus, '已複製這張心動卡的完整英文設定提示詞。', 'success');
   });
   const actions = document.createElement('div');
-  actions.className = 'redline-card-actions';
+  actions.className = 'heart-card-actions';
   actions.append(copy);
   article.append(title, meta, localizedLabel, localizedPrompt, englishLabel, englishPrompt, actions);
   return article;
 }
 
-function renderRedlineDrawResults(entries) {
-  if (!redlineResultList) return;
-  redlineResultList.replaceChildren();
+function renderHeartCardBacks(entries) {
+  if (!heartCardList) return;
+  heartCardList.replaceChildren();
   if (!entries.length) {
     const empty = document.createElement('p');
     empty.className = 'status';
-    empty.textContent = '目前沒有符合條件的匿名提示詞，請換一組條件再試。';
-    redlineResultList.append(empty);
+    empty.textContent = '目前沒有符合條件的匿名心動卡，請換一組條件再試。';
+    heartCardList.append(empty);
     return;
   }
-  redlineResultList.dataset.lastDrawIds = JSON.stringify(entries.map((entry) => entry.id));
-  entries.forEach((entry, index) => redlineResultList.append(makeRedlineCard(entry, index)));
+  heartCardList.dataset.lastDrawIds = JSON.stringify(entries.map((entry) => entry.id));
+  heartCardList.dataset.revealedId = '';
+  entries.forEach((entry, index) => heartCardList.append(makeHeartCardBack(entry, index)));
 }
 
-function rerenderRedlineCardsForLanguage() {
-  if (!redlineResultList?.dataset.lastDrawIds) return;
+function revealHeartCard(entryId) {
+  if (!heartCardList?.dataset.lastDrawIds) return;
+  const ids = JSON.parse(heartCardList.dataset.lastDrawIds);
+  const entries = ids.map((id) => getAllHeartCardEntries().find((entry) => entry.id === id)).filter(Boolean);
+  const selected = entries.find((entry) => entry.id === entryId);
+  if (!selected) return;
+  heartCardList.dataset.revealedId = entryId;
+  heartCardList.replaceChildren(makeHeartCardReveal(selected, entries.indexOf(selected)));
+  setStatus(matchmakingStatus, '心動卡已翻開；可複製完整英文設定提示詞，也可對照目前介面語言版本。', 'success');
+}
+
+function rerenderHeartCardsForLanguage() {
+  if (!heartCardList?.dataset.lastDrawIds) return;
   try {
-    const ids = JSON.parse(redlineResultList.dataset.lastDrawIds);
-    const entries = ids.map((id) => getAllRedlineEntries().find((entry) => entry.id === id)).filter(Boolean);
-    renderRedlineDrawResults(entries);
+    const ids = JSON.parse(heartCardList.dataset.lastDrawIds);
+    const entries = ids.map((id) => getAllHeartCardEntries().find((entry) => entry.id === id)).filter(Boolean);
+    const revealedId = heartCardList.dataset.revealedId;
+    if (revealedId) {
+      revealHeartCard(revealedId);
+    } else {
+      renderHeartCardBacks(entries);
+    }
   } catch {
-    redlineResultList.dataset.lastDrawIds = '';
+    heartCardList.dataset.lastDrawIds = '';
   }
 }
 
-function drawRedline(count) {
-  if (typeof RedlineApartment === 'undefined') return;
-  const filters = validateRedlineFilters();
+function showHeartCards() {
+  if (typeof MatchmakingStudio === 'undefined') return;
+  const filters = validateHeartCardFilters();
   if (!filters) return;
-  const profile = getRedlineProfile();
-  const cost = RedlineApartment.getDrawCost(count);
-  if (Number(profile.points || 0) < cost) {
-    setStatus(redlineStatus, `積分不足；${count === 2 ? '抽兩張需要 5 積分' : '抽一張需要 3 積分'}。`, 'error');
-    return;
+  const results = MatchmakingStudio.drawHeartCards(getAllHeartCardEntries(), filters, 3);
+  renderHeartCardBacks(results);
+  if (results.length) {
+    setStatus(matchmakingStatus, '已出現 3 張心動卡；請選一張翻開。', 'success');
+  } else {
+    setStatus(matchmakingStatus, '沒有符合條件的匿名心動卡。', 'error');
   }
-  const results = RedlineApartment.drawRedlineCards(getAllRedlineEntries(), filters, count);
-  if (!results.length) {
-    renderRedlineDrawResults([]);
-    setStatus(redlineStatus, '沒有符合條件的匿名提示詞，本次不扣積分。', 'error');
-    return;
-  }
-  adjustRedlinePoints(-cost, `已拉紅線 ${results.length} 張，扣除 ${cost} 積分。`);
-  renderRedlineDrawResults(results);
 }
+
 
 function makeReadonlyTextarea(value, rows = 4) {
   const textarea = document.createElement('textarea');
@@ -784,6 +802,8 @@ function saveCurrentPrompt() {
     dialogueToCamera: dialogueToCamera.value.trim(),
     dialogueBetweenCharacters: dialogueBetweenCharacters.value.trim(),
     sponsorSettings: getSponsorSettings(),
+    communityGender: getCurrentPromptCommunityProfile().gender,
+    communityAge: getCurrentPromptCommunityProfile().age,
     chineseConfirmation: textConfirmationPrompt.dataset.sourceZh || textConfirmationPrompt.value,
     englishPrompt: textResultPrompt.value,
     autoVideoZh: autoVideoConfirmation.dataset.sourceZh || autoVideoConfirmation.value,
@@ -1347,7 +1367,7 @@ setOutputVisibility('text', false);
 setOutputVisibility('video', false);
 updateAudienceMode(activeAudienceMode, localStorage.getItem('niaiGmail') || '');
 renderSavedPrompts();
-renderRedlineProfile();
+renderMatchmakingProfile();
 
 textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
@@ -1392,6 +1412,12 @@ deepfaceButton.addEventListener('click', () => {
   deepfaceButton.setAttribute('aria-pressed', String(deepfaceEnabled));
 });
 
+withMeButton.addEventListener('click', () => {
+  withMeEnabled = !withMeEnabled;
+  withMeButton.classList.toggle('active', withMeEnabled);
+  withMeButton.setAttribute('aria-pressed', String(withMeEnabled));
+});
+
 dialogueMode.addEventListener('change', updateDialogueVisibility);
 aiSuggestionToggle.addEventListener('change', applyAiSuggestionState);
 
@@ -1423,9 +1449,8 @@ sensualLoginButton.addEventListener('click', () => {
 });
 
 savePromptButton.addEventListener('click', saveCurrentPrompt);
-shareRedlineButton.addEventListener('click', shareCurrentPromptToRedline);
-drawOneRedlineButton.addEventListener('click', () => drawRedline(1));
-drawTwoRedlineButton.addEventListener('click', () => drawRedline(2));
+publishMomentButton.addEventListener('click', publishMomentToHeartCards);
+showHeartCardsButton.addEventListener('click', showHeartCards);
 
 resultImageInput.addEventListener('change', async () => {
   const [file] = resultImageInput.files;
@@ -1544,6 +1569,7 @@ rewriteButton.addEventListener('click', () => {
     audienceMode: activeAudienceMode,
     inputMode: activeInputComplexity,
     deepfaceEnabled,
+    withMeEnabled,
     intensity: intensity.value,
     lighting: lighting.value,
     camera: camera.value,

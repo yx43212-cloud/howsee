@@ -50,8 +50,8 @@
     <main id="appShell" class="app-shell" hidden>
       <nav class="app-page-tabs" aria-label="功能頁面切換">
         <button class="app-page-button active icon-button" type="button" data-app-page="generator" data-icon="✨" data-i18n="generator">提示詞生成</button>
-        <button class="app-page-button icon-button" type="button" data-app-page="library" data-icon="📚" data-i18n="library">儲存紀錄</button>
-        <button class="app-page-button icon-button" type="button" data-app-page="redline" data-icon="🧧" data-i18n="redline">紅線公寓</button>
+        <button class="app-page-button icon-button" type="button" data-app-page="library" data-icon="💓" data-i18n="library">悸動瞬間</button>
+        <button class="app-page-button icon-button" type="button" data-app-page="matchmaking" data-icon="💘" data-i18n="matchmaking">配對所</button>
       </nav>
 
       <section id="generatorPage" data-app-page-panel="generator">
@@ -321,6 +321,12 @@
             <div class="field">
               <label>DeepFace</label>
               <button id="deepfaceButton" type="button" class="secondary-button icon-button" data-icon="🪞" aria-pressed="false">DeepFace</button>
+              <p class="field-help">套用參考照的人物辨識特徵。</p>
+            </div>
+            <div class="field">
+              <label>WITH ME</label>
+              <button id="withMeButton" type="button" class="secondary-button icon-button" data-icon="🤝" aria-pressed="false">WITH ME</button>
+              <p class="field-help">提示詞會預留你上傳自己的照片，與角色依服裝、動作、畫風合成。</p>
             </div>
             <div class="field upload-field">
               <label for="sponsorImageInput">業配圖片</label>
@@ -499,50 +505,59 @@
 
       </section>
 
-      <section id="libraryPage" class="panel saved-panel" data-app-page-panel="library" hidden>
+      <section id="libraryPage" class="panel saved-panel heartbeat-panel" data-app-page-panel="library" hidden>
         <div class="section-heading">
-          <p class="section-kicker">Library</p>
-          <h2>已儲存提示詞</h2>
-          <p>提示詞與壓縮成果圖只存於本機瀏覽器，成果圖降畫質保存且不提供下載連結。</p>
+          <p class="section-kicker">Heartbeat Moment</p>
+          <h2>悸動瞬間</h2>
+          <p>記錄自己當次或先前正式輸出的完整提示詞，可上傳一張文轉圖縮圖；選取後可匿名上傳成配對所的心動卡，也可刪除。</p>
         </div>
-        <label for="saveTitleInput">儲存標題</label>
-        <input id="saveTitleInput" type="text" placeholder="例如：吸血鬼女王鏡頭版、設友產品形象短片" />
+        <label for="saveTitleInput">悸動標題／儲存標題</label>
+        <input id="saveTitleInput" type="text" placeholder="例如：月光玻璃屋伴侶、雨夜書店朋友、品牌模特心動版" />
         <div class="save-actions">
-          <button id="savePromptButton" type="button" class="secondary-button icon-button" data-icon="💾">儲存目前提示詞</button>
-          <label for="resultImageInput" class="secondary-button upload-button">上傳成果到選取紀錄</label>
+          <button id="savePromptButton" type="button" class="secondary-button icon-button" data-icon="💾">記錄這次悸動瞬間</button>
+          <label for="resultImageInput" class="secondary-button upload-button">上傳文轉圖縮圖</label>
           <input id="resultImageInput" type="file" accept="image/*" hidden />
+          <button id="publishMomentButton" type="button" class="secondary-button icon-button" data-icon="💌">匿名上傳成心動卡</button>
         </div>
+        <p class="status">縮圖只會以壓縮資料保留在本機；上傳成心動卡時會保留該縮圖供配對所翻卡預覽。</p>
         <div id="savedPromptList" class="saved-list"></div>
       </section>
 
 
 
-      <section id="redlinePage" class="panel redline-panel" data-app-page-panel="redline" hidden>
+      <section id="matchmakingPage" class="panel matchmaking-panel" data-app-page-panel="matchmaking" hidden>
         <div class="section-heading">
-          <p class="section-kicker">Redline Apartment</p>
-          <h2>紅線公寓</h2>
-          <p>登入後可匿名分享自己的提示詞；分享 1 次獲得 1 積分，每日登入也會獲得 1 積分。累積 3 積分可抽 1 張紅線，累積 5 積分可一次抽 2 張。</p>
+          <p class="section-kicker">Matchmaking Studio</p>
+          <h2>配對所</h2>
+          <p>先輸入你想找的性質、性別與成年年齡範圍；系統會出現 3 張符合範圍的心動卡。選擇一張翻開後，可看到匿名用戶留下的完整英文設定提示詞、你的介面語言對照版，以及對方保留的文轉圖縮圖。</p>
         </div>
 
-        <div class="redline-score-card">
+        <div class="matchmaking-score-card">
           <div>
-            <p class="section-kicker">Anonymous Community</p>
-            <h3 id="redlinePointText">目前積分：0</h3>
-            <p id="redlineStatus" class="status">放入紅線公寓的提示詞都會匿名顯示。</p>
+            <p class="section-kicker">Anonymous Heart Cards</p>
+            <h3 id="matchmakingTitleText">今天想遇見誰？</h3>
+            <p id="matchmakingStatus" class="status">所有心動卡都不具名；請先設定範圍，再翻開其中一張。</p>
           </div>
-          <button id="shareRedlineButton" type="button" class="secondary-button icon-button" data-icon="🎁">分享目前提示詞至紅線公寓（+1）</button>
         </div>
 
-        <div class="redline-draw-panel">
+        <div class="matchmaking-draw-panel">
           <div class="section-heading compact">
-            <p class="section-kicker">Gacha</p>
-            <h3>先決定想遇見的紅線</h3>
-            <p>請先選擇性別、成年年齡級距，以及提示詞性質屬於設友或色友，才能參與拉紅線。</p>
+            <p class="section-kicker">Heartbeat Draw</p>
+            <h3>設定想遇見的對象</h3>
+            <p>請先選擇性質屬於設友或色友、想遇見的性別與成年年齡級距，才會出現 3 張心動卡。</p>
           </div>
-          <div class="custom-grid redline-filter-grid">
+          <div class="custom-grid matchmaking-filter-grid">
             <div class="field">
-              <label for="redlineGender">想遇見的性別</label>
-              <select id="redlineGender">
+              <label for="heartNature">想找的性質</label>
+              <select id="heartNature">
+                <option value="">請選擇</option>
+                <option value="designer">設友</option>
+                <option value="sensual">色友</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="heartGender">想遇見的性別</label>
+              <select id="heartGender">
                 <option value="">請選擇</option>
                 <option value="female">女性</option>
                 <option value="male">男性</option>
@@ -551,8 +566,8 @@
               </select>
             </div>
             <div class="field">
-              <label for="redlineAge">想遇見的年齡</label>
-              <select id="redlineAge">
+              <label for="heartAge">想遇見的年齡</label>
+              <select id="heartAge">
                 <option value="">請選擇</option>
                 <option value="18-24">18-24</option>
                 <option value="25-29">25-29</option>
@@ -563,22 +578,13 @@
                 <option value="50+">50+</option>
               </select>
             </div>
-            <div class="field">
-              <label for="redlineNature">提示詞性質</label>
-              <select id="redlineNature">
-                <option value="">請選擇</option>
-                <option value="designer">設友</option>
-                <option value="sensual">色友</option>
-              </select>
-            </div>
           </div>
-          <div class="redline-actions">
-            <button id="drawOneRedlineButton" type="button" class="icon-button" data-icon="🪄">3 積分抽 1 張</button>
-            <button id="drawTwoRedlineButton" type="button" class="icon-button" data-icon="🧧">5 積分抽 2 張</button>
+          <div class="matchmaking-actions">
+            <button id="showHeartCardsButton" type="button" class="icon-button" data-icon="💗">顯示 3 張心動卡</button>
           </div>
         </div>
 
-        <div id="redlineResultList" class="redline-result-list" aria-live="polite"></div>
+        <div id="heartCardList" class="heart-card-list" aria-live="polite"></div>
       </section>
 
       <section class="guardrails">
@@ -595,7 +601,7 @@
     </main>
 
     <script src="src/translator.js"></script>
-    <script src="src/redline.js"></script>
+    <script src="src/matchmaking.js"></script>
     <script src="src/app.js"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-(function initRedlineApartment(globalScope) {
+(function initMatchmakingStudio(globalScope) {
   const DAILY_LOGIN_POINTS = 1;
   const SHARE_POINTS = 1;
   const SINGLE_DRAW_COST = 3;
@@ -16,7 +16,8 @@
         en: 'Anonymous designer share: female age 25-29, moonlit glass house, silver-white gown, quiet gaze, soft-focus blue backlight.',
         ja: '匿名の設友シェア：25〜29歳女性、月明かりのガラスハウス、銀白のドレス、静かな視線、柔らかな青い逆光。'
       },
-      englishPrompt: 'female adult age 25-29, moonlit glass house, silver-white gown, quiet gaze, soft-focus blue backlight, elegant cinematic composition, tasteful general-audience styling'
+      englishPrompt: 'female adult age 25-29, moonlit glass house, silver-white gown, quiet gaze, soft-focus blue backlight, elegant cinematic composition, tasteful general-audience styling',
+      thumbnailDataUrl: ''
     },
     {
       id: 'seed-designer-m-30',
@@ -29,7 +30,8 @@
         en: 'Anonymous designer share: male age 30-34, rainy-night bookstore, dark trench coat, warm desk lamp, cinematic profile.',
         ja: '匿名の設友シェア：30〜34歳男性、雨の夜の書店、濃色トレンチ、暖かなデスクライト、映画的な横顔。'
       },
-      englishPrompt: 'male adult age 30-34, rainy-night bookstore, dark trench coat, warm desk lamp, cinematic profile view, refined atmospheric design prompt'
+      englishPrompt: 'male adult age 30-34, rainy-night bookstore, dark trench coat, warm desk lamp, cinematic profile view, refined atmospheric design prompt',
+      thumbnailDataUrl: ''
     },
     {
       id: 'seed-sensual-f-35',
@@ -42,7 +44,8 @@
         en: 'Anonymous sensual share: female age 35-39, rose greenhouse, black satin dress, consenting adult intimate gaze, artistic coverage.',
         ja: '匿名の色友シェア：35〜39歳女性、バラの温室、黒いサテンドレス、合意ある成人の艶やかな視線、芸術的なカバー。'
       },
-      englishPrompt: 'female adult age 35-39, rose greenhouse, black satin dress, consenting adult intimate gaze, artistic coverage, sensual but non-explicit mood, no minors, no coercion'
+      englishPrompt: 'female adult age 35-39, rose greenhouse, black satin dress, consenting adult intimate gaze, artistic coverage, sensual but non-explicit mood, no minors, no coercion',
+      thumbnailDataUrl: ''
     },
     {
       id: 'seed-sensual-any-40',
@@ -55,7 +58,8 @@
         en: 'Anonymous sensual share: adult age 40-44, night-view suite, silk robe, intimate pause, soft city neon.',
         ja: '匿名の色友シェア：40〜44歳成人、夜景のスイート、シルクのローブ、艶やかな間、柔らかな都会のネオン。'
       },
-      englishPrompt: 'adult age 40-44, night-view suite, silk robe, intimate pause, soft city neon, adult-only consensual sensual mood, tasteful composition'
+      englishPrompt: 'adult age 40-44, night-view suite, silk robe, intimate pause, soft city neon, adult-only consensual sensual mood, tasteful composition',
+      thumbnailDataUrl: ''
     }
   ];
 
@@ -104,11 +108,11 @@
     return entry.localized?.[normalized] || localizePromptText(entry.localized?.zh || entry.sourceText || '', normalized);
   }
 
-  function createCommunityEntry({ id, gender, age, nature, sourceText, englishPrompt, language = 'zh' }) {
+  function createCommunityEntry({ id, gender, age, nature, sourceText, englishPrompt, thumbnailDataUrl = '', language = 'zh' }) {
     const normalized = normalizeLanguage(language);
     const baseText = sourceText || '';
     return {
-      id: id || `redline-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      id: id || `heart-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       gender: gender || 'any',
       age: age || '18-24',
       nature: nature === 'sensual' ? 'sensual' : 'designer',
@@ -118,6 +122,7 @@
       },
       sourceText: baseText,
       englishPrompt: englishPrompt || '',
+      thumbnailDataUrl,
       createdAt: new Date().toISOString(),
       anonymous: true
     };
@@ -132,7 +137,7 @@
     });
   }
 
-  function drawRedlineCards(entries, filters, count, random = Math.random) {
+  function drawMatchingCards(entries, filters, count, random = Math.random) {
     const pool = filterEntries(entries, filters);
     const available = [...pool];
     const results = [];
@@ -141,6 +146,14 @@
       results.push(available.splice(index, 1)[0]);
     }
     return results;
+  }
+
+  function drawHeartCards(entries, filters, count = 3, random = Math.random) {
+    return drawMatchingCards(entries, filters, count, random);
+  }
+
+  function revealHeartCard(entries, entryId) {
+    return entries.find((entry) => entry.id === entryId) || null;
   }
 
   function getDrawCountForPoints(points) {
@@ -174,7 +187,9 @@
     SEED_ENTRIES,
     createCommunityEntry,
     filterEntries,
-    drawRedlineCards,
+    drawMatchingCards,
+    drawHeartCards,
+    revealHeartCard,
     getDrawCountForPoints,
     getDrawCost,
     awardDailyLogin,
@@ -187,5 +202,5 @@
   if (typeof module !== 'undefined') {
     module.exports = api;
   }
-  globalScope.RedlineApartment = api;
+  globalScope.MatchmakingStudio = api;
 })(typeof window !== 'undefined' ? window : globalThis);

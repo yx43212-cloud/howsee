@@ -1411,6 +1411,14 @@ function getDeepFaceInstruction() {
   };
 }
 
+
+function getWithMeInstruction() {
+  return {
+    zh: 'WITH ME：提示詞完成後，使用者可在文轉圖 AI 上傳自己的照片，將本人作為同框對象與設定中的伴侶／朋友／模特合成；請依本提示詞規劃服裝風格、動作搭配、畫風、光線、構圖與整體協調，保留使用者照片的可辨識特徵並讓雙方自然互動',
+    en: 'WITH ME companion-composite plan: after generating this prompt, the user may upload their own photo in a text-to-image AI workflow and composite themselves beside the imagined partner, friend, or model; coordinate the user photo with the configured outfit style, pose pairing, art style, lighting, composition, and overall styling while preserving the user photo identity and creating natural interaction between both people'
+  };
+}
+
 function validateCharacterDetailInput(input) {
   if (typeof input === 'object' && input !== null) {
     const details = normalizeInput(input.zh);
@@ -1623,6 +1631,7 @@ function rewritePrompt(input, options = {}) {
     countZh: count.zh
   });
   const deepFace = options.deepfaceEnabled ? getDeepFaceInstruction() : null;
+  const withMe = options.withMeEnabled ? getWithMeInstruction() : null;
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1715,6 +1724,10 @@ function rewritePrompt(input, options = {}) {
     chinesePrompt.push(deepFace.zh);
   }
 
+  if (withMe) {
+    chinesePrompt.push(withMe.zh);
+  }
+
   if (!isSimpleLove && sponsor.hasSponsor) {
     chinesePrompt.push(`業配設定：${sponsor.zh}`);
   }
@@ -1767,6 +1780,10 @@ function rewritePrompt(input, options = {}) {
 
   if (deepFace) {
     englishPrompt.push(deepFace.en);
+  }
+
+  if (withMe) {
+    englishPrompt.push(withMe.en);
   }
 
   if (!isSimpleLove && sponsor.hasSponsor) {

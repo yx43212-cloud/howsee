@@ -10,8 +10,9 @@
 - Guardrails that reject underage, non-consensual, voyeuristic, and graphic violence cues; 設友 mode only shows general design presets, filters adult-oriented materials and outfit-integrity controls, while 色友 reveals a separate adult-oriented area after confirmation.
 - Browser-only implementation with no backend or data collection.
 
-- Anonymous 紅線公寓 community prototype: after Gmail login, users receive 1 point for daily login and 1 point for anonymously sharing their current prompt; 3 points draw one redline card and 5 points draw two cards from anonymous bilingual prompt shares filtered by desired gender, adult age bracket, and 設友/色友 nature.
-- Language switching now also refreshes generated/local saved/community comparison text into the selected interface language paired with the unchanged English prompt output.
+- Anonymous 配對所 community prototype: users save formal outputs as 悸動瞬間, optionally attach a compressed text-to-image thumbnail, publish selected moments as anonymous 心動卡, set desired 設友/色友 nature, gender, and adult age range, then reveal one of three matching cards with localized comparison text plus the complete English prompt.
+- Language switching now also refreshes generated/local saved/community 心動卡 comparison text into the selected interface language paired with the unchanged English prompt output.
+- WITH ME prompt planning lets users carry their own photo into a later text-to-image workflow so the imagined partner/friend/model can be composited with coordinated outfit, pose, art style, lighting, and composition.
 - 50 lighting-direction presets, 50 pure camera/viewpoint presets, 20 composition-structure presets, and 100 art-style presets for richer visual direction.
 - Gender selection plus 100 race presets, with the latter 50 dedicated to non-natural fantasy/sci-fi races and no visible category tags in the selector labels.
 - 400 explicitly named outfit presets split into male/female 100 normal and 100 adult-oriented sets, plus 200 explicitly named scene presets (100 everyday and 100 mysterious) and 150 explicitly named accessory/prop presets without visible category prefixes in selector labels.

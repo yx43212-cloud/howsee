@@ -824,106 +824,130 @@ body[data-theme='forbidden-love'] {
   min-height: 54px;
 }
 
-.redline-panel {
-  overflow: hidden;
-  position: relative;
+
+/* Matchmaking / Heartbeat updates */
+.app-shell {
+  animation: love-fade-in 520ms ease both;
 }
 
-.redline-panel::after {
-  content: '';
+@keyframes love-fade-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes heartbeat-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+.heartbeat-panel,
+.matchmaking-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.heartbeat-panel::before,
+.matchmaking-panel::before {
+  content: '♡';
   position: absolute;
-  inset: auto -90px -120px auto;
-  width: 260px;
-  height: 260px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 93, 143, 0.24), transparent 68%);
+  top: 22px;
+  right: 32px;
+  font-size: clamp(3rem, 8vw, 6rem);
+  color: rgba(255, 93, 143, 0.18);
+  animation: heartbeat-float 4.8s ease-in-out infinite;
   pointer-events: none;
 }
 
-.redline-score-card,
-.redline-draw-panel,
-.redline-card {
-  border: 1px solid rgba(255, 128, 166, 0.2);
-  border-radius: 28px;
-  padding: 20px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 228, 237, 0.48));
-  box-shadow: 0 16px 34px rgba(114, 38, 70, 0.1);
+.matchmaking-score-card,
+.matchmaking-draw-panel,
+.heart-card,
+.heart-card-back {
+  border: 1px solid rgba(255, 128, 166, 0.22);
+  border-radius: 30px;
+  padding: 22px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 225, 236, 0.52));
+  box-shadow: 0 18px 38px rgba(132, 34, 76, 0.12);
 }
 
-body[data-theme='misty-flirt'] .redline-score-card,
-body[data-theme='misty-flirt'] .redline-draw-panel,
-body[data-theme='misty-flirt'] .redline-card,
-body[data-theme='forbidden-love'] .redline-score-card,
-body[data-theme='forbidden-love'] .redline-draw-panel,
-body[data-theme='forbidden-love'] .redline-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 93, 143, 0.1));
+body[data-theme='misty-flirt'] .matchmaking-score-card,
+body[data-theme='misty-flirt'] .matchmaking-draw-panel,
+body[data-theme='misty-flirt'] .heart-card,
+body[data-theme='misty-flirt'] .heart-card-back,
+body[data-theme='forbidden-love'] .matchmaking-score-card,
+body[data-theme='forbidden-love'] .matchmaking-draw-panel,
+body[data-theme='forbidden-love'] .heart-card,
+body[data-theme='forbidden-love'] .heart-card-back {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 93, 143, 0.12));
 }
 
-.redline-score-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+.matchmaking-score-card {
   margin-bottom: 18px;
 }
 
-.redline-score-card h3 {
-  margin: 4px 0;
-  font-size: clamp(1.3rem, 3vw, 2rem);
-}
-
-.redline-draw-panel {
-  margin-bottom: 20px;
-}
-
-.redline-filter-grid {
+.matchmaking-filter-grid {
   margin-top: 14px;
 }
 
-.redline-actions,
-.redline-card-actions {
+.matchmaking-actions,
+.heart-card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 16px;
 }
 
-.redline-result-list {
+.heart-card-list {
   display: grid;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
 }
 
-.redline-card {
+.heart-card-back {
+  min-height: 260px;
+  border-style: dashed;
+  cursor: pointer;
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.heart-card-back:hover,
+.heart-card-back:focus-visible {
+  transform: translateY(-6px) rotate(-1deg);
+  border-color: var(--accent);
+  box-shadow: 0 24px 54px rgba(255, 93, 143, 0.22);
+}
+
+.heart-card-back span {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.heart-card-back strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.revealed-card {
+  grid-column: 1 / -1;
   display: grid;
   gap: 12px;
-  position: relative;
+  animation: love-fade-in 360ms ease both;
 }
 
-.redline-card::before {
-  content: '🧧';
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  font-size: 2rem;
-  filter: drop-shadow(0 8px 12px rgba(212, 15, 63, 0.22));
-}
-
-.redline-card h3 {
-  margin: 0;
-  padding-right: 44px;
-}
-
-.redline-card textarea {
-  min-height: 110px;
-}
-
-.redline-meta {
+.heart-card-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.redline-pill {
+.heart-card-pill {
   border-radius: 999px;
   padding: 6px 10px;
   background: rgba(255, 93, 143, 0.12);
@@ -932,9 +956,21 @@ body[data-theme='forbidden-love'] .redline-card {
   font-weight: 800;
 }
 
-@media (max-width: 760px) {
-  .redline-score-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
+.heart-card-thumb {
+  width: min(100%, 360px);
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 16px 32px rgba(58, 19, 42, 0.18);
+}
+
+.heart-card textarea {
+  min-height: 120px;
+}
+
+#deepfaceButton.active,
+#withMeButton.active {
+  color: white;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  box-shadow: 0 14px 30px rgba(255, 93, 143, 0.28);
 }
