@@ -13,6 +13,7 @@ const bodyProportion = document.querySelector('#bodyProportion');
 const face = document.querySelector('#face');
 const outfit = document.querySelector('#outfit');
 const outfitColor = document.querySelector('#outfitColor');
+const hairFurColor = document.querySelector('#hairFurColor');
 const outfitMaterial = document.querySelector('#outfitMaterial');
 const bodyFeature = document.querySelector('#bodyFeature');
 const outfitIntegrity = document.querySelector('#outfitIntegrity');
@@ -23,6 +24,7 @@ const accessory = document.querySelector('#accessory');
 const pet = document.querySelector('#pet');
 const actionMode = document.querySelector('#actionMode');
 const actionDetail = document.querySelector('#actionDetail');
+const gazeDirection = document.querySelector('#gazeDirection');
 const sensualOutfit = document.querySelector('#sensualOutfit');
 const sensualScene = document.querySelector('#sensualScene');
 const sensualAccessory = document.querySelector('#sensualAccessory');
@@ -41,6 +43,7 @@ const autoVideoChoice = document.querySelector('#autoVideoChoice');
 const autoVideoConfirmation = document.querySelector('#autoVideoConfirmation');
 const autoVideoPrompt = document.querySelector('#autoVideoPrompt');
 const copyAutoVideoButton = document.querySelector('#copyAutoVideoButton');
+const aiSuggestionToggle = document.querySelector('#aiSuggestionToggle');
 const rewriteButton = document.querySelector('#rewriteButton');
 const wizardPrevButton = document.querySelector('#wizardPrevButton');
 const wizardNextButton = document.querySelector('#wizardNextButton');
@@ -196,23 +199,16 @@ const SIMPLE_DAILY_SCENE_OPTIONS = [
 ];
 
 const WIZARD_PAGES = [
-  { step: 'visual', title: '基本畫面 1：光與鏡位', complexity: 'complex', controls: ['lighting', 'camera'] },
-  { step: 'visual', title: '基本畫面 2：構圖與畫風', complexity: 'complex', controls: ['composition', 'artStyle'] },
-  { step: 'character', title: '角色 1：人物基本', complexity: 'simple', controls: ['gender', 'race', 'emotion'] },
-  { step: 'character', title: '角色 2：時間年齡職業', complexity: 'simple', controls: ['timePoint', 'ageBracket', 'occupation'] },
-  { step: 'character', title: '角色 3：身形臉蛋人數', complexity: 'simple', controls: ['bodyProportion', 'face', 'count'] },
-  { step: 'character', title: '角色 4：服裝外觀', complexity: 'simple', controls: ['outfit', 'outfitColor', 'outfitMaterial'] },
-  { step: 'character', title: '角色 5：細節補充', complexity: 'simple', controls: ['bodyFeature', 'outfitIntegrity'] },
-  { step: 'character', title: '角色 6：多人細節', complexity: 'simple', controls: ['characterControls'] },
-  { step: 'scene', title: '日常場景', complexity: 'simple', controls: ['scene', 'pet'] },
-  { step: 'scene', title: '場景 1：地點道具寵物', complexity: 'complex', controls: ['scene', 'accessory', 'pet'] },
-  { step: 'scene', title: '場景 2：動作姿態', complexity: 'complex', controls: ['actionMode', 'actionDetail'] },
-  { step: 'dialogue', title: '對話：客製化對話感', complexity: 'complex', controls: ['dialogueMode', 'dialogueToCamera', 'dialogueBetweenCharacters'] },
-  { step: 'sponsor', title: '業配 1：內容置入', complexity: 'complex', controls: ['sponsorImageInput', 'sponsorText'] },
-  { step: 'sponsor', title: '業配 2：受眾目標', complexity: 'complex', controls: ['sponsorAudienceAge', 'sponsorAudienceIdentity', 'sponsorGoal'] },
-  { step: 'sponsor', title: '業配 3：露出規劃', complexity: 'complex', controls: ['sponsorItemType', 'sponsorExposureTiming', 'sponsorExposureForm'] },
-  { step: 'sensual', title: '色友 1：氛圍服裝地點', complexity: 'complex', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
-  { step: 'sensual', title: '色友 2：道具與動作', complexity: 'complex', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
+  { step: 'character', title: '1 人物：種族年齡性別', complexity: 'simple', controls: ['race', 'ageBracket', 'gender'] },
+  { step: 'character', title: '2 特徵：特徵毛色人數', complexity: 'simple', controls: ['bodyFeature', 'hairFurColor', 'count'] },
+  { step: 'outfit', title: '3 服裝：款式配色配件', complexity: 'simple', aiSuggested: true, controls: ['outfit', 'outfitColor', 'outfitMaterial', 'accessory'] },
+  { step: 'motion', title: '4 動作：配置與眼神', complexity: 'complex', aiSuggested: true, controls: ['actionMode', 'actionDetail', 'gazeDirection'] },
+  { step: 'scene', title: '5 場景：地點與光感', complexity: 'simple', aiSuggested: true, controls: ['scene', 'lighting'] },
+  { step: 'visual', title: '6 構圖：構圖與視角', complexity: 'complex', aiSuggested: true, controls: ['composition', 'camera', 'artStyle'] },
+  { step: 'character', title: '7 多人細節', complexity: 'simple', controls: ['characterControls'] },
+  { step: 'commercial', title: '8 商用：寵物置入對話 DeepFace', complexity: 'complex', controls: ['pet', 'dialogueMode', 'dialogueToCamera', 'dialogueBetweenCharacters', 'sponsorImageInput', 'sponsorText', 'sponsorAudienceAge', 'sponsorAudienceIdentity', 'sponsorGoal', 'sponsorItemType', 'sponsorExposureTiming', 'sponsorExposureForm'] },
+  { step: 'sensual', title: '9 色友：氛圍服裝地點', complexity: 'complex', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
+  { step: 'sensual', title: '10 色友：道具與動作', complexity: 'complex', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
 ];
 
 const WIZARD_CONTROL_IDS = Array.from(new Set(WIZARD_PAGES.flatMap((page) => page.controls)));
@@ -225,7 +221,8 @@ function setStatus(element, message, state = 'idle') {
 function getAvailableWizardPages() {
   return WIZARD_PAGES.map((page) => {
     const controls = page.controls.filter((id) => {
-      if (activeInputComplexity === 'simple' && page.complexity === 'complex') return false;
+      if (aiSuggestionToggle?.checked && page.aiSuggested) return false;
+      if (activeInputComplexity === 'simple' && ['visual', 'motion', 'commercial', 'sensual'].includes(page.step)) return false;
       if (page.step === 'sensual' && activeAudienceMode !== 'sensual') return false;
       if (id === 'outfitIntegrity' && activeAudienceMode !== 'sensual') return false;
       if (id === 'characterControls' && getVisibleCharacterCount() === 1) return false;
@@ -249,7 +246,8 @@ function renderWizardPage() {
   }
 
   for (const panel of textStepPanels) {
-    panel.hidden = panel.dataset.textStepPanel !== page.step;
+    const activePanelStep = ['outfit'].includes(page.step) ? 'character' : page.step === 'motion' ? 'scene' : page.step;
+    panel.hidden = panel.dataset.textStepPanel !== activePanelStep;
   }
 
   for (const id of WIZARD_CONTROL_IDS) {
@@ -269,7 +267,7 @@ function setWizardIndex(index) {
 }
 
 function setTextStep(stepName) {
-  if (activeInputComplexity === 'simple' && ['visual', 'dialogue', 'sponsor', 'sensual'].includes(stepName)) {
+  if (activeInputComplexity === 'simple' && ['visual', 'motion', 'commercial', 'sensual'].includes(stepName)) {
     stepName = 'character';
   }
   if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
@@ -314,6 +312,20 @@ function populateSceneOptions() {
 
 
 
+function applyAiSuggestionState() {
+  const aiSuggestedControlIds = ['outfit', 'outfitColor', 'outfitMaterial', 'accessory', 'actionMode', 'actionDetail', 'gazeDirection', 'scene', 'lighting', 'composition', 'camera', 'artStyle'];
+  if (aiSuggestionToggle?.checked) {
+    for (const id of aiSuggestedControlIds) {
+      const element = document.querySelector(`#${id}`);
+      if (element && Array.from(element.options || []).some((option) => option.value === 'AI判斷')) {
+        element.value = 'AI判斷';
+      }
+    }
+  }
+  renderWizardPage();
+}
+
+
 
 function setSubstep(buttons, activeName, dataKey) {
   for (const button of buttons) {
@@ -332,12 +344,12 @@ function setFieldVisibilityByControlId(id, isVisible) {
 }
 
 function setCharacterSubstep(stepName) {
-  const targetMap = { basics: 2, outfit: 5, multi: 7 };
+  const targetMap = { basics: 0, outfit: 2, multi: 6 };
   setSubstep(characterSubstepButtons, stepName, 'characterSubstep');
   setTextStep('character');
   const pages = getAvailableWizardPages();
-  const titleNeedle = targetMap[stepName] === 5 ? '服裝外觀' : targetMap[stepName] === 7 ? '多人細節' : '人物基本';
-  const index = pages.findIndex((page) => page.step === 'character' && page.title.includes(titleNeedle));
+  const titleNeedle = stepName === 'outfit' ? '服裝' : stepName === 'multi' ? '多人' : '人物';
+  const index = pages.findIndex((page) => page.title.includes(titleNeedle));
   if (index >= 0) setWizardIndex(index);
 }
 
@@ -345,8 +357,8 @@ function setCharacterSubstep(stepName) {
 function setSceneSubstep(stepName) {
   setSubstep(sceneSubstepButtons, stepName, 'sceneSubstep');
   const pages = getAvailableWizardPages();
-  const titleNeedle = stepName === 'motion' ? '動作姿態' : '地點道具';
-  const index = pages.findIndex((page) => page.step === 'scene' && page.title.includes(titleNeedle));
+  const titleNeedle = stepName === 'motion' ? '動作' : '場景';
+  const index = pages.findIndex((page) => page.title.includes(titleNeedle));
   if (index >= 0) setWizardIndex(index);
 }
 
@@ -802,14 +814,17 @@ function setupCustomizationControls() {
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
+  populateSelect(hairFurColor, CUSTOMIZATION_OPTIONS.hairFurColors);
   populateSelect(outfitMaterial, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
   populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
   populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
-  populateSelect(pet, CUSTOMIZATION_OPTIONS.pets);
+  populateSelect(pet, CUSTOMIZATION_OPTIONS.pets, { includeAi: false });
+  pet.value = pet.value || '無';
   populateSelect(accessory, getDesignerOptions(CUSTOMIZATION_OPTIONS.accessories));
   populateSceneOptions();
   populateSelect(actionMode, ACTION_MODE_OPTIONS);
+  populateSelect(gazeDirection, CUSTOMIZATION_OPTIONS.gazeDirections);
   populateSelect(sensualOutfit, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(sensualScene, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.scenes));
   populateSelect(sensualAccessory, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.accessories));
@@ -1077,6 +1092,7 @@ function applyImageVideoChoice(score) {
 setupCustomizationControls();
 setInterfaceLanguage(localStorage.getItem('niaiLanguage') || 'zh');
 setInputComplexity('simple');
+applyAiSuggestionState();
 setWizardIndex(0);
 setMode('text');
 setOutputVisibility('text', false);
@@ -1128,6 +1144,7 @@ deepfaceButton.addEventListener('click', () => {
 });
 
 dialogueMode.addEventListener('change', updateDialogueVisibility);
+aiSuggestionToggle.addEventListener('change', applyAiSuggestionState);
 
 function getCurrentGmail() {
   return gmailInput.value.trim() || localStorage.getItem('niaiGmail') || '';
@@ -1289,6 +1306,7 @@ rewriteButton.addEventListener('click', () => {
     face: face.value,
     outfit: getSensualOverride(outfit.value, sensualOutfit.value),
     outfitColor: outfitColor.value,
+    hairFurColor: hairFurColor.value,
     outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
     outfitIntegrity: activeAudienceMode === 'sensual' ? outfitIntegrity.value : 'AI判斷',
@@ -1300,10 +1318,11 @@ rewriteButton.addEventListener('click', () => {
     scene: getSensualOverride(scene.value, sensualScene.value),
     actionMode: activeInputComplexity === 'complex' ? getSensualOverride(actionMode.value, sensualActionMode.value) : 'AI判斷',
     actionDetail: activeInputComplexity === 'complex' ? getSensualOverride(actionDetail.value, sensualActionDetail.value) : 'AI判斷',
+    gazeDirection: gazeDirection.value,
     dialogueMode: dialogueMode.value,
     dialogueToCamera: dialogueToCamera.value,
     dialogueBetweenCharacters: dialogueBetweenCharacters.value,
-    sponsorSettings: activeInputComplexity === 'complex' ? getSponsorSettings() : {}
+    sponsorSettings: activeInputComplexity === 'complex' && document.querySelector('[data-text-step-panel="commercial"]') ? getSponsorSettings() : {}
   });
 
   renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');

@@ -20,6 +20,8 @@ const {
   TIME_POINTS,
   CUSTOMIZATION_OPTIONS,
   PET_OPTIONS,
+  HAIR_FUR_COLOR_OPTIONS,
+  GAZE_DIRECTION_OPTIONS,
   checkElementBoundaries
 } = require('../src/translator');
 
@@ -106,9 +108,12 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(EMOTION_OPTIONS.length, 50);
   assert.equal(EXPRESSION_OPTIONS, EMOTION_OPTIONS);
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
-  assert.equal(PET_OPTIONS.length, 100);
-  assert.equal(CUSTOMIZATION_OPTIONS.pets.length, 100);
-  assert.match(PET_OPTIONS[0].zh, /家貓/);
+  assert.equal(PET_OPTIONS.length, 101);
+  assert.equal(CUSTOMIZATION_OPTIONS.pets.length, 101);
+  assert.match(PET_OPTIONS[0].zh, /無/);
+  assert.match(PET_OPTIONS[1].zh, /家貓/);
+  assert.equal(HAIR_FUR_COLOR_OPTIONS.length, 30);
+  assert.equal(GAZE_DIRECTION_OPTIONS.length, 20);
   assert.match(PET_OPTIONS.at(-1).zh, /星際小獸/);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 400);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-normal').length, 100);
@@ -184,12 +189,14 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     outfit: CUSTOMIZATION_OPTIONS.outfits[50].zh,
     outfitColor: CUSTOMIZATION_OPTIONS.outfitColors[2].zh,
     bodyFeature: CUSTOMIZATION_OPTIONS.bodyFeatures[0].zh,
+    hairFurColor: HAIR_FUR_COLOR_OPTIONS[2].zh,
     outfitIntegrity: CUSTOMIZATION_OPTIONS.outfitIntegrity[3].zh,
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
     actionMode: ACTION_MODE_OPTIONS[2].zh,
     actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[2].zh)[25].zh,
+    gazeDirection: GAZE_DIRECTION_OPTIONS[0].zh,
     cosplayPrompt: 'vampire queen with pearl accessories'
   });
 
@@ -197,18 +204,21 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /性別：男性成人/);
   assert.match(result.chineseConfirmation, /種族：精靈族/);
   assert.match(result.chineseConfirmation, /情緒：咬唇表情/);
-  assert.match(result.chineseConfirmation, /身上特徵：鎖骨小痣/);
+  assert.match(result.chineseConfirmation, /特徵：鎖骨小痣/);
+  assert.match(result.chineseConfirmation, /毛色／髮色：栗棕/);
   assert.match(result.chineseConfirmation, /服裝：休閒亞麻襯衫套裝/);
   assert.match(result.chineseConfirmation, /服裝配色：酒紅/);
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
   assert.match(result.chineseConfirmation, /場景：現代公寓客廳/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
+  assert.match(result.chineseConfirmation, /眼神位置：看鏡頭/);
   assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
-  assert.match(result.englishPrompt, /body feature: beauty mark near collarbone/);
+  assert.match(result.englishPrompt, /feature: beauty mark near collarbone/);
+  assert.match(result.englishPrompt, /hair\/fur color: chestnut brown hair or fur/);
   assert.match(result.englishPrompt, /outfit: casual linen shirt set/);
   assert.match(result.englishPrompt, /outfit color palette: wine red/);
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
@@ -413,7 +423,11 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
-  assert.match(indexSource, /data-text-step="sponsor"/);
+  assert.match(indexSource, /data-text-step="commercial"/);
+  assert.match(indexSource, /AI建議/);
+  assert.match(indexSource, /hairFurColor/);
+  assert.match(indexSource, /gazeDirection/);
+  assert.match(indexSource, /商用加選/);
   assert.match(indexSource, /data-text-step="sensual"/);
   assert.match(indexSource, /data-character-substep="basics"/);
   assert.match(indexSource, /data-character-substep="outfit"/);
@@ -436,7 +450,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-language-choice="hk"/);
   assert.match(indexSource, /data-language-choice="ja"/);
   assert.match(indexSource, /data-icon="🎞️"/);
-  assert.match(indexSource, /寵物（100 種）/);
+  assert.match(indexSource, /<label for="pet">寵物<\/label>/);
   assert.match(indexSource, /清純戀愛/);
   assert.match(indexSource, /神秘曖昧/);
   assert.match(indexSource, /陽光熱戀/);
@@ -450,7 +464,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /簡單愛/);
   assert.match(indexSource, /複雜愛/);
   assert.match(indexSource, /DeepFace/);
-  assert.match(indexSource, /data-text-step="dialogue"/);
+  assert.match(indexSource, /data-text-step="commercial"/);
   assert.match(indexSource, /dialogueMode/);
   assert.match(indexSource, /savePromptButton/);
   assert.match(indexSource, /saveTitleInput/);
@@ -463,7 +477,7 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
   assert.match(indexSource, /data-text-step-panel="scene"[^>]*hidden/);
   assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
-  assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
+  assert.match(indexSource, /可自選是否讓 AI 判定/);
   assert.match(appSource, /function setTextStep/);
   assert.match(appSource, /WIZARD_PAGES/);
   assert.match(appSource, /function renderWizardPage/);
@@ -478,7 +492,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(appSource, /SIMPLE_DAILY_SCENE_OPTIONS/);
   assert.match(appSource, /landingPage/);
   assert.match(appSource, /appShell/);
-  assert.match(appSource, /populateSelect\(pet, CUSTOMIZATION_OPTIONS\.pets\)/);
+  assert.match(appSource, /populateSelect\(pet, CUSTOMIZATION_OPTIONS\.pets, \{ includeAi: false \}\)/);
+  assert.match(appSource, /applyAiSuggestionState/);
   assert.match(appSource, /deepfaceEnabled/);
   assert.match(appSource, /UI_TRANSLATIONS/);
   assert.match(appSource, /setInterfaceLanguage/);

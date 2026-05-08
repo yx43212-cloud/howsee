@@ -82,23 +82,25 @@
         <div class="love-mode-panel" aria-label="輸入模式">
           <button class="love-mode-button active icon-button" type="button" data-input-complexity="simple" data-icon="💗" data-i18n="simpleLove">簡單愛</button>
           <button class="love-mode-button icon-button" type="button" data-input-complexity="complex" data-icon="💞" data-i18n="complexLove">複雜愛</button>
-          <p class="field-help">簡單愛只處理人物配置與日常場景；複雜愛才加入光感、動作、業配、成人向等進階元素。</p>
+          <label class="confirm-row ai-suggestion-row"><input id="aiSuggestionToggle" type="checkbox" checked /> AI建議</label>
+          <p class="field-help">可自選是否讓 AI 判定適合的服裝、地點、光感、動作、構圖與視角；新手建議先開啟。</p>
         </div>
 
         <nav class="text-step-tabs" aria-label="文生圖設定分頁">
-          <button class="text-step-button active icon-button" type="button" data-icon="🧭" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="true">1 基本畫面</button>
-          <button class="text-step-button icon-button" type="button" data-icon="🧑" data-text-step="character" aria-controls="characterStepPanel" aria-selected="false">2 角色設定</button>
-          <button class="text-step-button icon-button" type="button" data-icon="🏞️" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">3 場景動作</button>
-          <button class="text-step-button icon-button" type="button" data-icon="💬" data-text-step="dialogue" aria-controls="dialogueStepPanel" aria-selected="false">4 對話</button>
-          <button class="text-step-button complex-only icon-button" type="button" data-icon="📣" data-text-step="sponsor" aria-controls="sponsorStepPanel" aria-selected="false">5 業配</button>
-          <button id="sensualStepButton" class="text-step-button sensual-only icon-button" type="button" data-icon="🌹" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>6 色友專區</button>
+          <button class="text-step-button active icon-button" type="button" data-icon="🧑" data-text-step="character" aria-controls="characterStepPanel" aria-selected="true">1 人物指標</button>
+          <button class="text-step-button icon-button" type="button" data-icon="👗" data-text-step="outfit" aria-controls="characterStepPanel" aria-selected="false">2 服裝配件</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🕺" data-text-step="motion" aria-controls="sceneStepPanel" aria-selected="false">3 動作眼神</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🏞️" data-text-step="scene" aria-controls="sceneStepPanel" aria-selected="false">4 場景光感</button>
+          <button class="text-step-button icon-button" type="button" data-icon="🎥" data-text-step="visual" aria-controls="visualStepPanel" aria-selected="false">5 構圖視角</button>
+          <button class="text-step-button complex-only icon-button" type="button" data-icon="💼" data-text-step="commercial" aria-controls="sponsorStepPanel" aria-selected="false">6 商用</button>
+          <button id="sensualStepButton" class="text-step-button sensual-only icon-button" type="button" data-icon="🌹" data-text-step="sensual" aria-controls="sensualStepPanel" aria-selected="false" hidden>7 色友</button>
         </nav>
 
         <section id="visualStepPanel" class="text-step-panel" data-text-step-panel="visual" aria-labelledby="visual-step-title">
           <div class="section-heading compact">
             <p class="section-kicker">Step 02</p>
-            <h2 id="visual-step-title">基本畫面</h2>
-            <p>先決定整張圖的強度、光、鏡位、構圖和畫風；不確定的選項保持 AI 判斷即可。</p>
+            <h2 id="visual-step-title">構圖與視角</h2>
+            <p>最後確認構圖、視角與畫風；若開啟 AI建議，這些欄位可交給 AI 判定。</p>
           </div>
           <div class="control-grid">
             <div class="field">
@@ -126,8 +128,8 @@
         <section id="characterStepPanel" class="text-step-panel" data-text-step-panel="character" aria-labelledby="character-step-title" hidden>
           <div class="section-heading compact">
             <p class="section-kicker">Step 03</p>
-            <h2 id="character-step-title">角色設定</h2>
-            <p>角色細節分頁只處理人物與穿搭。Cosplay 已移到最上方作為唯一自由輸入欄位；多人時才需要看下方角色卡；角色卡只輸出你實際選的項目，避免和最上方 Cosplay 重複。</p>
+            <h2 id="character-step-title">人物指標</h2>
+            <p>先輸入人物種族、年齡、性別，再補特徵與毛色；後續服裝、地點、光感、動作、構圖與視角可交給 AI建議。</p>
           </div>
           <nav class="setup-subtabs" aria-label="角色設定小步驟">
             <button class="setup-subtab active" type="button" data-character-substep="basics" aria-selected="true">人物基本</button>
@@ -181,8 +183,16 @@
               <select id="outfitMaterial"></select>
             </div>
             <div class="field">
-              <label for="bodyFeature">身上特徵（30 種）</label>
+              <label for="accessory">配件與道具（150 種）</label>
+              <select id="accessory"></select>
+            </div>
+            <div class="field">
+              <label for="bodyFeature">特徵</label>
               <select id="bodyFeature"></select>
+            </div>
+            <div class="field">
+              <label for="hairFurColor">毛色／髮色</label>
+              <select id="hairFurColor"></select>
             </div>
             <div class="field adult-only-control">
               <label for="outfitIntegrity">服裝完整度</label>
@@ -245,8 +255,8 @@
         <section id="sceneStepPanel" class="text-step-panel" data-text-step-panel="scene" aria-labelledby="scene-step-title" hidden>
           <div class="section-heading compact">
             <p class="section-kicker">Step 04</p>
-            <h2 id="scene-step-title">場景與動作</h2>
-            <p>最後再選場景、道具和動作／姿態。動作跟姿態是二擇一：先選類型，再選該類 50 個細項。</p>
+            <h2 id="scene-step-title">動作、眼神與場景</h2>
+            <p>依序整理動作配置、眼神位置、場景與光感；新手可開啟 AI建議讓系統判定。</p>
           </div>
           <nav class="setup-subtabs" aria-label="場景動作小步驟">
             <button class="setup-subtab active" type="button" data-scene-substep="place" aria-selected="true">地點道具</button>
@@ -257,14 +267,7 @@
               <label for="scene">場景配置（100 日常／100 祕境）</label>
               <select id="scene"></select>
             </div>
-            <div class="field">
-              <label for="accessory">配件與道具（150 種）</label>
-              <select id="accessory"></select>
-            </div>
-            <div class="field">
-              <label for="pet">寵物（100 種）</label>
-              <select id="pet"></select>
-            </div>
+
             <div class="field">
               <label for="actionMode">動作／姿態類型（4 類）</label>
               <select id="actionMode"></select>
@@ -275,16 +278,27 @@
               <select id="actionDetail"></select>
               <p class="field-help">動作和姿態共用這一欄：選「不同姿態」就是姿態，選其他三類就是動作，不會再同時輸出兩組互相打架的 action + pose。</p>
             </div>
+            <div class="field">
+              <label for="gazeDirection">眼神位置</label>
+              <select id="gazeDirection"></select>
+            </div>
           </div>
         </section>
 
-        <section id="dialogueStepPanel" class="text-step-panel" data-text-step-panel="dialogue" aria-labelledby="dialogue-step-title" hidden>
+        
+
+        <section id="sponsorStepPanel" class="text-step-panel" data-text-step-panel="commercial" aria-labelledby="sponsor-step-title" hidden>
           <div class="section-heading compact">
-            <p class="section-kicker">Dialogue</p>
-            <h2 id="dialogue-step-title">對話</h2>
-            <p>設定客製化對話感；多人時會在提示詞中補上角色編號與畫面位置。</p>
+            <p class="section-kicker">Commercial</p>
+            <h2 id="sponsor-step-title">商用加選</h2>
+            <p>寵物、置入、對話、DeepFace 等非必要或商用語言集中在這裡；需要時再打開設定。</p>
           </div>
           <div class="custom-grid">
+            <div class="field">
+              <label for="pet">寵物</label>
+              <select id="pet"></select>
+              <p class="field-help">非必要項目，可選「無」。</p>
+            </div>
             <div class="field">
               <label for="dialogueMode">對話方式</label>
               <select id="dialogueMode">
@@ -303,16 +317,10 @@
               <textarea id="dialogueBetweenCharacters" rows="3" placeholder="例如：角色1低聲邀請，角色2在右側回應並微笑"></textarea>
               <p class="field-help">兩人以上才啟用；提示詞會標明角色1、角色2與位置。</p>
             </div>
-          </div>
-        </section>
-
-        <section id="sponsorStepPanel" class="text-step-panel" data-text-step-panel="sponsor" aria-labelledby="sponsor-step-title" hidden>
-          <div class="section-heading compact">
-            <p class="section-kicker">Promotion</p>
-            <h2 id="sponsor-step-title">業配</h2>
-            <p>先放入圖片或文字，再選受眾、成果與露出形式；文生圖會保留內容設定，露出時刻只在圖轉影腳本中使用。</p>
-          </div>
-          <div class="custom-grid">
+            <div class="field">
+              <label>DeepFace</label>
+              <button id="deepfaceButton" type="button" class="secondary-button icon-button" data-icon="🪞" aria-pressed="false">DeepFace</button>
+            </div>
             <div class="field upload-field">
               <label for="sponsorImageInput">業配圖片</label>
               <input id="sponsorImageInput" type="file" accept="image/*" />
@@ -396,7 +404,6 @@
         </div>
 
         <div class="prompt-actions">
-          <button id="deepfaceButton" type="button" class="secondary-button icon-button" data-icon="🪞" aria-pressed="false">DeepFace</button>
           <button id="rewriteButton" type="button" class="icon-button" data-icon="⚡" data-i18n="rewrite">轉譯提示詞</button>
         </div>
       </section>

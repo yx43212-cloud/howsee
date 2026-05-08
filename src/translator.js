@@ -727,6 +727,22 @@ const outfitColors = [
   ['暗紅金邊', 'dark red with gold trim']
 ].map(([zh, en]) => option(zh, en));
 
+const HAIR_FUR_COLOR_OPTIONS = [
+  ['自然黑', 'natural black hair or fur'], ['深棕', 'dark brown hair or fur'], ['栗棕', 'chestnut brown hair or fur'], ['淺棕', 'light brown hair or fur'], ['金色', 'blonde or golden hair or fur'],
+  ['白金', 'platinum hair or fur'], ['銀灰', 'silver-gray hair or fur'], ['霧灰', 'misty gray hair or fur'], ['純白', 'pure white hair or fur'], ['奶油白', 'cream-white hair or fur'],
+  ['酒紅', 'wine-red hair or fur'], ['玫瑰粉', 'rose-pink hair or fur'], ['櫻花粉', 'sakura-pink hair or fur'], ['薰衣草紫', 'lavender-purple hair or fur'], ['深紫', 'deep purple hair or fur'],
+  ['海藍', 'ocean-blue hair or fur'], ['霧藍', 'mist-blue hair or fur'], ['湖水綠', 'aqua-green hair or fur'], ['森林綠', 'forest-green hair or fur'], ['孔雀藍綠', 'peacock teal hair or fur'],
+  ['橘紅', 'orange-red hair or fur'], ['蜜桃橘', 'peach-orange hair or fur'], ['漸層雙色', 'two-tone gradient hair or fur'], ['挑染髮尾', 'dyed-tip hair or fur accents'], ['內層染', 'underlayer hair or fur color'],
+  ['虎斑紋', 'tabby striped fur pattern'], ['斑點紋', 'spotted fur pattern'], ['三花配色', 'calico hair or fur palette'], ['銀白挑染', 'silver-white highlights'], ['AI判斷毛色', 'AI-suggested hair or fur color']
+].map(([zh, en]) => option(zh, en));
+
+const GAZE_DIRECTION_OPTIONS = [
+  ['看鏡頭', 'looking directly at camera'], ['看向左側', 'looking to the left'], ['看向右側', 'looking to the right'], ['低頭垂眼', 'lowered gaze'], ['抬眼凝視', 'raised-eye gaze'],
+  ['看向手部', 'looking at the hands'], ['看向道具', 'looking at the prop'], ['看向對方', 'looking at the other character'], ['回眸看鏡頭', 'looking back over shoulder at camera'], ['閉眼感受', 'eyes closed in a calm expression'],
+  ['看向遠方', 'looking into the distance'], ['看向寵物', 'looking toward the pet companion'], ['看向業配物', 'looking toward the sponsored item'], ['避開鏡頭', 'gaze away from camera'], ['三分側臉視線', 'three-quarter profile gaze'],
+  ['俯視鏡頭', 'looking down toward the camera'], ['仰望視線', 'looking upward'], ['雙人對視', 'mutual gaze between two characters'], ['多人視線交錯', 'interwoven gaze among multiple characters'], ['AI判斷眼神', 'AI-suggested gaze direction']
+].map(([zh, en]) => option(zh, en));
+
 const OUTFIT_MATERIAL_OPTIONS = [
   option('絲綢', 'silk'),
   option('緞面', 'satin'),
@@ -928,6 +944,7 @@ const ACTION_DETAIL_OPTIONS = Object.fromEntries(Object.keys(actionDetailSeeds).
 const ALL_ACTION_DETAIL_OPTIONS = Object.values(ACTION_DETAIL_OPTIONS).flat();
 
 const PET_OPTIONS = [
+  ['無', 'no pet or animal companion'],
   ['家貓', 'house cat'],
   ['短毛貓', 'short-haired cat'],
   ['長毛貓', 'long-haired cat'],
@@ -1038,6 +1055,8 @@ const CUSTOMIZATION_OPTIONS = {
     ...rareOutfitPairs.map(([zh, en]) => option(zh, en, 'rare'))
   ],
   outfitColors,
+  hairFurColors: HAIR_FUR_COLOR_OPTIONS,
+  gazeDirections: GAZE_DIRECTION_OPTIONS,
   outfitMaterials: OUTFIT_MATERIAL_OPTIONS,
   outfitIntegrity: OUTFIT_INTEGRITY_OPTIONS,
   bodyFeatures,
@@ -1584,6 +1603,7 @@ function rewritePrompt(input, options = {}) {
   const face = getCustomizationOption('faces', options.face);
   const outfit = getCustomizationOption('outfits', options.outfit);
   const outfitColor = getCustomizationOption('outfitColors', options.outfitColor);
+  const hairFurColor = getPresetOption(HAIR_FUR_COLOR_OPTIONS, options.hairFurColor);
   const outfitMaterial = getCustomizationOption('outfitMaterials', options.outfitMaterial);
   const bodyFeature = getCustomizationOption('bodyFeatures', options.bodyFeature);
   const outfitIntegrity = getCustomizationOption('outfitIntegrity', options.outfitIntegrity);
@@ -1593,6 +1613,7 @@ function rewritePrompt(input, options = {}) {
   const pet = getPresetOption(PET_OPTIONS, options.pet);
   const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
   const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
+  const gazeDirection = getPresetOption(GAZE_DIRECTION_OPTIONS, options.gazeDirection);
   const sponsor = normalizeSponsorSettings(options.sponsorSettings);
   const isSimpleLove = options.inputMode === 'simple';
   const dialogue = buildDialoguePlan({
@@ -1631,8 +1652,9 @@ function rewritePrompt(input, options = {}) {
       `職業：${occupation.zh}`,
       `身材比例：${bodyProportion.zh}`,
       `臉蛋：${face.zh}`,
-      `身上特徵：${bodyFeature.zh}`,
-      `服裝：${outfit.zh}`,
+      `特徵：${bodyFeature.zh}`,
+      `毛色／髮色：${hairFurColor.zh}`,
+      `服裝：${outfit.zh}`, 
       `服裝配色：${outfitColor.zh}`,
       `服裝材質：${outfitMaterial.zh}`,
       `服裝完整度：${outfitIntegrity.zh}`
@@ -1647,8 +1669,9 @@ function rewritePrompt(input, options = {}) {
       `occupation: ${occupation.en}`,
       `body proportion: ${bodyProportion.en}`,
       `face: ${face.en}`,
-      `body feature: ${bodyFeature.en}`,
-      `outfit: ${outfit.en}`,
+      `feature: ${bodyFeature.en}`,
+      `hair/fur color: ${hairFurColor.en}`,
+      `outfit: ${outfit.en}`, 
       `outfit color palette: ${outfitColor.en}`,
       `outfit material: ${outfitMaterial.en}`,
       `outfit integrity: ${outfitIntegrity.en}`
@@ -1673,7 +1696,8 @@ function rewritePrompt(input, options = {}) {
       `畫風：${artStyle.zh}`,
       `動作／姿態類型：${actionMode.zh}`,
       `動作／姿態細項：${actionDetail.zh}`,
-      `氛圍：${INTENSITY_WORDS[intensity]}`,
+      `眼神位置：${gazeDirection.zh}`,
+      `氛圍：${INTENSITY_WORDS[intensity]}`, 
       `情慾強度運用：${INTENSITY_PROFILES[intensity].zh}`
     );
   }
@@ -1724,7 +1748,8 @@ function rewritePrompt(input, options = {}) {
       `art style: ${artStyle.en}`,
       `action/posture mode: ${actionMode.en}`,
       `action/posture detail: ${actionDetail.en}`,
-      `tone: ${DEFAULT_STYLE.tone}`,
+      `gaze direction: ${gazeDirection.en}`,
+      `tone: ${DEFAULT_STYLE.tone}`, 
       `intensity: ${INTENSITY_WORDS[intensity]}`,
       `intensity application: ${INTENSITY_PROFILES[intensity].en}`
     );
@@ -2068,6 +2093,8 @@ if (typeof module !== 'undefined') {
     ALL_ACTION_DETAIL_OPTIONS,
     ACCESSORY_OPTIONS,
     PET_OPTIONS,
+    HAIR_FUR_COLOR_OPTIONS,
+    GAZE_DIRECTION_OPTIONS,
     OUTFIT_MATERIAL_OPTIONS,
     CUSTOMIZATION_OPTIONS,
     IMAGE_TO_VIDEO_TIER_PROMPTS,
