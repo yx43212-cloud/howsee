@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
+  SEED_ENTRIES,
   createCommunityEntry,
   filterEntries,
   drawHeartCards,
@@ -9,6 +10,13 @@ const {
   localizePromptText,
   getEntryLocalizedText
 } = require('../src/matchmaking.js');
+
+test('AI-defined matchmaking seed bank provides 100 anonymous heart-card answers', () => {
+  assert.equal(SEED_ENTRIES.length, 100);
+  assert.ok(SEED_ENTRIES.every((entry) => entry.anonymous));
+  assert.ok(SEED_ENTRIES.every((entry) => /AI-defined anonymous|AI自定義匿名/.test(`${entry.englishPrompt} ${entry.localized.zh}`)));
+  assert.ok(filterEntries(SEED_ENTRIES, { nature: 'designer', gender: 'female', age: '18-24' }).length >= 3);
+});
 
 test('heart card entries are anonymous and can retain a text-to-image thumbnail', () => {
   const entry = createCommunityEntry({

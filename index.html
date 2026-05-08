@@ -52,6 +52,7 @@
         <button class="app-page-button active icon-button" type="button" data-app-page="generator" data-icon="✨" data-i18n="generator">提示詞生成</button>
         <button class="app-page-button icon-button" type="button" data-app-page="library" data-icon="💓" data-i18n="library">悸動瞬間</button>
         <button class="app-page-button icon-button" type="button" data-app-page="matchmaking" data-icon="💘" data-i18n="matchmaking">配對所</button>
+        <button id="backToLoginButton" class="app-page-button icon-button" type="button" data-icon="🚪">回登入頁</button>
       </nav>
 
       <section id="generatorPage" data-app-page-panel="generator">
@@ -68,14 +69,14 @@
         </div>
 
         <label for="cosplayPrompt">Cosplay（主要輸入：角色／人設／作品風格）</label>
-        <textarea id="cosplayPrompt" rows="4" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
-        <p class="field-help">這是唯一的自由輸入欄位；不要填未成年、偷拍、強迫或血腥內容。不想細調時，填完這欄就能直接轉譯。</p>
+        <textarea id="cosplayPrompt" rows="4" required aria-required="true" placeholder="例如：吸血鬼女王、珍珠配件、賽博偶像、優雅護理師、原創角色"></textarea>
+        <p class="field-help">第一分頁 Cosplay 是唯一必填欄位；其他配置分頁全部可跳過，沒填就維持 AI 判定。不要填未成年、偷拍、強迫或血腥內容。</p>
 
         <div class="quick-guide" aria-label="操作提示">
           <p class="section-kicker">Easy Flow</p>
           <ol>
             <li><strong>先填 Cosplay：</strong>中文角色、人設或作品風格都可以。</li>
-            <li><strong>用分頁慢慢補設定：</strong>基本畫面、角色設定、場景動作分開處理，每個下拉都可維持 AI 判斷。</li>
+            <li><strong>用分頁慢慢補設定：</strong>第一分頁以外全部非必填；直接下一步或跳過時，每個下拉都可維持 AI 判斷。</li>
             <li><strong>產生後直接複製：</strong>右側會出英文文生圖提示詞，並自動附 5 種可選圖轉影提示詞。</li>
           </ol>
         </div>
@@ -407,7 +408,7 @@
         <div class="wizard-actions" aria-label="設定步驟導覽">
           <button id="wizardPrevButton" type="button" class="secondary-button icon-button" data-icon="⬅️">上一步</button>
           <p id="wizardProgress" class="status">步驟 1</p>
-          <button id="wizardNextButton" type="button" class="secondary-button icon-button" data-icon="➡️">下一步</button>
+          <button id="wizardNextButton" type="button" class="secondary-button icon-button" data-icon="➡️">跳過／下一步</button>
         </div>
 
         <div class="prompt-actions">

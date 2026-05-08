@@ -128,7 +128,11 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(OCCUPATION_OPTIONS.length, 50);
   assert.equal(BODY_PROPORTION_OPTIONS.length, 50);
   assert.equal(AGE_BRACKET_OPTIONS.at(-1).zh, '56-60 歲');
-  assert.equal(CUSTOMIZATION_OPTIONS.bodyFeatures.length, 30);
+  assert.equal(CUSTOMIZATION_OPTIONS.bodyFeatures.length, 80);
+  assert.equal(CUSTOMIZATION_OPTIONS.bodyFeatures.filter(({ rarity }) => rarity === 'sensual-special').length, 50);
+  assert.ok(CUSTOMIZATION_OPTIONS.bodyFeatures.some(({ zh }) => zh === '懷孕成人伴侶'));
+  assert.ok(CUSTOMIZATION_OPTIONS.bodyFeatures.some(({ zh }) => zh === '跛腳成人角色'));
+  assert.ok(CUSTOMIZATION_OPTIONS.bodyFeatures.some(({ zh }) => zh === '合意被虐狂人格'));
   assert.equal(CUSTOMIZATION_OPTIONS.outfitIntegrity.length, 10);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.length, 200);
   assert.equal(CUSTOMIZATION_OPTIONS.scenes.filter(({ rarity }) => rarity === 'normal').length, 100);
@@ -439,6 +443,9 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-scene-substep="motion"/);
   assert.match(indexSource, /wizardPrevButton/);
   assert.match(indexSource, /wizardNextButton/);
+  assert.match(indexSource, /backToLoginButton/);
+  assert.match(indexSource, /跳過／下一步/);
+  assert.match(indexSource, /第一分頁 Cosplay 是唯一必填欄位/);
   assert.match(indexSource, /wizardProgress/);
   assert.match(indexSource, /sponsorAudienceAge/);
   assert.match(indexSource, /sponsorAudienceIdentity/);
@@ -496,7 +503,10 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(appSource, /SIMPLE_DAILY_SCENE_OPTIONS/);
   assert.match(appSource, /landingPage/);
   assert.match(appSource, /appShell/);
+  assert.match(appSource, /function showLoginPage/);
+  assert.match(appSource, /請先填寫第一分頁 Cosplay/);
   assert.match(appSource, /populateSelect\(pet, CUSTOMIZATION_OPTIONS\.pets, \{ includeAi: false \}\)/);
+  assert.match(appSource, /function getBodyFeatureOptions/);
   assert.match(appSource, /applyAiSuggestionState/);
   assert.match(appSource, /deepfaceEnabled/);
   assert.match(appSource, /withMeEnabled/);
@@ -515,6 +525,9 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(styleSource, /body\[data-theme='forbidden-love'\]/);
   assert.match(styleSource, /\.language-panel/);
   assert.match(styleSource, /\.icon-button::before/);
+  assert.match(styleSource, /--button-text/);
+  assert.match(styleSource, /--secondary-button-text/);
+  assert.match(styleSource, /select option/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {

@@ -4,64 +4,60 @@
   const SINGLE_DRAW_COST = 3;
   const DOUBLE_DRAW_COST = 5;
 
-  const SEED_ENTRIES = [
-    {
-      id: 'seed-designer-f-25',
-      gender: 'female',
-      age: '25-29',
-      nature: 'designer',
-      localized: {
-        zh: '匿名設友分享：25-29 歲女性，月光玻璃屋、銀白長裙、安靜凝視、柔焦藍色逆光。',
-        hk: '匿名設友分享：25-29 歲女性，月光玻璃屋、銀白長裙、靜靜凝望、柔焦藍色逆光。',
-        en: 'Anonymous designer share: female age 25-29, moonlit glass house, silver-white gown, quiet gaze, soft-focus blue backlight.',
-        ja: '匿名の設友シェア：25〜29歳女性、月明かりのガラスハウス、銀白のドレス、静かな視線、柔らかな青い逆光。'
-      },
-      englishPrompt: 'female adult age 25-29, moonlit glass house, silver-white gown, quiet gaze, soft-focus blue backlight, elegant cinematic composition, tasteful general-audience styling',
-      thumbnailDataUrl: ''
-    },
-    {
-      id: 'seed-designer-m-30',
-      gender: 'male',
-      age: '30-34',
-      nature: 'designer',
-      localized: {
-        zh: '匿名設友分享：30-34 歲男性，雨夜書店、深色風衣、暖黃檯燈、電影感側臉。',
-        hk: '匿名設友分享：30-34 歲男性，雨夜書店、深色風褸、暖黃枱燈、電影感側面。',
-        en: 'Anonymous designer share: male age 30-34, rainy-night bookstore, dark trench coat, warm desk lamp, cinematic profile.',
-        ja: '匿名の設友シェア：30〜34歳男性、雨の夜の書店、濃色トレンチ、暖かなデスクライト、映画的な横顔。'
-      },
-      englishPrompt: 'male adult age 30-34, rainy-night bookstore, dark trench coat, warm desk lamp, cinematic profile view, refined atmospheric design prompt',
-      thumbnailDataUrl: ''
-    },
-    {
-      id: 'seed-sensual-f-35',
-      gender: 'female',
-      age: '35-39',
-      nature: 'sensual',
-      localized: {
-        zh: '匿名色友分享：35-39 歲女性，玫瑰溫室、黑緞禮服、合意成人曖昧眼神、藝術遮擋。',
-        hk: '匿名色友分享：35-39 歲女性，玫瑰溫室、黑緞禮服、合意成人曖昧眼神、藝術遮擋。',
-        en: 'Anonymous sensual share: female age 35-39, rose greenhouse, black satin dress, consenting adult intimate gaze, artistic coverage.',
-        ja: '匿名の色友シェア：35〜39歳女性、バラの温室、黒いサテンドレス、合意ある成人の艶やかな視線、芸術的なカバー。'
-      },
-      englishPrompt: 'female adult age 35-39, rose greenhouse, black satin dress, consenting adult intimate gaze, artistic coverage, sensual but non-explicit mood, no minors, no coercion',
-      thumbnailDataUrl: ''
-    },
-    {
-      id: 'seed-sensual-any-40',
-      gender: 'any',
-      age: '40-44',
-      nature: 'sensual',
-      localized: {
-        zh: '匿名色友分享：40-44 歲成人，夜景套房、絲質睡袍、曖昧停頓、柔和城市霓虹。',
-        hk: '匿名色友分享：40-44 歲成人，夜景套房、絲質睡袍、曖昧停頓、柔和城市霓虹。',
-        en: 'Anonymous sensual share: adult age 40-44, night-view suite, silk robe, intimate pause, soft city neon.',
-        ja: '匿名の色友シェア：40〜44歳成人、夜景のスイート、シルクのローブ、艶やかな間、柔らかな都会のネオン。'
-      },
-      englishPrompt: 'adult age 40-44, night-view suite, silk robe, intimate pause, soft city neon, adult-only consensual sensual mood, tasteful composition',
-      thumbnailDataUrl: ''
-    }
+  const HEART_CARD_GENDERS = ['female', 'male', 'nonbinary', 'any'];
+  const HEART_CARD_AGES = ['18-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50+'];
+  const HEART_CARD_ARCHETYPES = [
+    ['月光玻璃屋伴侶', 'moonlit glasshouse companion', 'silver-white outfit, quiet gaze, soft blue backlight'],
+    ['雨夜書店朋友', 'rainy-night bookstore friend', 'dark coat, warm desk lamp, cinematic profile'],
+    ['玫瑰溫室模特', 'rose greenhouse model', 'black satin styling, intimate but non-explicit gaze, artistic coverage'],
+    ['夜景套房旅伴', 'night-view suite travel companion', 'silk robe styling, soft city neon, tasteful composition'],
+    ['海風露台戀人', 'sea-breeze terrace lover', 'linen outfit, wind-swept hair, golden-hour glow'],
+    ['復古唱片店同伴', 'vintage record-store companion', 'retro jacket, vinyl shelves, nostalgic warm color'],
+    ['星光天台守護者', 'starlit rooftop guardian', 'long coat, skyline bokeh, protective mood'],
+    ['森林木屋室友', 'forest cabin roommate', 'cozy knitwear, window light, relaxed everyday intimacy'],
+    ['美術館午後約會', 'museum afternoon date', 'minimal suit styling, marble hall, quiet emotional tension'],
+    ['午夜咖啡館知己', 'midnight cafe confidant', 'soft sweater, rain window, private conversation mood'],
+    ['霧藍湖畔旅人', 'misty blue lakeside traveler', 'travel cloak, reflective water, poetic solitude'],
+    ['暖黃工作室繆思', 'warm studio muse', 'casual shirt, painterly props, creative partner energy'],
+    ['霓虹巷口搭檔', 'neon alley partner', 'cyber jacket, colored rim light, confident stance'],
+    ['古堡走廊主人', 'castle corridor host', 'velvet formalwear, candlelit depth, aristocratic mystery'],
+    ['花瓣白房間戀人', 'petal-white room lover', 'soft robe, floral light, gentle romantic framing'],
+    ['晨光廚房伴侶', 'morning kitchen companion', 'apron styling, natural smile, domestic warmth'],
+    ['爵士酒廊邀請者', 'jazz lounge inviter', 'tailored eveningwear, brass reflections, slow-burn charm'],
+    ['雪夜壁爐朋友', 'snow-night fireplace friend', 'blanket layers, amber firelight, close winter mood'],
+    ['水族館藍光模特', 'aquarium blue-light model', 'flowing outfit, aquatic reflections, dreamy gaze'],
+    ['祕密花園引路人', 'secret-garden guide', 'botanical accessories, dusk glow, romantic mystery']
   ];
+
+  const SEED_ENTRIES = Array.from({ length: 100 }, (_, index) => {
+    const [zhTitle, enTitle, enDetails] = HEART_CARD_ARCHETYPES[index % HEART_CARD_ARCHETYPES.length];
+    const gender = HEART_CARD_GENDERS[index % HEART_CARD_GENDERS.length];
+    const age = HEART_CARD_AGES[index % HEART_CARD_AGES.length];
+    const nature = index % 2 === 0 ? 'designer' : 'sensual';
+    const genderZh = { female: '女性', male: '男性', nonbinary: '非二元成人', any: '成人' }[gender];
+    const natureZh = nature === 'sensual' ? '色友' : '設友';
+    const safetyEn = nature === 'sensual'
+      ? 'adult-only consenting mood, tasteful non-explicit sensual styling, no minors, no coercion'
+      : 'general-audience designer styling, no erotic framing, no minors, no coercion';
+    const zh = `AI自定義匿名${natureZh}心動卡：${age} ${genderZh}，${zhTitle}，保留完整文轉圖設定與安全成人邊界。`;
+    const en = `AI-defined anonymous ${nature} heart card: ${gender} adult age ${age}, ${enTitle}, ${enDetails}, coherent text-to-image setting prompt, ${safetyEn}`;
+    return {
+      id: `seed-heart-${String(index + 1).padStart(3, '0')}`,
+      gender,
+      age,
+      nature,
+      localized: {
+        zh,
+        hk: zh.replace('自定義', '自訂').replace('完整文轉圖設定', '完整文轉圖設定'),
+        en,
+        ja: `AI定義の匿名${nature === 'sensual' ? '色友' : '設友'}心動カード：${age} ${gender} adult、${enTitle}、安全な成人向け境界を保持。`
+      },
+      sourceText: zh,
+      englishPrompt: en,
+      thumbnailDataUrl: '',
+      anonymous: true
+    };
+  });
 
   const LOCALIZED_PREFIX = {
     zh: '匿名分享',

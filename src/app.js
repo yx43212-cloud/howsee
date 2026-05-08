@@ -76,6 +76,7 @@ const imageVideoPromptChoice = document.querySelector('#imageVideoPromptChoice')
 const imageVideoStatus = document.querySelector('#imageVideoStatus');
 const characterCards = Array.from(document.querySelectorAll('[data-character-card]'));
 const appPageButtons = Array.from(document.querySelectorAll('[data-app-page]'));
+const backToLoginButton = document.querySelector('#backToLoginButton');
 const appPagePanels = Array.from(document.querySelectorAll('[data-app-page-panel]'));
 const gmailInput = document.querySelector('#gmailInput');
 const designerLoginButton = document.querySelector('#designerLoginButton');
@@ -270,7 +271,7 @@ function renderWizardPage() {
 
   updateAdultOnlyControls();
   updateDialogueVisibility();
-  wizardProgress.textContent = `${page.title}｜${currentWizardIndex + 1}/${pages.length}｜本步 ${page.controls.length} 項`;
+  wizardProgress.textContent = `${page.title}｜${currentWizardIndex + 1}/${pages.length}｜本步 ${page.controls.length} 項｜除 Cosplay 外可跳過＝AI 判定`;
   wizardPrevButton.disabled = currentWizardIndex === 0;
   wizardNextButton.disabled = currentWizardIndex === pages.length - 1;
 }
@@ -399,6 +400,18 @@ function setAppPage(pageName) {
   for (const panel of appPagePanels) {
     panel.hidden = panel.dataset.appPagePanel !== pageName;
   }
+}
+
+function showLoginPage(message = '已回到登入頁；請選擇本次使用身份。') {
+  if (landingPage) landingPage.hidden = false;
+  if (appShell) appShell.hidden = true;
+  if (authPanel) authPanel.classList.remove('is-locked');
+  designerLoginButton.disabled = false;
+  sensualLoginButton.disabled = false;
+  gmailInput.disabled = false;
+  sensualConfirm.disabled = false;
+  sensualConfirm.checked = false;
+  setStatus(authStatus, message, 'success');
 }
 
 function updateAudienceMode(mode, gmail) {
@@ -986,6 +999,13 @@ function updateSensualActionDetailOptions() {
   }
 }
 
+
+function getBodyFeatureOptions() {
+  return activeAudienceMode === 'sensual'
+    ? CUSTOMIZATION_OPTIONS.bodyFeatures
+    : getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures);
+}
+
 function setupCharacterControls() {
   for (let index = 1; index <= 3; index += 1) {
     populateSelect(document.querySelector(`#character${index}Gender`), CUSTOMIZATION_OPTIONS.genders);
@@ -998,7 +1018,7 @@ function setupCharacterControls() {
     populateSelect(document.querySelector(`#character${index}Outfit`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
     populateSelect(document.querySelector(`#character${index}OutfitColor`), CUSTOMIZATION_OPTIONS.outfitColors);
     populateSelect(document.querySelector(`#character${index}OutfitMaterial`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
-    populateSelect(document.querySelector(`#character${index}BodyFeature`), getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
+    populateSelect(document.querySelector(`#character${index}BodyFeature`), getBodyFeatureOptions());
     populateSelect(document.querySelector(`#character${index}OutfitIntegrity`), getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   }
 }
@@ -1075,7 +1095,7 @@ function setupCustomizationControls() {
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
   populateSelect(hairFurColor, CUSTOMIZATION_OPTIONS.hairFurColors);
   populateSelect(outfitMaterial, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
-  populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
+  populateSelect(bodyFeature, getBodyFeatureOptions());
   populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
   populateSelect(pet, CUSTOMIZATION_OPTIONS.pets, { includeAi: false });
@@ -1365,7 +1385,8 @@ setWizardIndex(0);
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
-updateAudienceMode(activeAudienceMode, localStorage.getItem('niaiGmail') || '');
+gmailInput.value = localStorage.getItem('niaiGmail') || '';
+showLoginPage('登入頁已準備好；請選擇設友或色友後進入。');
 renderSavedPrompts();
 renderMatchmakingProfile();
 
@@ -1387,6 +1408,8 @@ for (const button of sceneSubstepButtons) {
 for (const button of appPageButtons) {
   button.addEventListener('click', () => setAppPage(button.dataset.appPage));
 }
+
+backToLoginButton.addEventListener('click', () => showLoginPage());
 
 wizardPrevButton.addEventListener('click', () => setWizardIndex(currentWizardIndex - 1));
 wizardNextButton.addEventListener('click', () => setWizardIndex(currentWizardIndex + 1));
@@ -1565,6 +1588,12 @@ function getSensualOverride(generalValue, sensualValue) {
 }
 
 rewriteButton.addEventListener('click', () => {
+  if (!cosplayPrompt.value.trim()) {
+    setStatus(textStatus, '請先填寫第一分頁 Cosplay；其他配置分頁可全部跳過並交給 AI 判定。', 'error');
+    cosplayPrompt.focus();
+    return;
+  }
+
   const result = rewritePrompt(getTextRewriteSource(), {
     audienceMode: activeAudienceMode,
     inputMode: activeInputComplexity,

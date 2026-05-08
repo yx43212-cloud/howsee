@@ -16,6 +16,10 @@
   --gold: #f7d98f;
   --danger: #ffb4a8;
   --success: #9df3c4;
+  --button-text: #ffffff;
+  --secondary-button-text: #2b1020;
+  --surface-overlay: rgba(255, 255, 255, 0.08);
+  --placeholder: rgba(255, 248, 252, 0.62);
   --shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
 }
 
@@ -177,20 +181,20 @@ h2 {
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 .text-step-button {
   min-height: 46px;
   padding: 10px 12px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-overlay);
   color: var(--muted);
   box-shadow: none;
 }
 
 .text-step-button.active {
-  color: #fff;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--accent-strong), var(--accent));
 }
 
@@ -261,6 +265,17 @@ input[type='file'] {
   min-height: 50px;
 }
 
+select option {
+  color: var(--text);
+  background: var(--field);
+}
+
+button:disabled {
+  opacity: 0.55;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
 input[type='file'] {
   cursor: pointer;
 }
@@ -284,7 +299,7 @@ textarea {
 }
 
 textarea::placeholder {
-  color: rgba(217, 201, 229, 0.55);
+  color: var(--placeholder);
 }
 
 textarea:hover,
@@ -305,7 +320,7 @@ button {
   min-height: 54px;
   padding: 16px 20px;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: white;
+  color: var(--button-text);
   font-weight: 900;
   letter-spacing: 0.05em;
   box-shadow: 0 16px 38px rgba(255, 47, 130, 0.28);
@@ -324,7 +339,8 @@ button:active {
 
 .secondary-button {
   margin-top: 16px;
-  background: linear-gradient(135deg, rgba(247, 217, 143, 0.96), rgba(255, 95, 159, 0.9));
+  background: linear-gradient(135deg, rgba(247, 217, 143, 0.98), rgba(255, 142, 184, 0.95));
+  color: var(--secondary-button-text);
 }
 
 .status {
@@ -332,7 +348,7 @@ button:active {
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 .status[data-state='error'] {
@@ -370,7 +386,7 @@ button:active {
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 @media (max-width: 980px) {
@@ -424,7 +440,7 @@ button:active {
 }
 
 .mode-button {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-overlay);
   outline: 1px solid rgba(255, 255, 255, 0.16);
 }
 
@@ -445,7 +461,7 @@ button:active {
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 .character-card h3 {
@@ -534,7 +550,7 @@ button:active {
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 .saved-item[data-active='true'] {
@@ -579,7 +595,7 @@ button:active {
 }
 
 .setup-subtab.active {
-  color: #fff;
+  color: var(--button-text);
   background: linear-gradient(135deg, rgba(255, 95, 159, 0.92), rgba(247, 217, 143, 0.44));
 }
 
@@ -663,7 +679,7 @@ input[type='file']::file-selector-button {
   border-radius: 12px;
   padding: 10px 14px;
   background: linear-gradient(135deg, var(--accent-strong), var(--accent));
-  color: #fff;
+  color: var(--button-text);
   font: inherit;
   font-weight: 900;
 }
@@ -676,14 +692,14 @@ input[type='file']::file-selector-button {
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.055);
+  background: var(--surface-overlay);
 }
 
 .theme-button {
   min-height: 48px;
   border-radius: 18px;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-overlay);
 }
 
 .theme-button.active {
@@ -701,7 +717,11 @@ body[data-theme='pure-love'] {
   --soft: #a4768d;
   --accent: #ff8db8;
   --accent-strong: #ff5f9f;
-  --gold: #d99a7a;
+  --gold: #8a4b2f;
+  --button-text: #2b1020;
+  --secondary-button-text: #2b1020;
+  --surface-overlay: rgba(74, 36, 55, 0.08);
+  --placeholder: rgba(74, 36, 55, 0.58);
   color-scheme: light;
 }
 
@@ -715,7 +735,11 @@ body[data-theme='misty-flirt'] {
   --muted: #c6d8ec;
   --accent: #8fb8ff;
   --accent-strong: #6b8dff;
-  --gold: #b9d5ff;
+  --gold: #d7e7ff;
+  --button-text: #ffffff;
+  --secondary-button-text: #102039;
+  --surface-overlay: rgba(255, 255, 255, 0.09);
+  --placeholder: rgba(237, 247, 255, 0.62);
 }
 
 body[data-theme='sunny-passion'] {
@@ -728,7 +752,11 @@ body[data-theme='sunny-passion'] {
   --muted: #85612c;
   --accent: #ff9c57;
   --accent-strong: #ff773d;
-  --gold: #bb7418;
+  --gold: #7a460f;
+  --button-text: #2c1705;
+  --secondary-button-text: #2c1705;
+  --surface-overlay: rgba(81, 56, 25, 0.08);
+  --placeholder: rgba(81, 56, 25, 0.56);
   color-scheme: light;
 }
 
@@ -742,7 +770,11 @@ body[data-theme='forbidden-love'] {
   --muted: #efb7bf;
   --accent: #d40f3f;
   --accent-strong: #ff174d;
-  --gold: #ffbd9a;
+  --gold: #ffd2bd;
+  --button-text: #ffffff;
+  --secondary-button-text: #2a070f;
+  --surface-overlay: rgba(255, 255, 255, 0.09);
+  --placeholder: rgba(255, 242, 244, 0.62);
 }
 
 .love-mode-panel,
@@ -766,7 +798,7 @@ body[data-theme='forbidden-love'] {
 
 .love-mode-button.active,
 #deepfaceButton.active {
-  color: white;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   box-shadow: 0 14px 30px rgba(255, 93, 143, 0.28);
 }
@@ -801,7 +833,7 @@ body[data-theme='forbidden-love'] {
 }
 
 .language-button.active {
-  color: #fff;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
 }
 
@@ -970,7 +1002,7 @@ body[data-theme='forbidden-love'] .heart-card-back {
 
 #deepfaceButton.active,
 #withMeButton.active {
-  color: white;
+  color: var(--button-text);
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   box-shadow: 0 14px 30px rgba(255, 93, 143, 0.28);
 }
