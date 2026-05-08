@@ -823,3 +823,118 @@ body[data-theme='forbidden-love'] {
 .love-mode-button.icon-button {
   min-height: 54px;
 }
+
+.redline-panel {
+  overflow: hidden;
+  position: relative;
+}
+
+.redline-panel::after {
+  content: '';
+  position: absolute;
+  inset: auto -90px -120px auto;
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 93, 143, 0.24), transparent 68%);
+  pointer-events: none;
+}
+
+.redline-score-card,
+.redline-draw-panel,
+.redline-card {
+  border: 1px solid rgba(255, 128, 166, 0.2);
+  border-radius: 28px;
+  padding: 20px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 228, 237, 0.48));
+  box-shadow: 0 16px 34px rgba(114, 38, 70, 0.1);
+}
+
+body[data-theme='misty-flirt'] .redline-score-card,
+body[data-theme='misty-flirt'] .redline-draw-panel,
+body[data-theme='misty-flirt'] .redline-card,
+body[data-theme='forbidden-love'] .redline-score-card,
+body[data-theme='forbidden-love'] .redline-draw-panel,
+body[data-theme='forbidden-love'] .redline-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 93, 143, 0.1));
+}
+
+.redline-score-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.redline-score-card h3 {
+  margin: 4px 0;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+.redline-draw-panel {
+  margin-bottom: 20px;
+}
+
+.redline-filter-grid {
+  margin-top: 14px;
+}
+
+.redline-actions,
+.redline-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.redline-result-list {
+  display: grid;
+  gap: 16px;
+}
+
+.redline-card {
+  display: grid;
+  gap: 12px;
+  position: relative;
+}
+
+.redline-card::before {
+  content: '🧧';
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 2rem;
+  filter: drop-shadow(0 8px 12px rgba(212, 15, 63, 0.22));
+}
+
+.redline-card h3 {
+  margin: 0;
+  padding-right: 44px;
+}
+
+.redline-card textarea {
+  min-height: 110px;
+}
+
+.redline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.redline-pill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 93, 143, 0.12);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .redline-score-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -51,6 +51,7 @@
       <nav class="app-page-tabs" aria-label="功能頁面切換">
         <button class="app-page-button active icon-button" type="button" data-app-page="generator" data-icon="✨" data-i18n="generator">提示詞生成</button>
         <button class="app-page-button icon-button" type="button" data-app-page="library" data-icon="📚" data-i18n="library">儲存紀錄</button>
+        <button class="app-page-button icon-button" type="button" data-app-page="redline" data-icon="🧧" data-i18n="redline">紅線公寓</button>
       </nav>
 
       <section id="generatorPage" data-app-page-panel="generator">
@@ -514,6 +515,72 @@
         <div id="savedPromptList" class="saved-list"></div>
       </section>
 
+
+
+      <section id="redlinePage" class="panel redline-panel" data-app-page-panel="redline" hidden>
+        <div class="section-heading">
+          <p class="section-kicker">Redline Apartment</p>
+          <h2>紅線公寓</h2>
+          <p>登入後可匿名分享自己的提示詞；分享 1 次獲得 1 積分，每日登入也會獲得 1 積分。累積 3 積分可抽 1 張紅線，累積 5 積分可一次抽 2 張。</p>
+        </div>
+
+        <div class="redline-score-card">
+          <div>
+            <p class="section-kicker">Anonymous Community</p>
+            <h3 id="redlinePointText">目前積分：0</h3>
+            <p id="redlineStatus" class="status">放入紅線公寓的提示詞都會匿名顯示。</p>
+          </div>
+          <button id="shareRedlineButton" type="button" class="secondary-button icon-button" data-icon="🎁">分享目前提示詞至紅線公寓（+1）</button>
+        </div>
+
+        <div class="redline-draw-panel">
+          <div class="section-heading compact">
+            <p class="section-kicker">Gacha</p>
+            <h3>先決定想遇見的紅線</h3>
+            <p>請先選擇性別、成年年齡級距，以及提示詞性質屬於設友或色友，才能參與拉紅線。</p>
+          </div>
+          <div class="custom-grid redline-filter-grid">
+            <div class="field">
+              <label for="redlineGender">想遇見的性別</label>
+              <select id="redlineGender">
+                <option value="">請選擇</option>
+                <option value="female">女性</option>
+                <option value="male">男性</option>
+                <option value="nonbinary">非二元／其他</option>
+                <option value="any">都可以</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="redlineAge">想遇見的年齡</label>
+              <select id="redlineAge">
+                <option value="">請選擇</option>
+                <option value="18-24">18-24</option>
+                <option value="25-29">25-29</option>
+                <option value="30-34">30-34</option>
+                <option value="35-39">35-39</option>
+                <option value="40-44">40-44</option>
+                <option value="45-49">45-49</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="redlineNature">提示詞性質</label>
+              <select id="redlineNature">
+                <option value="">請選擇</option>
+                <option value="designer">設友</option>
+                <option value="sensual">色友</option>
+              </select>
+            </div>
+          </div>
+          <div class="redline-actions">
+            <button id="drawOneRedlineButton" type="button" class="icon-button" data-icon="🪄">3 積分抽 1 張</button>
+            <button id="drawTwoRedlineButton" type="button" class="icon-button" data-icon="🧧">5 積分抽 2 張</button>
+          </div>
+        </div>
+
+        <div id="redlineResultList" class="redline-result-list" aria-live="polite"></div>
+      </section>
+
       <section class="guardrails">
         <div class="section-heading">
           <p class="section-kicker">Safety</p>
@@ -528,6 +595,7 @@
     </main>
 
     <script src="src/translator.js"></script>
+    <script src="src/redline.js"></script>
     <script src="src/app.js"></script>
   </body>
 </html>
