@@ -13,6 +13,7 @@ const bodyProportion = document.querySelector('#bodyProportion');
 const face = document.querySelector('#face');
 const outfit = document.querySelector('#outfit');
 const outfitColor = document.querySelector('#outfitColor');
+const hairFurColor = document.querySelector('#hairFurColor');
 const outfitMaterial = document.querySelector('#outfitMaterial');
 const bodyFeature = document.querySelector('#bodyFeature');
 const outfitIntegrity = document.querySelector('#outfitIntegrity');
@@ -20,8 +21,10 @@ const count = document.querySelector('#count');
 const cosplayPrompt = document.querySelector('#cosplayPrompt');
 const scene = document.querySelector('#scene');
 const accessory = document.querySelector('#accessory');
+const pet = document.querySelector('#pet');
 const actionMode = document.querySelector('#actionMode');
 const actionDetail = document.querySelector('#actionDetail');
+const gazeDirection = document.querySelector('#gazeDirection');
 const sensualOutfit = document.querySelector('#sensualOutfit');
 const sensualScene = document.querySelector('#sensualScene');
 const sensualAccessory = document.querySelector('#sensualAccessory');
@@ -40,6 +43,7 @@ const autoVideoChoice = document.querySelector('#autoVideoChoice');
 const autoVideoConfirmation = document.querySelector('#autoVideoConfirmation');
 const autoVideoPrompt = document.querySelector('#autoVideoPrompt');
 const copyAutoVideoButton = document.querySelector('#copyAutoVideoButton');
+const aiSuggestionToggle = document.querySelector('#aiSuggestionToggle');
 const rewriteButton = document.querySelector('#rewriteButton');
 const wizardPrevButton = document.querySelector('#wizardPrevButton');
 const wizardNextButton = document.querySelector('#wizardNextButton');
@@ -61,6 +65,7 @@ const copyVideoButton = document.querySelector('#copyVideoButton');
 const imageInput = document.querySelector('#imageInput');
 const imageDescription = document.querySelector('#imageDescription');
 const desiredMotion = document.querySelector('#desiredMotion');
+const dialogueMode = document.querySelector('#dialogueMode');
 const dialogueToCamera = document.querySelector('#dialogueToCamera');
 const dialogueBetweenCharacters = document.querySelector('#dialogueBetweenCharacters');
 const videoDuration = document.querySelector('#videoDuration');
@@ -81,6 +86,14 @@ const savePromptButton = document.querySelector('#savePromptButton');
 const saveTitleInput = document.querySelector('#saveTitleInput');
 const resultImageInput = document.querySelector('#resultImageInput');
 const savedPromptList = document.querySelector('#savedPromptList');
+const publishMomentButton = document.querySelector('#publishMomentButton');
+const matchmakingTitleText = document.querySelector('#matchmakingTitleText');
+const matchmakingStatus = document.querySelector('#matchmakingStatus');
+const heartGender = document.querySelector('#heartGender');
+const heartAge = document.querySelector('#heartAge');
+const heartNature = document.querySelector('#heartNature');
+const showHeartCardsButton = document.querySelector('#showHeartCardsButton');
+const heartCardList = document.querySelector('#heartCardList');
 const sensualOnlyElements = Array.from(document.querySelectorAll('.sensual-only'));
 const textStepButtons = Array.from(document.querySelectorAll('[data-text-step]'));
 const textStepPanels = Array.from(document.querySelectorAll('[data-text-step-panel]'));
@@ -88,18 +101,76 @@ const characterSubstepButtons = Array.from(document.querySelectorAll('[data-char
 const sceneSubstepButtons = Array.from(document.querySelectorAll('[data-scene-substep]'));
 const adultOnlyControls = Array.from(document.querySelectorAll('.adult-only-control'));
 const themeButtons = Array.from(document.querySelectorAll('[data-theme-choice]'));
+const languageButtons = Array.from(document.querySelectorAll('[data-language-choice]'));
+const inputComplexityButtons = Array.from(document.querySelectorAll('[data-input-complexity]'));
+const complexOnlyElements = Array.from(document.querySelectorAll('.complex-only'));
+const authPanel = document.querySelector('.auth-panel');
+const landingPage = document.querySelector('#landingPage');
+const appShell = document.querySelector('#appShell');
+const deepfaceButton = document.querySelector('#deepfaceButton');
+const withMeButton = document.querySelector('#withMeButton');
 
 let uploadedImageAnalysis = null;
 let lastImageVideoResult = null;
 let activeAudienceMode = localStorage.getItem('niaiAudienceMode') || 'designer';
+let activeInputComplexity = 'simple';
+let deepfaceEnabled = false;
+let withMeEnabled = false;
 let activeSavedPromptId = null;
 let sponsorImageName = '';
+let activeInterfaceLanguage = localStorage.getItem('niaiLanguage') || 'zh';
 
 let currentWizardIndex = 0;
 
 function simpleOption(zh, en = zh, group = '') {
   return { zh, en, group };
 }
+
+
+const UI_TRANSLATIONS = {
+  zh: {
+    enterDesigner: '進入設友', enterSensual: '進入色友', generator: '提示詞生成', library: '悸動瞬間', matchmaking: '配對所',
+    textMode: '文生圖提示詞', videoMode: '圖轉影提示詞', simpleLove: '簡單愛', complexLove: '複雜愛',
+    rewrite: '轉譯提示詞', makeVideo: '產生圖轉影提示詞', langStatus: '介面語言已切換為中文。'
+  },
+  en: {
+    enterDesigner: 'Designer', enterSensual: 'Sensual', generator: 'Generator', library: 'Heartbeat Moments', matchmaking: 'Matchmaking',
+    textMode: 'Text prompt', videoMode: 'Image to video', simpleLove: 'Simple Love', complexLove: 'Complex Love',
+    rewrite: 'Rewrite', makeVideo: 'Make video prompt', langStatus: 'Interface language switched to English.'
+  },
+  hk: {
+    enterDesigner: '入設友', enterSensual: '入色友', generator: '提示詞工房', library: '悸動瞬間', matchmaking: '配對所',
+    textMode: '文生圖提示詞', videoMode: '圖轉片提示詞', simpleLove: '簡單愛', complexLove: '複雜愛',
+    rewrite: '轉提示詞', makeVideo: '生成圖轉片提示詞', langStatus: '介面語言已切換成港語。'
+  },
+  ja: {
+    enterDesigner: '設友へ', enterSensual: '色友へ', generator: 'プロンプト生成', library: 'ときめき瞬間', matchmaking: 'マッチング所',
+    textMode: '画像プロンプト', videoMode: '画像から動画', simpleLove: 'シンプル愛', complexLove: '複雑愛',
+    rewrite: '変換', makeVideo: '動画プロンプト生成', langStatus: 'UI言語を日本語に切り替えました。'
+  }
+};
+
+function setInterfaceLanguage(language) {
+  activeInterfaceLanguage = typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.normalizeLanguage(language) : language;
+  const dictionary = UI_TRANSLATIONS[language] || UI_TRANSLATIONS.zh;
+  document.documentElement.lang = language === 'ja' ? 'ja' : language === 'en' ? 'en' : 'zh-Hant';
+  localStorage.setItem('niaiLanguage', language);
+
+  for (const element of document.querySelectorAll('[data-i18n]')) {
+    const key = element.dataset.i18n;
+    if (dictionary[key]) element.textContent = dictionary[key];
+  }
+
+  for (const button of languageButtons) {
+    const active = button.dataset.languageChoice === language;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  }
+
+  if (authStatus) setStatus(authStatus, dictionary.langStatus);
+  refreshLocalizedPromptDisplays();
+}
+
 
 const SPONSOR_AGE_OPTIONS = ['18-20', '21-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60+'].map((value) => simpleOption(value, value));
 const SPONSOR_IDENTITY_OPTIONS = [
@@ -123,22 +194,35 @@ const SPONSOR_FORM_OPTIONS = [
   ['展示', 'showcase'], ['操作', 'hands-on operation'], ['互動', 'interaction with the item'], ['介紹', 'spoken or visual introduction'], ['背景植入', 'background placement'], ['特寫', 'close-up reveal'], ['字幕口播', 'caption or voiceover mention'], ['前後對比', 'before-and-after comparison']
 ].map(([zh, en]) => simpleOption(zh, en));
 
+const SIMPLE_DAILY_SCENE_OPTIONS = [
+  simpleOption('高樓公寓客廳', 'high-rise apartment living room'),
+  simpleOption('城市夜景陽台', 'city-view balcony'),
+  simpleOption('古典圖書館角落', 'classic library corner'),
+  simpleOption('夜晚雨窗咖啡館', 'night cafe beside a rainy window'),
+  simpleOption('柔粉色甜點店包廂', 'soft-pink dessert shop booth'),
+  simpleOption('歐式陽光溫室', 'European sunroom'),
+  simpleOption('海景露台躺椅區', 'ocean-view terrace lounge'),
+  simpleOption('私人泳池旁', 'private poolside'),
+  simpleOption('熱帶度假別墅', 'tropical resort villa'),
+  simpleOption('山景度假木屋', 'mountain-view vacation cabin'),
+  simpleOption('空中花園休息室', 'sky-garden lounge'),
+  simpleOption('海邊玻璃屋', 'seaside glass house'),
+  simpleOption('私人花園玻璃亭', 'private garden glass pavilion'),
+  simpleOption('星夜花園涼亭', 'starlit garden pavilion'),
+  simpleOption('午夜城市天橋', 'midnight city skybridge')
+];
+
 const WIZARD_PAGES = [
-  { step: 'visual', title: '基本畫面 1：光與鏡位', controls: ['lighting', 'camera'] },
-  { step: 'visual', title: '基本畫面 2：構圖與畫風', controls: ['composition', 'artStyle'] },
-  { step: 'character', title: '角色 1：人物基本', controls: ['gender', 'race', 'emotion'] },
-  { step: 'character', title: '角色 2：時間年齡職業', controls: ['timePoint', 'ageBracket', 'occupation'] },
-  { step: 'character', title: '角色 3：身形臉蛋人數', controls: ['bodyProportion', 'face', 'count'] },
-  { step: 'character', title: '角色 4：服裝外觀', controls: ['outfit', 'outfitColor', 'outfitMaterial'] },
-  { step: 'character', title: '角色 5：細節補充', controls: ['bodyFeature', 'outfitIntegrity'] },
-  { step: 'character', title: '角色 6：多人細節', controls: ['characterControls'] },
-  { step: 'scene', title: '場景 1：地點道具', controls: ['scene', 'accessory'] },
-  { step: 'scene', title: '場景 2：動作姿態', controls: ['actionMode', 'actionDetail'] },
-  { step: 'sponsor', title: '業配 1：內容置入', controls: ['sponsorImageInput', 'sponsorText'] },
-  { step: 'sponsor', title: '業配 2：受眾目標', controls: ['sponsorAudienceAge', 'sponsorAudienceIdentity', 'sponsorGoal'] },
-  { step: 'sponsor', title: '業配 3：露出規劃', controls: ['sponsorItemType', 'sponsorExposureTiming', 'sponsorExposureForm'] },
-  { step: 'sensual', title: '色友 1：氛圍服裝地點', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
-  { step: 'sensual', title: '色友 2：道具與動作', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
+  { step: 'character', title: '1 人物：種族年齡性別', complexity: 'simple', controls: ['race', 'ageBracket', 'gender'] },
+  { step: 'character', title: '2 特徵：特徵毛色人數', complexity: 'simple', controls: ['bodyFeature', 'hairFurColor', 'count'] },
+  { step: 'outfit', title: '3 服裝：款式配色配件', complexity: 'simple', aiSuggested: true, controls: ['outfit', 'outfitColor', 'outfitMaterial', 'accessory'] },
+  { step: 'motion', title: '4 動作：配置與眼神', complexity: 'complex', aiSuggested: true, controls: ['actionMode', 'actionDetail', 'gazeDirection'] },
+  { step: 'scene', title: '5 場景：地點與光感', complexity: 'simple', aiSuggested: true, controls: ['scene', 'lighting'] },
+  { step: 'visual', title: '6 構圖：構圖與視角', complexity: 'complex', aiSuggested: true, controls: ['composition', 'camera', 'artStyle'] },
+  { step: 'character', title: '7 多人細節', complexity: 'simple', controls: ['characterControls'] },
+  { step: 'commercial', title: '8 商用：寵物置入對話 DeepFace', complexity: 'complex', controls: ['pet', 'dialogueMode', 'dialogueToCamera', 'dialogueBetweenCharacters', 'sponsorImageInput', 'sponsorText', 'sponsorAudienceAge', 'sponsorAudienceIdentity', 'sponsorGoal', 'sponsorItemType', 'sponsorExposureTiming', 'sponsorExposureForm'] },
+  { step: 'sensual', title: '9 色友：氛圍服裝地點', complexity: 'complex', controls: ['intensity', 'sensualOutfit', 'sensualScene'] },
+  { step: 'sensual', title: '10 色友：道具與動作', complexity: 'complex', controls: ['sensualAccessory', 'sensualActionMode', 'sensualActionDetail'] }
 ];
 
 const WIZARD_CONTROL_IDS = Array.from(new Set(WIZARD_PAGES.flatMap((page) => page.controls)));
@@ -151,8 +235,12 @@ function setStatus(element, message, state = 'idle') {
 function getAvailableWizardPages() {
   return WIZARD_PAGES.map((page) => {
     const controls = page.controls.filter((id) => {
+      if (aiSuggestionToggle?.checked && page.aiSuggested) return false;
+      if (activeInputComplexity === 'simple' && ['visual', 'motion', 'commercial', 'sensual'].includes(page.step)) return false;
       if (page.step === 'sensual' && activeAudienceMode !== 'sensual') return false;
       if (id === 'outfitIntegrity' && activeAudienceMode !== 'sensual') return false;
+      if (id === 'characterControls' && getVisibleCharacterCount() === 1) return false;
+      if (id === 'dialogueBetweenCharacters' && getVisibleCharacterCount() === 1) return false;
       return true;
     });
     return { ...page, controls };
@@ -172,7 +260,8 @@ function renderWizardPage() {
   }
 
   for (const panel of textStepPanels) {
-    panel.hidden = panel.dataset.textStepPanel !== page.step;
+    const activePanelStep = ['outfit'].includes(page.step) ? 'character' : page.step === 'motion' ? 'scene' : page.step;
+    panel.hidden = panel.dataset.textStepPanel !== activePanelStep;
   }
 
   for (const id of WIZARD_CONTROL_IDS) {
@@ -180,6 +269,7 @@ function renderWizardPage() {
   }
 
   updateAdultOnlyControls();
+  updateDialogueVisibility();
   wizardProgress.textContent = `${page.title}｜${currentWizardIndex + 1}/${pages.length}｜本步 ${page.controls.length} 項`;
   wizardPrevButton.disabled = currentWizardIndex === 0;
   wizardNextButton.disabled = currentWizardIndex === pages.length - 1;
@@ -191,6 +281,9 @@ function setWizardIndex(index) {
 }
 
 function setTextStep(stepName) {
+  if (activeInputComplexity === 'simple' && ['visual', 'motion', 'commercial', 'sensual'].includes(stepName)) {
+    stepName = 'character';
+  }
   if (stepName === 'sensual' && activeAudienceMode !== 'sensual') {
     stepName = 'visual';
   }
@@ -199,6 +292,52 @@ function setTextStep(stepName) {
   setWizardIndex(targetIndex >= 0 ? targetIndex : 0);
 }
 
+function updateDialogueVisibility() {
+  const mode = dialogueMode.value;
+  const showCamera = ['to-camera', 'both'].includes(mode);
+  const showBetween = getVisibleCharacterCount() > 1 && ['between-characters', 'both'].includes(mode);
+  setFieldVisibilityByControlId('dialogueToCamera', showCamera);
+  setFieldVisibilityByControlId('dialogueBetweenCharacters', showBetween);
+}
+
+function setInputComplexity(mode) {
+  activeInputComplexity = mode === 'complex' ? 'complex' : 'simple';
+  for (const button of inputComplexityButtons) {
+    const active = button.dataset.inputComplexity === activeInputComplexity;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  }
+  for (const element of complexOnlyElements) {
+    element.hidden = activeInputComplexity === 'simple';
+  }
+  populateSceneOptions();
+  renderWizardPage();
+}
+
+function populateSceneOptions() {
+  const previousScene = scene.value;
+  const sceneOptions = activeInputComplexity === 'simple' ? SIMPLE_DAILY_SCENE_OPTIONS : getDesignerOptions(CUSTOMIZATION_OPTIONS.scenes);
+  populateSelect(scene, sceneOptions);
+  if (sceneOptions.some((option) => option.zh === previousScene)) {
+    scene.value = previousScene;
+  }
+}
+
+
+
+
+function applyAiSuggestionState() {
+  const aiSuggestedControlIds = ['outfit', 'outfitColor', 'outfitMaterial', 'accessory', 'actionMode', 'actionDetail', 'gazeDirection', 'scene', 'lighting', 'composition', 'camera', 'artStyle'];
+  if (aiSuggestionToggle?.checked) {
+    for (const id of aiSuggestedControlIds) {
+      const element = document.querySelector(`#${id}`);
+      if (element && Array.from(element.options || []).some((option) => option.value === 'AI判斷')) {
+        element.value = 'AI判斷';
+      }
+    }
+  }
+  renderWizardPage();
+}
 
 
 
@@ -219,12 +358,12 @@ function setFieldVisibilityByControlId(id, isVisible) {
 }
 
 function setCharacterSubstep(stepName) {
-  const targetMap = { basics: 2, outfit: 5, multi: 7 };
+  const targetMap = { basics: 0, outfit: 2, multi: 6 };
   setSubstep(characterSubstepButtons, stepName, 'characterSubstep');
   setTextStep('character');
   const pages = getAvailableWizardPages();
-  const titleNeedle = targetMap[stepName] === 5 ? '服裝外觀' : targetMap[stepName] === 7 ? '多人細節' : '人物基本';
-  const index = pages.findIndex((page) => page.step === 'character' && page.title.includes(titleNeedle));
+  const titleNeedle = stepName === 'outfit' ? '服裝' : stepName === 'multi' ? '多人' : '人物';
+  const index = pages.findIndex((page) => page.title.includes(titleNeedle));
   if (index >= 0) setWizardIndex(index);
 }
 
@@ -232,8 +371,8 @@ function setCharacterSubstep(stepName) {
 function setSceneSubstep(stepName) {
   setSubstep(sceneSubstepButtons, stepName, 'sceneSubstep');
   const pages = getAvailableWizardPages();
-  const titleNeedle = stepName === 'motion' ? '動作姿態' : '地點道具';
-  const index = pages.findIndex((page) => page.step === 'scene' && page.title.includes(titleNeedle));
+  const titleNeedle = stepName === 'motion' ? '動作' : '場景';
+  const index = pages.findIndex((page) => page.title.includes(titleNeedle));
   if (index >= 0) setWizardIndex(index);
 }
 
@@ -274,9 +413,24 @@ function updateAudienceMode(mode, gmail) {
   if (mode !== 'sensual' && document.querySelector('[data-text-step-panel="sensual"]')?.hidden === false) {
     setTextStep('visual');
   }
-  authStatus.textContent = mode === 'sensual'
-    ? `已用 ${gmail || 'Gmail'} 登入色友；獨立成人向專區與合意規範已啟用。`
-    : `已用 ${gmail || 'Gmail'} 登入設友；目前只顯示一般設計素材。`;
+  if (gmail) {
+    if (landingPage) landingPage.hidden = true;
+    if (appShell) appShell.hidden = false;
+    authStatus.textContent = mode === 'sensual'
+      ? `已用 ${gmail} 進入色友；本次操作維持成人向模式。`
+      : `已用 ${gmail} 進入設友；本次操作維持一般設計模式。`;
+    if (authPanel) {
+      authPanel.classList.add('is-locked');
+    }
+    designerLoginButton.disabled = true;
+    sensualLoginButton.disabled = true;
+    gmailInput.disabled = true;
+    sensualConfirm.disabled = true;
+  } else {
+    if (landingPage) landingPage.hidden = false;
+    if (appShell) appShell.hidden = true;
+    authStatus.textContent = '尚未進入；請先選擇本次使用身份。';
+  }
   setupCustomizationControls();
   renderWizardPage();
   authStatus.dataset.state = 'success';
@@ -293,6 +447,249 @@ function getSavedPrompts() {
 function setSavedPrompts(items) {
   localStorage.setItem('niaiSavedPrompts', JSON.stringify(items));
 }
+
+function getMomentStorageKey(suffix = '') {
+  const gmail = localStorage.getItem('niaiGmail') || gmailInput?.value.trim() || 'guest';
+  return `niaiMatchmaking:${gmail}${suffix ? `:${suffix}` : ''}`;
+}
+
+function getLocalHeartCardEntries() {
+  try {
+    const currentEntries = JSON.parse(localStorage.getItem('niaiHeartCardEntries') || '[]');
+    return currentEntries;
+  } catch {
+    return [];
+  }
+}
+
+function setLocalHeartCardEntries(entries) {
+  localStorage.setItem('niaiHeartCardEntries', JSON.stringify(entries));
+}
+
+function getAllHeartCardEntries() {
+  const seedEntries = typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.SEED_ENTRIES : [];
+  return [...getLocalHeartCardEntries(), ...seedEntries];
+}
+
+function renderMatchmakingProfile(message = '') {
+  if (!matchmakingTitleText || !matchmakingStatus) return;
+  matchmakingTitleText.textContent = activeInterfaceLanguage === 'en'
+    ? 'Who do you want to meet today?'
+    : activeInterfaceLanguage === 'ja'
+      ? '今日は誰に出会いたい？'
+      : '今天想遇見誰？';
+  if (message) {
+    setStatus(matchmakingStatus, message, 'success');
+  }
+}
+
+function localizeComparisonText(sourceText) {
+  if (typeof MatchmakingStudio === 'undefined') return sourceText || '';
+  return MatchmakingStudio.localizePromptText(sourceText || '', activeInterfaceLanguage);
+}
+
+function refreshLocalizedPromptDisplays() {
+  for (const textarea of [textConfirmationPrompt, autoVideoConfirmation, videoConfirmationPrompt]) {
+    if (textarea?.dataset.sourceZh) {
+      textarea.value = localizeComparisonText(textarea.dataset.sourceZh);
+    }
+  }
+  renderSavedPrompts();
+  renderMatchmakingProfile();
+  rerenderHeartCardsForLanguage();
+}
+
+function getCurrentPromptCommunityProfile() {
+  return {
+    gender: gender.value && gender.value !== 'AI判斷' ? inferHeartCardGender(gender.value) : 'any',
+    age: normalizeHeartCardAge(ageBracket.value),
+    nature: activeAudienceMode === 'sensual' ? 'sensual' : 'designer'
+  };
+}
+
+function inferHeartCardGender(value) {
+  if (/女|female|woman/i.test(value)) return 'female';
+  if (/男|male|man/i.test(value)) return 'male';
+  if (/非二元|nonbinary|non-binary/i.test(value)) return 'nonbinary';
+  return 'any';
+}
+
+function normalizeHeartCardAge(value) {
+  const match = String(value || '').match(/(\d{2})/);
+  const ageValue = match ? Number(match[1]) : 25;
+  if (ageValue < 25) return '18-24';
+  if (ageValue < 30) return '25-29';
+  if (ageValue < 35) return '30-34';
+  if (ageValue < 40) return '35-39';
+  if (ageValue < 45) return '40-44';
+  if (ageValue < 50) return '45-49';
+  return '50+';
+}
+
+function getSelectedMoment() {
+  return getSavedPrompts().find((candidate) => candidate.id === activeSavedPromptId) || null;
+}
+
+function buildHeartCardEntryFromMoment(moment) {
+  if (typeof MatchmakingStudio === 'undefined' || !moment?.englishPrompt || !moment?.chineseConfirmation) return null;
+  return MatchmakingStudio.createCommunityEntry({
+    id: `heart-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    gender: moment.communityGender || getCurrentPromptCommunityProfile().gender,
+    age: moment.communityAge || getCurrentPromptCommunityProfile().age,
+    nature: moment.mode === 'sensual' ? 'sensual' : 'designer',
+    sourceText: moment.chineseConfirmation,
+    englishPrompt: moment.englishPrompt,
+    thumbnailDataUrl: moment.images?.[0]?.dataUrl || '',
+    language: 'zh'
+  });
+}
+
+function publishMomentToHeartCards() {
+  const selectedMoment = getSelectedMoment();
+  const currentMoment = textResultPrompt.value ? {
+    id: `current-${Date.now()}`,
+    mode: activeAudienceMode,
+    chineseConfirmation: textConfirmationPrompt.dataset.sourceZh || textConfirmationPrompt.value,
+    englishPrompt: textResultPrompt.value,
+    images: []
+  } : null;
+  const entry = buildHeartCardEntryFromMoment(selectedMoment || currentMoment);
+  if (!entry) {
+    setStatus(textStatus, '請先在「悸動瞬間」選取一筆正式輸出的提示詞，或先產生目前提示詞。', 'error');
+    return;
+  }
+  setLocalHeartCardEntries([entry, ...getLocalHeartCardEntries()]);
+  setAppPage('matchmaking');
+  setStatus(matchmakingStatus, '已匿名上傳成心動卡；配對所只會顯示不具名內容。', 'success');
+}
+
+function getHeartCardFilters() {
+  return {
+    nature: heartNature.value,
+    gender: heartGender.value,
+    age: heartAge.value
+  };
+}
+
+function validateHeartCardFilters() {
+  const filters = getHeartCardFilters();
+  if (!filters.nature || !filters.gender || !filters.age) {
+    setStatus(matchmakingStatus, '請先選擇想找的性質、性別與成年年齡範圍。', 'error');
+    return null;
+  }
+  return filters;
+}
+
+function makeHeartCardBack(entry, index) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'heart-card-back icon-button';
+  button.dataset.icon = '💓';
+  button.dataset.heartCardId = entry.id;
+  button.innerHTML = `<span>心動卡 ${index + 1}</span><strong>點我翻開</strong>`;
+  button.addEventListener('click', () => revealHeartCard(entry.id));
+  return button;
+}
+
+function makeHeartCardReveal(entry, index) {
+  const article = document.createElement('article');
+  article.className = 'heart-card revealed-card';
+  article.dataset.heartCardId = entry.id;
+  const title = document.createElement('h3');
+  title.textContent = activeInterfaceLanguage === 'ja' ? `心動カード ${index + 1}` : activeInterfaceLanguage === 'en' ? `Heart card ${index + 1}` : `心動卡 ${index + 1}`;
+
+  const meta = document.createElement('div');
+  meta.className = 'heart-card-meta';
+  for (const label of ['匿名', entry.nature === 'sensual' ? '色友' : '設友', entry.gender || 'any', entry.age]) {
+    const pill = document.createElement('span');
+    pill.className = 'heart-card-pill';
+    pill.textContent = label;
+    meta.append(pill);
+  }
+
+  if (entry.thumbnailDataUrl) {
+    const thumb = document.createElement('img');
+    thumb.className = 'heart-card-thumb';
+    thumb.src = entry.thumbnailDataUrl;
+    thumb.alt = '匿名用戶保留的文轉圖縮圖';
+    article.append(thumb);
+  }
+
+  const localizedLabel = makeSavedLabel(activeInterfaceLanguage === 'en' ? 'Localized comparison' : activeInterfaceLanguage === 'ja' ? 'ローカル対照' : '本地語言對照');
+  const localizedPrompt = makeReadonlyTextarea(typeof MatchmakingStudio !== 'undefined' ? MatchmakingStudio.getEntryLocalizedText(entry, activeInterfaceLanguage) : entry.sourceText, 5);
+  const englishLabel = makeSavedLabel('Complete English text-to-image setting prompt');
+  const englishPrompt = makeReadonlyTextarea(entry.englishPrompt, 8);
+  const copy = document.createElement('button');
+  copy.type = 'button';
+  copy.className = 'secondary-button icon-button';
+  copy.dataset.icon = '📋';
+  copy.textContent = '複製完整英文設定提示詞';
+  copy.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(entry.englishPrompt || '');
+    setStatus(matchmakingStatus, '已複製這張心動卡的完整英文設定提示詞。', 'success');
+  });
+  const actions = document.createElement('div');
+  actions.className = 'heart-card-actions';
+  actions.append(copy);
+  article.append(title, meta, localizedLabel, localizedPrompt, englishLabel, englishPrompt, actions);
+  return article;
+}
+
+function renderHeartCardBacks(entries) {
+  if (!heartCardList) return;
+  heartCardList.replaceChildren();
+  if (!entries.length) {
+    const empty = document.createElement('p');
+    empty.className = 'status';
+    empty.textContent = '目前沒有符合條件的匿名心動卡，請換一組條件再試。';
+    heartCardList.append(empty);
+    return;
+  }
+  heartCardList.dataset.lastDrawIds = JSON.stringify(entries.map((entry) => entry.id));
+  heartCardList.dataset.revealedId = '';
+  entries.forEach((entry, index) => heartCardList.append(makeHeartCardBack(entry, index)));
+}
+
+function revealHeartCard(entryId) {
+  if (!heartCardList?.dataset.lastDrawIds) return;
+  const ids = JSON.parse(heartCardList.dataset.lastDrawIds);
+  const entries = ids.map((id) => getAllHeartCardEntries().find((entry) => entry.id === id)).filter(Boolean);
+  const selected = entries.find((entry) => entry.id === entryId);
+  if (!selected) return;
+  heartCardList.dataset.revealedId = entryId;
+  heartCardList.replaceChildren(makeHeartCardReveal(selected, entries.indexOf(selected)));
+  setStatus(matchmakingStatus, '心動卡已翻開；可複製完整英文設定提示詞，也可對照目前介面語言版本。', 'success');
+}
+
+function rerenderHeartCardsForLanguage() {
+  if (!heartCardList?.dataset.lastDrawIds) return;
+  try {
+    const ids = JSON.parse(heartCardList.dataset.lastDrawIds);
+    const entries = ids.map((id) => getAllHeartCardEntries().find((entry) => entry.id === id)).filter(Boolean);
+    const revealedId = heartCardList.dataset.revealedId;
+    if (revealedId) {
+      revealHeartCard(revealedId);
+    } else {
+      renderHeartCardBacks(entries);
+    }
+  } catch {
+    heartCardList.dataset.lastDrawIds = '';
+  }
+}
+
+function showHeartCards() {
+  if (typeof MatchmakingStudio === 'undefined') return;
+  const filters = validateHeartCardFilters();
+  if (!filters) return;
+  const results = MatchmakingStudio.drawHeartCards(getAllHeartCardEntries(), filters, 3);
+  renderHeartCardBacks(results);
+  if (results.length) {
+    setStatus(matchmakingStatus, '已出現 3 張心動卡；請選一張翻開。', 'success');
+  } else {
+    setStatus(matchmakingStatus, '沒有符合條件的匿名心動卡。', 'error');
+  }
+}
+
 
 function makeReadonlyTextarea(value, rows = 4) {
   const textarea = document.createElement('textarea');
@@ -341,9 +738,9 @@ function renderSavedPrompts() {
       ? `業配：${item.sponsorSettings.text || item.sponsorSettings.imageName}｜${item.sponsorSettings.audienceAgeZh}｜${item.sponsorSettings.audienceIdentityZh}｜${item.sponsorSettings.goalZh}`
       : '未設定業配。';
 
-    const chinesePrompt = makeReadonlyTextarea(item.chineseConfirmation, 5);
+    const chinesePrompt = makeReadonlyTextarea(localizeComparisonText(item.chineseConfirmation), 5);
     const englishPrompt = makeReadonlyTextarea(item.englishPrompt, 6);
-    const videoZh = makeReadonlyTextarea(item.autoVideoZh, 4);
+    const videoZh = makeReadonlyTextarea(localizeComparisonText(item.autoVideoZh), 4);
     const videoEn = makeReadonlyTextarea(item.autoVideoPrompt, 5);
 
     const choose = document.createElement('button');
@@ -405,9 +802,11 @@ function saveCurrentPrompt() {
     dialogueToCamera: dialogueToCamera.value.trim(),
     dialogueBetweenCharacters: dialogueBetweenCharacters.value.trim(),
     sponsorSettings: getSponsorSettings(),
-    chineseConfirmation: textConfirmationPrompt.value,
+    communityGender: getCurrentPromptCommunityProfile().gender,
+    communityAge: getCurrentPromptCommunityProfile().age,
+    chineseConfirmation: textConfirmationPrompt.dataset.sourceZh || textConfirmationPrompt.value,
     englishPrompt: textResultPrompt.value,
-    autoVideoZh: autoVideoConfirmation.value,
+    autoVideoZh: autoVideoConfirmation.dataset.sourceZh || autoVideoConfirmation.value,
     autoVideoPrompt: autoVideoPrompt.value,
     createdAt: new Date().toISOString(),
     images: []
@@ -674,13 +1073,17 @@ function setupCustomizationControls() {
   populateSelect(face, CUSTOMIZATION_OPTIONS.faces);
   populateSelect(outfit, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(outfitColor, CUSTOMIZATION_OPTIONS.outfitColors);
+  populateSelect(hairFurColor, CUSTOMIZATION_OPTIONS.hairFurColors);
   populateSelect(outfitMaterial, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitMaterials));
   populateSelect(bodyFeature, getDesignerOptions(CUSTOMIZATION_OPTIONS.bodyFeatures));
   populateSelect(outfitIntegrity, getDesignerOptions(CUSTOMIZATION_OPTIONS.outfitIntegrity));
   populateSelect(count, CUSTOMIZATION_OPTIONS.counts);
+  populateSelect(pet, CUSTOMIZATION_OPTIONS.pets, { includeAi: false });
+  pet.value = pet.value || '無';
   populateSelect(accessory, getDesignerOptions(CUSTOMIZATION_OPTIONS.accessories));
-  populateSelect(scene, getDesignerOptions(CUSTOMIZATION_OPTIONS.scenes));
+  populateSceneOptions();
   populateSelect(actionMode, ACTION_MODE_OPTIONS);
+  populateSelect(gazeDirection, CUSTOMIZATION_OPTIONS.gazeDirections);
   populateSelect(sensualOutfit, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.outfits));
   populateSelect(sensualScene, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.scenes));
   populateSelect(sensualAccessory, getSensualOnlyOptions(CUSTOMIZATION_OPTIONS.accessories));
@@ -793,32 +1196,59 @@ function getDialogueForVideo() {
   };
 }
 
-function buildAutoVideoChoices(textPrompt) {
+function extractPromptValue(prompt, label) {
+  const escaped = label.replace(/[.*+?^${}()|\[\]\\]/g, '\\$&');
+  const match = prompt.match(new RegExp(`${escaped}:\\s*([^,]+)`, 'i'));
+  return match?.[1]?.trim() || '';
+}
+
+function buildPromptThreadInsights(textPrompt) {
   const base = textPrompt.replace(/\s+/g, ' ').trim();
+  return {
+    base,
+    subject: extractPromptValue(base, 'subject/action') || 'the established subject',
+    scene: extractPromptValue(base, 'scene') || 'the established scene',
+    pet: extractPromptValue(base, 'pet/companion'),
+    count: extractPromptValue(base, 'character count'),
+    style: extractPromptValue(base, 'art style'),
+    action: extractPromptValue(base, 'action/posture detail'),
+    sponsor: extractPromptValue(base, 'sponsored content'),
+    dialogue: /dialogue settings:/i.test(base)
+  };
+}
+
+function buildAutoVideoChoices(textPrompt) {
+  const thread = buildPromptThreadInsights(textPrompt);
   const dialogue = getDialogueForVideo();
+  const petZh = thread.pet ? `；寵物陪伴：${thread.pet}` : '';
+  const sponsorZh = thread.sponsor ? `；業配露出：${thread.sponsor}` : '';
+  const styleZh = thread.style ? `；保留畫風：${thread.style}` : '';
+  const dialogueZh = dialogue.zh ? `；對話：${dialogue.zh}` : thread.dialogue ? '；沿用提示詞串內的對話設定' : '';
+  const threadSummaryZh = `提示詞串解析：主體 ${thread.subject}；場景 ${thread.scene}${petZh}${sponsorZh}${styleZh}${dialogueZh}`;
+  const threadSummaryEn = `prompt-thread analysis: subject ${thread.subject}; scene ${thread.scene}${thread.pet ? `; pet/companion ${thread.pet}` : ''}${thread.sponsor ? `; sponsored content ${thread.sponsor}` : ''}${thread.style ? `; art style ${thread.style}` : ''}${thread.dialogue ? '; use existing dialogue settings' : ''}`;
   const designerVariants = [
-    ['AI 1｜自然微動', '依照圖片內容加入眨眼、呼吸、髮絲與衣料自然微動。', 'natural blinking, breathing, subtle hair and clothing motion based on the uploaded or generated image'],
-    ['AI 2｜慢速推鏡', '鏡頭慢慢推近主體，保持原本構圖與角色造型。', 'slow push-in toward the subject, preserving original composition and styling'],
-    ['AI 3｜環境氛圍', '背景光影與景深輕微漂移，主體保持穩定。', 'gentle background light and depth-of-field drift while keeping the subject stable'],
-    ['AI 4｜表情反應', '加入自然表情變化、視線移動與小幅轉頭。', 'natural expression change, eye movement, and a slight head turn'],
-    ['AI 5｜電影循環', '短距離電影感運鏡，適合做平順循環短片。', 'short cinematic camera move designed as a smooth loop']
+    ['AI 1｜主體故事微動', `依主體與場景安排自然反應，不新增情慾化肢體；${thread.scene} 的空間感要被看見。`, `story-aware general-audience motion for ${thread.subject} inside ${thread.scene}, natural reactions only, no romanticized body emphasis`],
+    ['AI 2｜場景互動', `讓角色與 ${thread.scene} 產生合理互動，例如視線、手部整理、走位或道具使用。`, `scene interaction based on ${thread.scene}: gaze shift, practical hand movement, small blocking adjustment, or prop use`],
+    ['AI 3｜造型材質', `讀取服裝、配件、畫風與寵物設定，讓髮絲、布料、物件或寵物做安全微動。`, `animate styling details from the prompt thread: hair, fabric, props${thread.pet ? `, and ${thread.pet}` : ''}, with safe subtle motion`],
+    ['AI 4｜業配／對話節奏', `若有業配或對話，依提示詞串安排露出與口型節奏，不搶走主題。`, `if the thread includes sponsored content or dialogue, time the reveal and lip-sync naturally without overpowering the main subject`],
+    ['AI 5｜循環短片腳本', `依提示詞串建立開場、中段、結尾三段式循環，不只做單純推近。`, `create a three-beat loop from the prompt thread: opening context, middle interaction, closing hold; do not rely on a generic push-in`]
   ];
   const sensualVariants = [
-    ['AI 1｜柔和呼吸運鏡', '柔和呼吸與慢推鏡；髮絲、布料輕微晃動，保持原本構圖。', 'subtle breathing, gentle hair and fabric motion, slow cinematic push-in, preserve the source composition'],
-    ['AI 2｜眼神與唇部微動', '眼神慢慢移動、唇部微表情與輕微轉頭，不加入露骨行為動畫。', 'slow eye movement, soft lip micro-expression, slight head turn, elegant camera easing, no explicit act animation'],
-    ['AI 3｜手部與服裝細節', '手部整理造型、布料自然位移、配件閃光，維持精緻畫面張力。', 'hands adjust styling, fabric shifts naturally, accessory sparkle, controlled elegant visual tension'],
-    ['AI 4｜姿態重心變化', '姿態重心慢慢轉移、身體線條有優雅動勢，維持藝術遮擋。', 'slow posture weight shift, graceful body-line motion, light parallax, keep tasteful artistic coverage'],
-    ['AI 5｜電影感環繞鏡頭', '短距離電影感環繞鏡頭、景深層次與氛圍光漂移，適合循環。', 'short cinematic orbit, layered depth, atmospheric light drift, smooth loop-ready motion']
+    ['AI 1｜成人氛圍呼吸', `依角色、服裝與場景維持合意成人氛圍，動態以呼吸、眼神與布料微動為主。`, `adult-consenting mood based on the established subject, outfit, and scene; use breathing, gaze, and fabric micro-motion without explicit acts`],
+    ['AI 2｜曖昧互動節奏', `讀取角色數與對話設定，安排靠近、停頓、眼神交換與反應節奏，避免露骨行為。`, `use character count and dialogue settings for approach, pause, gaze exchange, and reactions, avoiding explicit sexual action`],
+    ['AI 3｜身形與造型張力', `保留提示詞串的服裝完整度、身形與畫風，只加入安全的姿態重心變化。`, `preserve outfit integrity, body styling, and art style from the prompt thread; add safe weight-shift posture motion only`],
+    ['AI 4｜業配自然露出', `若有業配，讓露出時刻融入曖昧場景，不破壞合意成人安全邊界。`, `if sponsored content exists, integrate its reveal into the adult mood while preserving consent and safety boundaries`],
+    ['AI 5｜成人向循環腳本', `依提示詞串分成開場凝視、中段互動、結尾停格三段，保留藝術遮擋。`, `build a three-beat adult-only loop from the prompt thread: opening gaze, middle interaction, closing hold, preserving tasteful coverage`]
   ];
   const variants = activeAudienceMode === 'sensual' ? sensualVariants : designerVariants;
   const safety = activeAudienceMode === 'sensual'
-    ? 'no minors, no coercion, no voyeur framing, no graphic violence, no new explicit nudity beyond the source frame'
-    : 'safe general-audience motion, no identity change, no abrupt morphing, no graphic violence';
+    ? 'sensual-mode safety: all characters are clearly 18+ consenting adults, no coercion, no minors, no voyeur framing, no explicit sex-act animation, no new explicit nudity beyond the source frame'
+    : 'designer-mode safety: general-audience motion only, no sensual framing, no lingerie emphasis, no erotic gaze direction, no identity change, no abrupt morphing, no graphic violence';
 
   return variants.map(([label, zh, motion], index) => ({
     label,
-    zh: `中文說明：${zh}${dialogue.zh ? `；對話：${dialogue.zh}` : ''}`,
-    prompt: `image-to-video prompt option ${index + 1}, use this text-to-image prompt as the source frame: ${base}, motion plan: ${motion}, ${dialogue.en || 'no spoken dialogue requested'}, duration: 5 seconds, motion strength: medium, preserve subject appearance, outfit, scene, camera angle, and art style, ${safety}`
+    zh: `中文說明：${threadSummaryZh}；建議：${zh}${dialogue.zh ? `；對話：${dialogue.zh}` : ''}`,
+    prompt: `image-to-video prompt option ${index + 1}, ${threadSummaryEn}, use this generated prompt thread as the source plan: ${thread.base}, motion plan: ${motion}, ${dialogue.en || 'use dialogue only if already present in the prompt thread'}, duration: 5 seconds, motion strength: medium, preserve subject identity, outfit, pet or prop continuity, scene logic, composition, and art style, ${safety}`
   }));
 }
 
@@ -834,24 +1264,28 @@ function renderAutoVideoChoices(textPrompt) {
   }
 
   autoVideoChoice.value = '0';
-  autoVideoConfirmation.value = choices[0].zh;
+  autoVideoConfirmation.dataset.sourceZh = choices[0].zh;
+  autoVideoConfirmation.value = localizeComparisonText(choices[0].zh);
   autoVideoPrompt.value = choices[0].prompt;
   autoVideoPanel.hidden = false;
 }
 
 function renderTextResult(result, successMessage) {
   if (!result.ok || !result.screened) {
+    textConfirmationPrompt.dataset.sourceZh = '';
     textConfirmationPrompt.value = '';
     textResultPrompt.value = '';
     setOutputVisibility('text', false);
     autoVideoPanel.hidden = true;
+    autoVideoConfirmation.dataset.sourceZh = '';
     autoVideoConfirmation.value = '';
     autoVideoPrompt.value = '';
     setStatus(textStatus, result.reason || '提示詞未通過安全篩選。', 'error');
     return;
   }
 
-  textConfirmationPrompt.value = result.chineseConfirmation;
+  textConfirmationPrompt.dataset.sourceZh = result.chineseConfirmation;
+  textConfirmationPrompt.value = localizeComparisonText(result.chineseConfirmation);
   textResultPrompt.value = result.englishPrompt;
   setOutputVisibility('text', true);
   renderAutoVideoChoices(result.englishPrompt);
@@ -860,9 +1294,11 @@ function renderTextResult(result, successMessage) {
 
 function renderVideoResult(result, successMessage) {
   if (!result.ok || !result.screened) {
-    videoConfirmationPrompt.value = result.suggestedFix
+    const fixText = result.suggestedFix
       ? `修正建議：${result.suggestedFix.zh}\nSuggested fix: ${result.suggestedFix.en}`
       : '';
+    videoConfirmationPrompt.dataset.sourceZh = fixText;
+    videoConfirmationPrompt.value = localizeComparisonText(fixText);
     videoResultPrompt.value = '';
     setOutputVisibility('video', Boolean(result.suggestedFix));
     videoResultPrompt.hidden = true;
@@ -875,7 +1311,8 @@ function renderVideoResult(result, successMessage) {
     return;
   }
 
-  videoConfirmationPrompt.value = result.chineseConfirmation;
+  videoConfirmationPrompt.dataset.sourceZh = result.chineseConfirmation;
+  videoConfirmationPrompt.value = localizeComparisonText(result.chineseConfirmation);
   videoResultPrompt.value = result.englishPrompt;
   setOutputVisibility('video', true);
   setStatus(videoStatus, successMessage, 'success');
@@ -909,7 +1346,9 @@ function applyImageVideoChoice(score) {
     return;
   }
 
-  videoConfirmationPrompt.value = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
+  const selectedVideoZh = lastImageVideoResult.chineseConfirmation.replace(/中文對照詞意：[^，]+/, `中文對照詞意：${choice.zh}`);
+  videoConfirmationPrompt.dataset.sourceZh = selectedVideoZh;
+  videoConfirmationPrompt.value = localizeComparisonText(selectedVideoZh);
   if (lastImageVideoResult.audienceMode === 'designer') {
     videoResultPrompt.value = lastImageVideoResult.englishPrompt.replace(/motion suggestion: [^,]+/, `motion suggestion: ${choice.en}`);
   } else {
@@ -919,12 +1358,16 @@ function applyImageVideoChoice(score) {
 }
 
 setupCustomizationControls();
+setInterfaceLanguage(localStorage.getItem('niaiLanguage') || 'zh');
+setInputComplexity('simple');
+applyAiSuggestionState();
 setWizardIndex(0);
 setMode('text');
 setOutputVisibility('text', false);
 setOutputVisibility('video', false);
 updateAudienceMode(activeAudienceMode, localStorage.getItem('niaiGmail') || '');
 renderSavedPrompts();
+renderMatchmakingProfile();
 
 textModeButton.addEventListener('click', () => setMode('text'));
 videoModeButton.addEventListener('click', () => setMode('video'));
@@ -955,6 +1398,29 @@ for (const button of themeButtons) {
   });
 }
 
+for (const button of languageButtons) {
+  button.addEventListener('click', () => setInterfaceLanguage(button.dataset.languageChoice));
+}
+
+for (const button of inputComplexityButtons) {
+  button.addEventListener('click', () => setInputComplexity(button.dataset.inputComplexity));
+}
+
+deepfaceButton.addEventListener('click', () => {
+  deepfaceEnabled = !deepfaceEnabled;
+  deepfaceButton.classList.toggle('active', deepfaceEnabled);
+  deepfaceButton.setAttribute('aria-pressed', String(deepfaceEnabled));
+});
+
+withMeButton.addEventListener('click', () => {
+  withMeEnabled = !withMeEnabled;
+  withMeButton.classList.toggle('active', withMeEnabled);
+  withMeButton.setAttribute('aria-pressed', String(withMeEnabled));
+});
+
+dialogueMode.addEventListener('change', updateDialogueVisibility);
+aiSuggestionToggle.addEventListener('change', applyAiSuggestionState);
+
 function getCurrentGmail() {
   return gmailInput.value.trim() || localStorage.getItem('niaiGmail') || '';
 }
@@ -962,7 +1428,7 @@ function getCurrentGmail() {
 designerLoginButton.addEventListener('click', () => {
   const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；入口選定後本次操作不再切換身份。', 'error');
     return;
   }
   sensualConfirm.checked = false;
@@ -972,7 +1438,7 @@ designerLoginButton.addEventListener('click', () => {
 sensualLoginButton.addEventListener('click', () => {
   const gmail = getCurrentGmail();
   if (!/@gmail\.com$/i.test(gmail)) {
-    setStatus(authStatus, '請輸入 Gmail；之後可直接按按鈕切換設友／色友，不需要重開頁面。', 'error');
+    setStatus(authStatus, '請輸入 Gmail；入口選定後本次操作不再切換身份。', 'error');
     return;
   }
   if (!sensualConfirm.checked) {
@@ -983,6 +1449,8 @@ sensualLoginButton.addEventListener('click', () => {
 });
 
 savePromptButton.addEventListener('click', saveCurrentPrompt);
+publishMomentButton.addEventListener('click', publishMomentToHeartCards);
+showHeartCardsButton.addEventListener('click', showHeartCards);
 
 resultImageInput.addEventListener('change', async () => {
   const [file] = resultImageInput.files;
@@ -1000,6 +1468,8 @@ resultImageInput.addEventListener('change', async () => {
 
 count.addEventListener('change', () => {
   updateCharacterCards();
+  updateDialogueVisibility();
+  renderWizardPage();
 });
 
 actionMode.addEventListener('change', updateActionDetailOptions);
@@ -1010,7 +1480,8 @@ function refreshAutoVideoFromDialogue() {
   const choices = buildAutoVideoChoices(textResultPrompt.value);
   const selectedIndex = Number(autoVideoChoice.value) || 0;
   const choice = choices[selectedIndex] || choices[0];
-  autoVideoConfirmation.value = choice.zh;
+  autoVideoConfirmation.dataset.sourceZh = choice.zh;
+  autoVideoConfirmation.value = localizeComparisonText(choice.zh);
   autoVideoPrompt.value = choice.prompt;
 }
 
@@ -1096,6 +1567,9 @@ function getSensualOverride(generalValue, sensualValue) {
 rewriteButton.addEventListener('click', () => {
   const result = rewritePrompt(getTextRewriteSource(), {
     audienceMode: activeAudienceMode,
+    inputMode: activeInputComplexity,
+    deepfaceEnabled,
+    withMeEnabled,
     intensity: intensity.value,
     lighting: lighting.value,
     camera: camera.value,
@@ -1111,6 +1585,7 @@ rewriteButton.addEventListener('click', () => {
     face: face.value,
     outfit: getSensualOverride(outfit.value, sensualOutfit.value),
     outfitColor: outfitColor.value,
+    hairFurColor: hairFurColor.value,
     outfitMaterial: outfitMaterial.value,
     bodyFeature: bodyFeature.value,
     outfitIntegrity: activeAudienceMode === 'sensual' ? outfitIntegrity.value : 'AI判斷',
@@ -1118,10 +1593,15 @@ rewriteButton.addEventListener('click', () => {
     cosplayPrompt: cosplayPrompt.value,
     characterDetails: collectCharacterDetails(),
     accessory: getSensualOverride(accessory.value, sensualAccessory.value),
+    pet: pet.value,
     scene: getSensualOverride(scene.value, sensualScene.value),
-    actionMode: getSensualOverride(actionMode.value, sensualActionMode.value),
-    actionDetail: getSensualOverride(actionDetail.value, sensualActionDetail.value),
-    sponsorSettings: getSponsorSettings()
+    actionMode: activeInputComplexity === 'complex' ? getSensualOverride(actionMode.value, sensualActionMode.value) : 'AI判斷',
+    actionDetail: activeInputComplexity === 'complex' ? getSensualOverride(actionDetail.value, sensualActionDetail.value) : 'AI判斷',
+    gazeDirection: gazeDirection.value,
+    dialogueMode: dialogueMode.value,
+    dialogueToCamera: dialogueToCamera.value,
+    dialogueBetweenCharacters: dialogueBetweenCharacters.value,
+    sponsorSettings: activeInputComplexity === 'complex' && document.querySelector('[data-text-step-panel="commercial"]') ? getSponsorSettings() : {}
   });
 
   renderTextResult(result, '文生圖提示詞已產生：中文僅供確認，下方可複製區只包含英文提示詞。');
@@ -1143,6 +1623,7 @@ imageVideoButton.addEventListener('click', () => {
     audienceMode: activeAudienceMode,
     dialogueToCamera: dialogueToCamera.value,
     dialogueBetweenCharacters: dialogueBetweenCharacters.value,
+    promptThread: textResultPrompt.value || autoVideoPrompt.value,
     sponsorSettings: getSponsorSettings()
   });
 

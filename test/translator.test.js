@@ -19,6 +19,9 @@ const {
   EXPRESSION_OPTIONS,
   TIME_POINTS,
   CUSTOMIZATION_OPTIONS,
+  PET_OPTIONS,
+  HAIR_FUR_COLOR_OPTIONS,
+  GAZE_DIRECTION_OPTIONS,
   checkElementBoundaries
 } = require('../src/translator');
 
@@ -88,6 +91,9 @@ test('provides requested preset counts for visual controls', () => {
   assert.equal(CAMERA_ANGLES.length, 50);
   assert.equal(COMPOSITION_STRUCTURES.length, 20);
   assert.equal(ART_STYLES.length, 100);
+  assert.ok(ART_STYLES.every(({ zh, en }) => !/種族|光感|柔光|月光|光效|glow|light|lighting|race|species|goddess|vampire|merfolk|angel|demon/i.test(`${zh} ${en}`)));
+  assert.ok(ART_STYLES.some(({ zh }) => /筆|刷|色彩|畫派|派|塗|彩/.test(zh)));
+  assert.ok(ART_STYLES.every(({ en }) => /brushwork|palette|color|composition|texture|drawing|rendering|print|vector|dithering|collage/.test(en)));
   assert.equal(TIME_POINTS.length, 20);
   assert.ok(TIME_POINTS.every(({ en }) => /light|color|texture/.test(en)));
   assert.ok(TIME_POINTS.every(({ zh }) => /光|色|質感/.test(zh)));
@@ -102,6 +108,13 @@ test('provides requested gender, race, emotion, outfit, scene, and body customiz
   assert.equal(EMOTION_OPTIONS.length, 50);
   assert.equal(EXPRESSION_OPTIONS, EMOTION_OPTIONS);
   assert.equal(CUSTOMIZATION_OPTIONS.faces.length, 30);
+  assert.equal(PET_OPTIONS.length, 101);
+  assert.equal(CUSTOMIZATION_OPTIONS.pets.length, 101);
+  assert.match(PET_OPTIONS[0].zh, /無/);
+  assert.match(PET_OPTIONS[1].zh, /家貓/);
+  assert.equal(HAIR_FUR_COLOR_OPTIONS.length, 30);
+  assert.equal(GAZE_DIRECTION_OPTIONS.length, 20);
+  assert.match(PET_OPTIONS.at(-1).zh, /星際小獸/);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.length, 400);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-normal').length, 100);
   assert.equal(CUSTOMIZATION_OPTIONS.outfits.filter(({ rarity }) => rarity === 'male-sensual').length, 100);
@@ -176,12 +189,14 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
     outfit: CUSTOMIZATION_OPTIONS.outfits[50].zh,
     outfitColor: CUSTOMIZATION_OPTIONS.outfitColors[2].zh,
     bodyFeature: CUSTOMIZATION_OPTIONS.bodyFeatures[0].zh,
+    hairFurColor: HAIR_FUR_COLOR_OPTIONS[2].zh,
     outfitIntegrity: CUSTOMIZATION_OPTIONS.outfitIntegrity[3].zh,
     count: CUSTOMIZATION_OPTIONS.counts[1].zh,
     scene: CUSTOMIZATION_OPTIONS.scenes[50].zh,
     accessory: CUSTOMIZATION_OPTIONS.accessories[55].zh,
     actionMode: ACTION_MODE_OPTIONS[2].zh,
     actionDetail: getActionDetailsForMode(ACTION_MODE_OPTIONS[2].zh)[25].zh,
+    gazeDirection: GAZE_DIRECTION_OPTIONS[0].zh,
     cosplayPrompt: 'vampire queen with pearl accessories'
   });
 
@@ -189,18 +204,21 @@ test('adds selected gender, race, emotion, body, outfit, and scene customization
   assert.match(result.chineseConfirmation, /性別：男性成人/);
   assert.match(result.chineseConfirmation, /種族：精靈族/);
   assert.match(result.chineseConfirmation, /情緒：咬唇表情/);
-  assert.match(result.chineseConfirmation, /身上特徵：鎖骨小痣/);
+  assert.match(result.chineseConfirmation, /特徵：鎖骨小痣/);
+  assert.match(result.chineseConfirmation, /毛色／髮色：栗棕/);
   assert.match(result.chineseConfirmation, /服裝：休閒亞麻襯衫套裝/);
   assert.match(result.chineseConfirmation, /服裝配色：酒紅/);
   assert.match(result.chineseConfirmation, /服裝完整度：外套半披/);
   assert.match(result.chineseConfirmation, /場景：現代公寓客廳/);
   assert.match(result.chineseConfirmation, /光感：正面柔光/);
   assert.match(result.chineseConfirmation, /配件／道具：皮革腿環/);
+  assert.match(result.chineseConfirmation, /眼神位置：看鏡頭/);
   assert.match(result.chineseConfirmation, /Cosplay：vampire queen with pearl accessories/);
   assert.match(result.englishPrompt, /gender: adult man/);
   assert.match(result.englishPrompt, /race: elf/);
   assert.match(result.englishPrompt, /emotion: soft lip-biting expression/);
-  assert.match(result.englishPrompt, /body feature: beauty mark near collarbone/);
+  assert.match(result.englishPrompt, /feature: beauty mark near collarbone/);
+  assert.match(result.englishPrompt, /hair\/fur color: chestnut brown hair or fur/);
   assert.match(result.englishPrompt, /outfit: casual linen shirt set/);
   assert.match(result.englishPrompt, /outfit color palette: wine red/);
   assert.match(result.englishPrompt, /outfit integrity: jacket half-draped/);
@@ -276,6 +294,58 @@ test('per-character detail objects can override each adult character without dup
   assert.match(result.englishPrompt, /character 1 details: gender: adult woman, race: elf/);
   assert.match(result.englishPrompt, /character 2 details: gender: adult man, occupation: private bodyguard/);
   assert.doesNotMatch(result.englishPrompt, /gender: adult man, race: AI decides/);
+});
+
+test('dialogue settings label numbered multi-character positions and single character omits per-character cards', () => {
+  const multi = rewritePrompt('咖啡館約會', {
+    count: CUSTOMIZATION_OPTIONS.counts[1].zh,
+    dialogueMode: 'between-characters',
+    dialogueBetweenCharacters: '角色1說晚安，角色2回頭微笑'
+  });
+
+  assert.equal(multi.ok, true);
+  assert.match(multi.chineseConfirmation, /對話設定/);
+  assert.match(multi.chineseConfirmation, /角色1在畫面左側或前景/);
+  assert.match(multi.englishPrompt, /Character 1 is placed/);
+  assert.match(multi.englishPrompt, /label speakers by character number/);
+
+  const single = rewritePrompt('單人肖像', {
+    count: CUSTOMIZATION_OPTIONS.counts[0].zh,
+    characterDetails: [{ zh: '角色1: 性別 女性成人', en: 'gender: adult woman' }],
+    dialogueMode: 'between-characters',
+    dialogueBetweenCharacters: '角色1自言自語'
+  });
+
+  assert.equal(single.ok, true);
+  assert.doesNotMatch(single.chineseConfirmation, /角色1細節/);
+  assert.doesNotMatch(single.englishPrompt, /character 1 details/);
+  assert.doesNotMatch(single.englishPrompt, /character-to-character dialogue/);
+});
+
+test('DeepFace, WITH ME, and simple love mode produce targeted prompt instructions', () => {
+  const result = rewritePrompt('日常穿搭人像', {
+    inputMode: 'simple',
+    deepfaceEnabled: true,
+    withMeEnabled: true,
+    scene: CUSTOMIZATION_OPTIONS.scenes[17].zh,
+    lighting: LIGHTING_DESCRIPTIONS[1].zh,
+    actionMode: ACTION_MODE_OPTIONS[1].zh,
+    pet: PET_OPTIONS.at(-1).zh,
+    sponsorSettings: { text: '新品香氛', goalZh: '認識品牌', goalEn: 'brand awareness' }
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.chineseConfirmation, /輸入模式：簡單愛/);
+  assert.match(result.chineseConfirmation, /DeepFace：請套用附圖的人物設定/);
+  assert.match(result.chineseConfirmation, /WITH ME：提示詞完成後/);
+  assert.match(result.englishPrompt, /input mode: simple love/);
+  assert.match(result.englishPrompt, /DeepFace reference application/);
+  assert.match(result.englishPrompt, /WITH ME companion-composite plan/);
+  assert.match(result.chineseConfirmation, /寵物：星際小獸/);
+  assert.match(result.englishPrompt, /pet\/companion: small star beast/);
+  assert.doesNotMatch(result.englishPrompt, /lighting:/);
+  assert.doesNotMatch(result.englishPrompt, /action\/posture/);
+  assert.doesNotMatch(result.englishPrompt, /sponsored placement settings/);
 });
 
 test('does not append category tag text to browser option labels', () => {
@@ -356,7 +426,11 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /data-text-step="visual"/);
   assert.match(indexSource, /data-text-step="character"/);
   assert.match(indexSource, /data-text-step="scene"/);
-  assert.match(indexSource, /data-text-step="sponsor"/);
+  assert.match(indexSource, /data-text-step="commercial"/);
+  assert.match(indexSource, /AI建議/);
+  assert.match(indexSource, /hairFurColor/);
+  assert.match(indexSource, /gazeDirection/);
+  assert.match(indexSource, /商用加選/);
   assert.match(indexSource, /data-text-step="sensual"/);
   assert.match(indexSource, /data-character-substep="basics"/);
   assert.match(indexSource, /data-character-substep="outfit"/);
@@ -371,6 +445,15 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /sponsorGoal/);
   assert.match(indexSource, /sponsorExposureTiming/);
   assert.match(indexSource, /sponsorExposureForm/);
+  assert.match(indexSource, /id="landingPage"/);
+  assert.match(indexSource, /id="appShell" class="app-shell" hidden/);
+  assert.match(indexSource, /id="pet"/);
+  assert.match(indexSource, /data-language-choice="zh"/);
+  assert.match(indexSource, /data-language-choice="en"/);
+  assert.match(indexSource, /data-language-choice="hk"/);
+  assert.match(indexSource, /data-language-choice="ja"/);
+  assert.match(indexSource, /data-icon="🎞️"/);
+  assert.match(indexSource, /<label for="pet">寵物<\/label>/);
   assert.match(indexSource, /清純戀愛/);
   assert.match(indexSource, /神秘曖昧/);
   assert.match(indexSource, /陽光熱戀/);
@@ -379,18 +462,26 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(indexSource, /sensualOutfit/);
   assert.match(indexSource, /sensualScene/);
   assert.match(indexSource, /sensualActionDetail/);
-  assert.match(indexSource, /切換為設友/);
-  assert.match(indexSource, /切換為色友/);
+  assert.match(indexSource, /進入設友/);
+  assert.match(indexSource, /進入色友/);
+  assert.match(indexSource, /簡單愛/);
+  assert.match(indexSource, /複雜愛/);
+  assert.match(indexSource, /DeepFace/);
+  assert.match(indexSource, /WITH ME/);
+  assert.match(indexSource, /data-text-step="commercial"/);
+  assert.match(indexSource, /dialogueMode/);
   assert.match(indexSource, /savePromptButton/);
   assert.match(indexSource, /saveTitleInput/);
   assert.match(indexSource, /dialogueToCamera/);
   assert.match(indexSource, /dialogueBetweenCharacters/);
+  assert.match(indexSource, /對鏡頭說/);
+  assert.match(indexSource, /角色間對話/);
   assert.match(indexSource, /resultImageInput/);
   assert.match(indexSource, /data-text-step-panel="visual"/);
   assert.match(indexSource, /data-text-step-panel="character"[^>]*hidden/);
   assert.match(indexSource, /data-text-step-panel="scene"[^>]*hidden/);
   assert.match(indexSource, /每個下拉都可維持 AI 判斷/);
-  assert.match(indexSource, /不確定的選項保持 AI 判斷即可/);
+  assert.match(indexSource, /可自選是否讓 AI 判定/);
   assert.match(appSource, /function setTextStep/);
   assert.match(appSource, /WIZARD_PAGES/);
   assert.match(appSource, /function renderWizardPage/);
@@ -401,6 +492,18 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(appSource, /function updateAdultOnlyControls/);
   assert.match(appSource, /populateSelect\(sensualOutfit, getSensualOnlyOptions\(CUSTOMIZATION_OPTIONS\.outfits\)\)/);
   assert.match(appSource, /getSensualOverride/);
+  assert.match(appSource, /setInputComplexity/);
+  assert.match(appSource, /SIMPLE_DAILY_SCENE_OPTIONS/);
+  assert.match(appSource, /landingPage/);
+  assert.match(appSource, /appShell/);
+  assert.match(appSource, /populateSelect\(pet, CUSTOMIZATION_OPTIONS\.pets, \{ includeAi: false \}\)/);
+  assert.match(appSource, /applyAiSuggestionState/);
+  assert.match(appSource, /deepfaceEnabled/);
+  assert.match(appSource, /withMeEnabled/);
+  assert.match(appSource, /UI_TRANSLATIONS/);
+  assert.match(appSource, /setInterfaceLanguage/);
+  assert.match(appSource, /buildPromptThreadInsights/);
+  assert.match(appSource, /prompt-thread analysis/);
   assert.match(appSource, /button\.addEventListener\('click', \(\) => setTextStep\(button\.dataset\.textStep\)\)/);
   assert.match(styleSource, /\.quick-guide/);
   assert.match(styleSource, /\.text-step-tabs/);
@@ -410,6 +513,8 @@ test('text-to-image controls are split into guided setup tabs', () => {
   assert.match(styleSource, /file-selector-button/);
   assert.match(styleSource, /body\[data-theme='pure-love'\]/);
   assert.match(styleSource, /body\[data-theme='forbidden-love'\]/);
+  assert.match(styleSource, /\.language-panel/);
+  assert.match(styleSource, /\.icon-button::before/);
 });
 
 test('all customization selectors include AI judgment in the browser', () => {
@@ -427,7 +532,10 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.doesNotMatch(appSource, /sourcePrompt/);
   assert.match(appSource, /selected customization controls/);
   assert.match(appSource, /buildAutoVideoChoices/);
+  assert.match(appSource, /designer-mode safety/);
+  assert.match(appSource, /sensual-mode safety/);
   assert.match(appSource, /getDialogueForVideo/);
+  assert.match(appSource, /populateSceneOptions/);
   assert.match(appSource, /refreshAutoVideoFromDialogue/);
   assert.match(appSource, /autoVideoChoice/);
   assert.match(appSource, /autoVideoConfirmation/);
@@ -443,8 +551,8 @@ test('all customization selectors include AI judgment in the browser', () => {
   assert.match(indexSource, /autoVideoConfirmation/);
   assert.match(indexSource, /中文圖轉影說明/);
   assert.match(indexSource, /儲存標題/);
-  assert.match(indexSource, /跟鏡頭說/);
-  assert.match(indexSource, /角色間互動對話/);
+  assert.match(indexSource, /對鏡頭說/);
+  assert.match(indexSource, /角色間對話/);
   assert.match(indexSource, /character1Race/);
   assert.match(indexSource, /adult-only-control[^>]*for="character1OutfitIntegrity"/);
   assert.match(indexSource, /動作和姿態共用這一欄/);
@@ -501,6 +609,31 @@ test('creates safe image-to-video prompts with Chinese meaning confirmation and 
   assert.doesNotMatch(result.englishPrompt, /圖轉影|色情程度|成人向強度|中文對照/);
 });
 
+
+test('image-to-video reads generated prompt threads and keeps designer/sensual split', () => {
+  const designer = createImageToVideoPrompt({
+    audienceMode: 'designer',
+    imageDescription: '品牌產品與人物在咖啡館',
+    promptThread: 'subject/action: florist with perfume bottle, character count: single adult, scene: night cafe beside a rainy window, pet/companion: house cat, art style: watercolor wash brushwork, sponsored content: Serenity Mist'
+  });
+
+  assert.equal(designer.ok, true);
+  assert.match(designer.chineseConfirmation, /已讀取目前已生成的提示詞串/);
+  assert.match(designer.englishPrompt, /generated prompt thread to read before planning motion/);
+  assert.match(designer.englishPrompt, /prompt-thread script|prompt-thread continuity/);
+  assert.doesNotMatch(designer.englishPrompt, /sensual-mode safety|adult-only explicitness/);
+  assert.match(designer.englishPrompt, /designer-mode safety|general-audience/);
+
+  const sensual = createImageToVideoPrompt({
+    audienceMode: 'sensual',
+    imageDescription: 'adult portrait, elegant lingerie, bedroom, warm shadows',
+    skinToneRatio: 0.2,
+    promptThread: 'subject/action: consenting adult romantic portrait, scene: velvet sofa parlor, outfit: lace styling, dialogue settings: quiet whisper'
+  });
+
+  assert.equal(sensual.ok, true);
+  assert.match(sensual.englishPrompt, /adult-only explicitness rating|sensual-mode safety/);
+});
 
 test('designer image-to-video prompts avoid adult framing and include dialogue', () => {
   const result = createImageToVideoPrompt({

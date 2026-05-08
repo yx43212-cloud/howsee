@@ -215,106 +215,106 @@ const COMPOSITION_STRUCTURES = [
 ];
 
 const ART_STYLES = [
-  { zh: '電影劇照風', en: 'cinematic still frame, dramatic composition, filmic color grading' },
-  { zh: '高級雜誌寫真風', en: 'premium editorial photography, refined styling, glossy finish' },
-  { zh: '精品時尚封面風', en: 'luxury fashion magazine cover, polished styling, premium composition' },
-  { zh: '高級閨房寫真風', en: 'fine-art boudoir photography, elegant shadows, restrained sensuality' },
-  { zh: '古典油畫寫實風', en: 'classic oil painting realism, soft brush texture, museum portrait lighting' },
-  { zh: '巴洛克肖像風', en: 'baroque-inspired portrait, rich contrast, ornate visual atmosphere' },
-  { zh: '新黑色電影風', en: 'neo-noir photography, deep shadows, moody tension' },
-  { zh: '柔和粉彩插畫風', en: 'soft pastel illustration, dreamy colors, delicate linework' },
-  { zh: '日系動畫主視覺風', en: 'anime key visual style, clean rendering, expressive eyes' },
-  { zh: '漫畫封面風', en: 'manga cover illustration, sharp line art, dramatic screentone depth' },
-  { zh: '半寫實數位繪畫風', en: 'semi-realistic digital painting, painterly edges, detailed anatomy' },
-  { zh: '高級伸展台時尚風', en: 'high-fashion runway editorial, bold silhouette, glossy styling' },
-  { zh: '復古底片攝影風', en: 'vintage film photography, subtle grain, warm faded tones' },
-  { zh: '拍立得親密快照風', en: 'polaroid-inspired intimate snapshot, soft flash, nostalgic mood' },
-  { zh: '超現實夢境藝術風', en: 'surreal dreamscape art, symbolic props, floating atmosphere' },
-  { zh: '賽博龐克霓虹風', en: 'cyberpunk neon illustration, reflective surfaces, futuristic palette' },
-  { zh: '黑暗哥德浪漫風', en: 'dark gothic romance, velvet shadows, silver highlights' },
-  { zh: '極簡棚拍肖像風', en: 'minimalist studio portrait, clean backdrop, precise body lines' },
-  { zh: '浪漫水彩風', en: 'romantic watercolor wash, translucent layers, gentle color bleeding' },
-  { zh: '新藝術海報風', en: 'Art Nouveau poster style, flowing ornamental lines, elegant framing' },
-  { zh: '裝飾藝術奢華風', en: 'Art Deco glamour, geometric framing, gold accents, sleek luxury' },
-  { zh: '文藝復興肖像氛圍', en: 'Renaissance portrait mood, balanced composition, soft sfumato lighting' },
-  { zh: '印象派光影研究風', en: 'impressionist light study, visible strokes, luminous color vibration' },
-  { zh: '高細節 3D 渲染風', en: 'hyper-detailed 3D render, cinematic materials, realistic fabric simulation' },
-  { zh: '柔焦美妝廣告風', en: 'soft glam beauty campaign, luminous makeup, creamy highlights' },
-  { zh: '黑白時尚攝影風', en: 'editorial black-and-white photography, sculptural contrast, timeless mood' },
-  { zh: '高亮柔白棚拍風', en: 'high-key studio style, bright airy tones, soft exposure' },
-  { zh: '低調暗背景戲劇肖像風', en: 'low-key dramatic portrait, dark background, focused rim lighting' },
-  { zh: '韓系 Webtoon 插畫風', en: 'Korean webtoon illustration, smooth shading, stylish character design' },
-  { zh: '日系視覺小說 CG 風', en: 'Japanese visual novel CG style, polished lighting, emotional framing' },
-  { zh: '奇幻角色設計風', en: 'fantasy character art, ornate costume details, magical ambience' },
-  { zh: '神話女神插畫風', en: 'mythic goddess illustration, radiant aura, heroic scale' },
-  { zh: '精品香水廣告風', en: 'luxury perfume advertisement, sensual elegance, glossy finish' },
-  { zh: '音樂錄影帶畫面風', en: 'music video frame, dynamic colored lights, performance energy' },
-  { zh: '時裝型錄攝影風', en: 'fashion lookbook photography, clean poses, precise garment detail' },
-  { zh: '建築室內雜誌風', en: 'architectural interior editorial, strong lines, refined spatial composition' },
-  { zh: '浪漫燭光寫實風', en: 'romantic warm-glow realism, textured shadows' },
-  { zh: '雨夜電影攝影風', en: 'rainy-night cinematic photography, reflections, blue-orange contrast' },
-  { zh: '柔焦魅力攝影風', en: 'soft-focus glamour photography, gentle bloom, polished skin highlights' },
-  { zh: '紀實親密肖像風', en: 'documentary-style intimate portrait, natural framing, believable emotion' },
-  { zh: '空靈奇幻寫實風', en: 'ethereal fantasy realism, delicate atmosphere' },
-  { zh: '復古 80 年代霓虹海報風', en: 'retro 1980s neon poster, saturated colors, graphic lighting' },
-  { zh: 'Y2K 亮面數位藝術風', en: 'Y2K glossy digital art, chrome accents, playful luxury' },
-  { zh: '高細節概念美術風', en: 'high-detail concept art, cinematic composition, clear focal hierarchy' },
-  { zh: '高級 AI 肖像風', en: 'premium AI portrait style, crisp details, balanced realism and fantasy' },
-  { zh: '浪漫故事書插畫風', en: 'storybook romantic illustration, warm palette, graceful shapes' },
-  { zh: '單色水墨風', en: 'monochrome ink wash, expressive brushwork, elegant negative space' },
-  { zh: '大理石雕像美學風', en: 'sculptural marble statue aesthetic, smooth forms, gallery lighting' },
-  { zh: '紅毯明星雜誌風', en: 'red-carpet celebrity editorial, confident pose, flash-lit glamour' },
-  { zh: '超乾淨商業渲染風', en: 'ultra-clean commercial render, sharp focus, production-ready prompt style' },
-  { zh: '透明水晶夢境風', en: 'transparent crystal dream style, refractive highlights, delicate fantasy polish' },
-  { zh: '暗黑童話插畫風', en: 'dark fairytale illustration, moody ornament, sensual storybook atmosphere' },
-  { zh: '洛可可粉金肖像風', en: 'rococo rose-gold portrait, ornate curves, delicate luxury detail' },
-  { zh: '維多利亞哥德寫真風', en: 'Victorian gothic editorial, corseted silhouettes, antique shadow mood' },
-  { zh: '未來奢華時尚風', en: 'futuristic luxury fashion, sleek metallic styling, premium sci-fi glamour' },
-  { zh: '霓虹玻璃棚拍風', en: 'neon glass studio style, reflective panels, vivid color glow' },
-  { zh: '柔霧膠片寫真風', en: 'soft mist film portrait, creamy grain, gentle nostalgic bloom' },
-  { zh: '高彩度流行海報風', en: 'high-saturation pop poster, bold graphic color, crisp figure emphasis' },
-  { zh: '低飽和文藝寫真風', en: 'low-saturation art portrait, quiet palette, refined emotional texture' },
-  { zh: '日系寫真集封面風', en: 'Japanese photobook cover style, clean layout, intimate editorial softness' },
-  { zh: '韓系偶像概念照風', en: 'K-pop idol concept photo style, polished styling, dramatic color accents' },
-  { zh: '歐美時尚大片風', en: 'Western high-fashion campaign, confident styling, cinematic editorial scale' },
-  { zh: '精品內衣型錄風', en: 'luxury lingerie lookbook style, tasteful adult styling, fabric detail focus' },
-  { zh: '成人戀愛遊戲CG風', en: 'adult romance game CG style, polished character rendering, emotional close framing' },
-  { zh: '乙女向華麗插畫風', en: 'otome-inspired ornate illustration, jeweled details, romantic elegance' },
-  { zh: '奇幻酒館海報風', en: 'fantasy tavern poster style, warm dramatic color, character-led composition' },
-  { zh: '魔法儀式光效風', en: 'magical ritual glow style, luminous symbols, fantasy atmospheric light' },
-  { zh: '太空歌劇肖像風', en: 'space opera portrait, cosmic backdrop feeling, polished sci-fi costume detail' },
-  { zh: '賽博偶像舞台風', en: 'cyber idol stage style, neon accents, glossy performance energy' },
-  { zh: '復古科幻雜誌風', en: 'retro sci-fi magazine cover, painted futurism, bold dramatic shapes' },
-  { zh: '蒸汽龐克華麗風', en: 'steampunk glamour style, brass details, smoky warm atmosphere' },
-  { zh: '柴油龐克電影風', en: 'dieselpunk cinematic style, industrial elegance, high-contrast atmosphere' },
-  { zh: '沙漠黃金幻想風', en: 'desert-gold fantasy style, sun-warmed palette, ornate textile texture' },
-  { zh: '海底人魚幻想風', en: 'underwater merfolk fantasy, blue-green caustic light, flowing fabric motion' },
-  { zh: '森林妖精柔光風', en: 'forest fae soft-light style, green-gold ambience, delicate magical texture' },
-  { zh: '冰雪女王肖像風', en: 'ice-queen portrait style, silver-blue palette, crystalline highlights' },
-  { zh: '火焰女神海報風', en: 'fire goddess poster style, amber glow, strong silhouette drama' },
-  { zh: '月光吸血鬼寫真風', en: 'moonlit vampire editorial, cool silver light, velvet darkness' },
-  { zh: '天使羽光插畫風', en: 'angelic feather-light illustration, pearly highlights, airy softness' },
-  { zh: '惡魔紅黑海報風', en: 'demon red-black poster style, bold contrast, glossy shadow tension' },
-  { zh: '花魁浮世繪混合風', en: 'oiran ukiyo-e fusion style, ornate patterns, modern sensual elegance' },
-  { zh: '中國古風工筆風', en: 'Chinese gongbi-inspired style, fine lines, elegant textile detail' },
-  { zh: '港風復古電影風', en: 'Hong Kong retro cinema style, neon warmth, nostalgic film contrast' },
-  { zh: '台式寫真棚拍風', en: 'Taiwanese portrait studio style, soft glamour, approachable polish' },
-  { zh: '法式香頌海報風', en: 'French chanson poster style, romantic typography mood, vintage elegance' },
-  { zh: '義式奢華電影風', en: 'Italian luxury cinema style, warm sensual color, refined drama' },
-  { zh: '北歐極簡寫真風', en: 'Nordic minimalist portrait, clean palette, calm sculptural composition' },
-  { zh: '拉丁熱情海報風', en: 'Latine passion poster style, warm saturated palette, rhythmic composition' },
-  { zh: '黑金奢華廣告風', en: 'black-gold luxury advertisement, glossy premium contrast, jewel highlights' },
-  { zh: '銀白未來廣告風', en: 'silver-white futuristic advertisement, clean reflections, sleek material finish' },
-  { zh: '糖果色夢幻插畫風', en: 'candy-color dreamy illustration, playful pastel shine, soft rounded detail' },
-  { zh: '濃厚油彩肖像風', en: 'thick impasto oil portrait, visible brush texture, dramatic painted depth' },
-  { zh: '鉛筆素描寫真風', en: 'pencil sketch portrait style, delicate shading, intimate line texture' },
-  { zh: '炭筆高反差風', en: 'charcoal high-contrast style, smoky shadows, expressive figure contours' },
-  { zh: '彩色鉛筆柔描風', en: 'colored-pencil soft rendering, textured paper feel, gentle color layering' },
-  { zh: '玻璃反射藝術風', en: 'glass-reflection art style, layered reflections, prismatic composition' },
-  { zh: '水面倒影電影風', en: 'water-reflection cinematic style, rippled highlights, moody symmetry' },
-  { zh: '珠寶櫥窗廣告風', en: 'jewelry-window advertisement style, sparkling accents, luxury product polish' },
-  { zh: '夢幻薄霧棚拍風', en: 'dreamy haze studio style, soft diffusion, luminous figure edges' },
-  { zh: '超寫實高解析風', en: 'hyper-real high-resolution style, precise skin and fabric detail, premium realism' }
+  { zh: '水彩暈染印象派色彩風', en: 'watercolor wash brushwork, Impressionist color handling, style-only rendering' },
+  { zh: '水彩暈染野獸派高彩風', en: 'watercolor wash brushwork, Fauvist saturated palette, style-only rendering' },
+  { zh: '水彩暈染莫蘭迪灰調風', en: 'watercolor wash brushwork, Morandi muted palette, style-only rendering' },
+  { zh: '水彩暈染包浩斯原色風', en: 'watercolor wash brushwork, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '水彩暈染浮世繪配色風', en: 'watercolor wash brushwork, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '水彩暈染新藝術曲線風', en: 'watercolor wash brushwork, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '水彩暈染裝飾藝術幾何風', en: 'watercolor wash brushwork, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '水彩暈染至上主義構成風', en: 'watercolor wash brushwork, Suprematist abstract composition, style-only rendering' },
+  { zh: '水彩暈染普普藝術色塊風', en: 'watercolor wash brushwork, Pop Art bold color fields, style-only rendering' },
+  { zh: '水彩暈染極簡留白風', en: 'watercolor wash brushwork, minimal negative-space arrangement, style-only rendering' },
+  { zh: '厚塗油彩印象派色彩風', en: 'impasto oil brushwork, Impressionist color handling, style-only rendering' },
+  { zh: '厚塗油彩野獸派高彩風', en: 'impasto oil brushwork, Fauvist saturated palette, style-only rendering' },
+  { zh: '厚塗油彩莫蘭迪灰調風', en: 'impasto oil brushwork, Morandi muted palette, style-only rendering' },
+  { zh: '厚塗油彩包浩斯原色風', en: 'impasto oil brushwork, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '厚塗油彩浮世繪配色風', en: 'impasto oil brushwork, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '厚塗油彩新藝術曲線風', en: 'impasto oil brushwork, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '厚塗油彩裝飾藝術幾何風', en: 'impasto oil brushwork, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '厚塗油彩至上主義構成風', en: 'impasto oil brushwork, Suprematist abstract composition, style-only rendering' },
+  { zh: '厚塗油彩普普藝術色塊風', en: 'impasto oil brushwork, Pop Art bold color fields, style-only rendering' },
+  { zh: '厚塗油彩極簡留白風', en: 'impasto oil brushwork, minimal negative-space arrangement, style-only rendering' },
+  { zh: '乾刷壓克力印象派色彩風', en: 'dry-brush acrylic texture, Impressionist color handling, style-only rendering' },
+  { zh: '乾刷壓克力野獸派高彩風', en: 'dry-brush acrylic texture, Fauvist saturated palette, style-only rendering' },
+  { zh: '乾刷壓克力莫蘭迪灰調風', en: 'dry-brush acrylic texture, Morandi muted palette, style-only rendering' },
+  { zh: '乾刷壓克力包浩斯原色風', en: 'dry-brush acrylic texture, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '乾刷壓克力浮世繪配色風', en: 'dry-brush acrylic texture, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '乾刷壓克力新藝術曲線風', en: 'dry-brush acrylic texture, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '乾刷壓克力裝飾藝術幾何風', en: 'dry-brush acrylic texture, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '乾刷壓克力至上主義構成風', en: 'dry-brush acrylic texture, Suprematist abstract composition, style-only rendering' },
+  { zh: '乾刷壓克力普普藝術色塊風', en: 'dry-brush acrylic texture, Pop Art bold color fields, style-only rendering' },
+  { zh: '乾刷壓克力極簡留白風', en: 'dry-brush acrylic texture, minimal negative-space arrangement, style-only rendering' },
+  { zh: '細線鋼筆印象派色彩風', en: 'fine-line ink drawing, Impressionist color handling, style-only rendering' },
+  { zh: '細線鋼筆野獸派高彩風', en: 'fine-line ink drawing, Fauvist saturated palette, style-only rendering' },
+  { zh: '細線鋼筆莫蘭迪灰調風', en: 'fine-line ink drawing, Morandi muted palette, style-only rendering' },
+  { zh: '細線鋼筆包浩斯原色風', en: 'fine-line ink drawing, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '細線鋼筆浮世繪配色風', en: 'fine-line ink drawing, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '細線鋼筆新藝術曲線風', en: 'fine-line ink drawing, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '細線鋼筆裝飾藝術幾何風', en: 'fine-line ink drawing, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '細線鋼筆至上主義構成風', en: 'fine-line ink drawing, Suprematist abstract composition, style-only rendering' },
+  { zh: '細線鋼筆普普藝術色塊風', en: 'fine-line ink drawing, Pop Art bold color fields, style-only rendering' },
+  { zh: '細線鋼筆極簡留白風', en: 'fine-line ink drawing, minimal negative-space arrangement, style-only rendering' },
+  { zh: '炭筆擦染印象派色彩風', en: 'charcoal smudge rendering, Impressionist color handling, style-only rendering' },
+  { zh: '炭筆擦染野獸派高彩風', en: 'charcoal smudge rendering, Fauvist saturated palette, style-only rendering' },
+  { zh: '炭筆擦染莫蘭迪灰調風', en: 'charcoal smudge rendering, Morandi muted palette, style-only rendering' },
+  { zh: '炭筆擦染包浩斯原色風', en: 'charcoal smudge rendering, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '炭筆擦染浮世繪配色風', en: 'charcoal smudge rendering, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '炭筆擦染新藝術曲線風', en: 'charcoal smudge rendering, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '炭筆擦染裝飾藝術幾何風', en: 'charcoal smudge rendering, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '炭筆擦染至上主義構成風', en: 'charcoal smudge rendering, Suprematist abstract composition, style-only rendering' },
+  { zh: '炭筆擦染普普藝術色塊風', en: 'charcoal smudge rendering, Pop Art bold color fields, style-only rendering' },
+  { zh: '炭筆擦染極簡留白風', en: 'charcoal smudge rendering, minimal negative-space arrangement, style-only rendering' },
+  { zh: '色鉛層疊印象派色彩風', en: 'layered colored-pencil strokes, Impressionist color handling, style-only rendering' },
+  { zh: '色鉛層疊野獸派高彩風', en: 'layered colored-pencil strokes, Fauvist saturated palette, style-only rendering' },
+  { zh: '色鉛層疊莫蘭迪灰調風', en: 'layered colored-pencil strokes, Morandi muted palette, style-only rendering' },
+  { zh: '色鉛層疊包浩斯原色風', en: 'layered colored-pencil strokes, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '色鉛層疊浮世繪配色風', en: 'layered colored-pencil strokes, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '色鉛層疊新藝術曲線風', en: 'layered colored-pencil strokes, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '色鉛層疊裝飾藝術幾何風', en: 'layered colored-pencil strokes, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '色鉛層疊至上主義構成風', en: 'layered colored-pencil strokes, Suprematist abstract composition, style-only rendering' },
+  { zh: '色鉛層疊普普藝術色塊風', en: 'layered colored-pencil strokes, Pop Art bold color fields, style-only rendering' },
+  { zh: '色鉛層疊極簡留白風', en: 'layered colored-pencil strokes, minimal negative-space arrangement, style-only rendering' },
+  { zh: '平塗向量印象派色彩風', en: 'flat vector blocking, Impressionist color handling, style-only rendering' },
+  { zh: '平塗向量野獸派高彩風', en: 'flat vector blocking, Fauvist saturated palette, style-only rendering' },
+  { zh: '平塗向量莫蘭迪灰調風', en: 'flat vector blocking, Morandi muted palette, style-only rendering' },
+  { zh: '平塗向量包浩斯原色風', en: 'flat vector blocking, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '平塗向量浮世繪配色風', en: 'flat vector blocking, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '平塗向量新藝術曲線風', en: 'flat vector blocking, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '平塗向量裝飾藝術幾何風', en: 'flat vector blocking, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '平塗向量至上主義構成風', en: 'flat vector blocking, Suprematist abstract composition, style-only rendering' },
+  { zh: '平塗向量普普藝術色塊風', en: 'flat vector blocking, Pop Art bold color fields, style-only rendering' },
+  { zh: '平塗向量極簡留白風', en: 'flat vector blocking, minimal negative-space arrangement, style-only rendering' },
+  { zh: '像素點陣印象派色彩風', en: 'pixel-art dithering, Impressionist color handling, style-only rendering' },
+  { zh: '像素點陣野獸派高彩風', en: 'pixel-art dithering, Fauvist saturated palette, style-only rendering' },
+  { zh: '像素點陣莫蘭迪灰調風', en: 'pixel-art dithering, Morandi muted palette, style-only rendering' },
+  { zh: '像素點陣包浩斯原色風', en: 'pixel-art dithering, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '像素點陣浮世繪配色風', en: 'pixel-art dithering, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '像素點陣新藝術曲線風', en: 'pixel-art dithering, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '像素點陣裝飾藝術幾何風', en: 'pixel-art dithering, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '像素點陣至上主義構成風', en: 'pixel-art dithering, Suprematist abstract composition, style-only rendering' },
+  { zh: '像素點陣普普藝術色塊風', en: 'pixel-art dithering, Pop Art bold color fields, style-only rendering' },
+  { zh: '像素點陣極簡留白風', en: 'pixel-art dithering, minimal negative-space arrangement, style-only rendering' },
+  { zh: '拼貼紙感印象派色彩風', en: 'paper collage texture, Impressionist color handling, style-only rendering' },
+  { zh: '拼貼紙感野獸派高彩風', en: 'paper collage texture, Fauvist saturated palette, style-only rendering' },
+  { zh: '拼貼紙感莫蘭迪灰調風', en: 'paper collage texture, Morandi muted palette, style-only rendering' },
+  { zh: '拼貼紙感包浩斯原色風', en: 'paper collage texture, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '拼貼紙感浮世繪配色風', en: 'paper collage texture, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '拼貼紙感新藝術曲線風', en: 'paper collage texture, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '拼貼紙感裝飾藝術幾何風', en: 'paper collage texture, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '拼貼紙感至上主義構成風', en: 'paper collage texture, Suprematist abstract composition, style-only rendering' },
+  { zh: '拼貼紙感普普藝術色塊風', en: 'paper collage texture, Pop Art bold color fields, style-only rendering' },
+  { zh: '拼貼紙感極簡留白風', en: 'paper collage texture, minimal negative-space arrangement, style-only rendering' },
+  { zh: '絲網印刷印象派色彩風', en: 'silkscreen print grain, Impressionist color handling, style-only rendering' },
+  { zh: '絲網印刷野獸派高彩風', en: 'silkscreen print grain, Fauvist saturated palette, style-only rendering' },
+  { zh: '絲網印刷莫蘭迪灰調風', en: 'silkscreen print grain, Morandi muted palette, style-only rendering' },
+  { zh: '絲網印刷包浩斯原色風', en: 'silkscreen print grain, Bauhaus primary-color structure, style-only rendering' },
+  { zh: '絲網印刷浮世繪配色風', en: 'silkscreen print grain, Ukiyo-e inspired color blocks, style-only rendering' },
+  { zh: '絲網印刷新藝術曲線風', en: 'silkscreen print grain, Art Nouveau flowing ornament, style-only rendering' },
+  { zh: '絲網印刷裝飾藝術幾何風', en: 'silkscreen print grain, Art Deco geometric rhythm, style-only rendering' },
+  { zh: '絲網印刷至上主義構成風', en: 'silkscreen print grain, Suprematist abstract composition, style-only rendering' },
+  { zh: '絲網印刷普普藝術色塊風', en: 'silkscreen print grain, Pop Art bold color fields, style-only rendering' },
+  { zh: '絲網印刷極簡留白風', en: 'silkscreen print grain, minimal negative-space arrangement, style-only rendering' }
 ];
 
 function option(zh, en, rarity = '') {
@@ -727,6 +727,22 @@ const outfitColors = [
   ['暗紅金邊', 'dark red with gold trim']
 ].map(([zh, en]) => option(zh, en));
 
+const HAIR_FUR_COLOR_OPTIONS = [
+  ['自然黑', 'natural black hair or fur'], ['深棕', 'dark brown hair or fur'], ['栗棕', 'chestnut brown hair or fur'], ['淺棕', 'light brown hair or fur'], ['金色', 'blonde or golden hair or fur'],
+  ['白金', 'platinum hair or fur'], ['銀灰', 'silver-gray hair or fur'], ['霧灰', 'misty gray hair or fur'], ['純白', 'pure white hair or fur'], ['奶油白', 'cream-white hair or fur'],
+  ['酒紅', 'wine-red hair or fur'], ['玫瑰粉', 'rose-pink hair or fur'], ['櫻花粉', 'sakura-pink hair or fur'], ['薰衣草紫', 'lavender-purple hair or fur'], ['深紫', 'deep purple hair or fur'],
+  ['海藍', 'ocean-blue hair or fur'], ['霧藍', 'mist-blue hair or fur'], ['湖水綠', 'aqua-green hair or fur'], ['森林綠', 'forest-green hair or fur'], ['孔雀藍綠', 'peacock teal hair or fur'],
+  ['橘紅', 'orange-red hair or fur'], ['蜜桃橘', 'peach-orange hair or fur'], ['漸層雙色', 'two-tone gradient hair or fur'], ['挑染髮尾', 'dyed-tip hair or fur accents'], ['內層染', 'underlayer hair or fur color'],
+  ['虎斑紋', 'tabby striped fur pattern'], ['斑點紋', 'spotted fur pattern'], ['三花配色', 'calico hair or fur palette'], ['銀白挑染', 'silver-white highlights'], ['AI判斷毛色', 'AI-suggested hair or fur color']
+].map(([zh, en]) => option(zh, en));
+
+const GAZE_DIRECTION_OPTIONS = [
+  ['看鏡頭', 'looking directly at camera'], ['看向左側', 'looking to the left'], ['看向右側', 'looking to the right'], ['低頭垂眼', 'lowered gaze'], ['抬眼凝視', 'raised-eye gaze'],
+  ['看向手部', 'looking at the hands'], ['看向道具', 'looking at the prop'], ['看向對方', 'looking at the other character'], ['回眸看鏡頭', 'looking back over shoulder at camera'], ['閉眼感受', 'eyes closed in a calm expression'],
+  ['看向遠方', 'looking into the distance'], ['看向寵物', 'looking toward the pet companion'], ['看向業配物', 'looking toward the sponsored item'], ['避開鏡頭', 'gaze away from camera'], ['三分側臉視線', 'three-quarter profile gaze'],
+  ['俯視鏡頭', 'looking down toward the camera'], ['仰望視線', 'looking upward'], ['雙人對視', 'mutual gaze between two characters'], ['多人視線交錯', 'interwoven gaze among multiple characters'], ['AI判斷眼神', 'AI-suggested gaze direction']
+].map(([zh, en]) => option(zh, en));
+
 const OUTFIT_MATERIAL_OPTIONS = [
   option('絲綢', 'silk'),
   option('緞面', 'satin'),
@@ -927,6 +943,110 @@ function makeActionDetailOptions(mode) {
 const ACTION_DETAIL_OPTIONS = Object.fromEntries(Object.keys(actionDetailSeeds).map((mode) => [mode, makeActionDetailOptions(mode)]));
 const ALL_ACTION_DETAIL_OPTIONS = Object.values(ACTION_DETAIL_OPTIONS).flat();
 
+const PET_OPTIONS = [
+  ['無', 'no pet or animal companion'],
+  ['家貓', 'house cat'],
+  ['短毛貓', 'short-haired cat'],
+  ['長毛貓', 'long-haired cat'],
+  ['橘貓', 'orange tabby cat'],
+  ['黑貓', 'black cat'],
+  ['暹羅貓', 'Siamese cat'],
+  ['布偶貓', 'ragdoll cat'],
+  ['英國短毛貓', 'British shorthair cat'],
+  ['緬因貓', 'Maine coon cat'],
+  ['柴犬', 'Shiba Inu'],
+  ['黃金獵犬', 'golden retriever'],
+  ['拉布拉多', 'Labrador retriever'],
+  ['柯基', 'corgi'],
+  ['貴賓犬', 'poodle'],
+  ['法國鬥牛犬', 'French bulldog'],
+  ['哈士奇', 'husky'],
+  ['邊境牧羊犬', 'border collie'],
+  ['德國牧羊犬', 'German shepherd'],
+  ['博美犬', 'Pomeranian'],
+  ['吉娃娃', 'Chihuahua'],
+  ['兔子', 'rabbit'],
+  ['侏儒兔', 'dwarf rabbit'],
+  ['天竺鼠', 'guinea pig'],
+  ['倉鼠', 'hamster'],
+  ['龍貓', 'chinchilla'],
+  ['刺蝟', 'hedgehog'],
+  ['雪貂', 'ferret'],
+  ['小白鼠', 'white mouse'],
+  ['寵物豬', 'pet pig'],
+  ['迷你驢', 'mini donkey'],
+  ['鸚鵡', 'parrot'],
+  ['虎皮鸚鵡', 'budgerigar'],
+  ['玄鳳鸚鵡', 'cockatiel'],
+  ['金絲雀', 'canary'],
+  ['文鳥', 'Java sparrow'],
+  ['鴿子', 'pigeon'],
+  ['孔雀', 'peacock'],
+  ['鴨子', 'duck'],
+  ['迷你雞', 'mini chicken'],
+  ['貓頭鷹', 'owl'],
+  ['金魚', 'goldfish'],
+  ['錦鯉', 'koi fish'],
+  ['鬥魚', 'betta fish'],
+  ['熱帶魚', 'tropical fish'],
+  ['海馬', 'seahorse'],
+  ['小丑魚', 'clownfish'],
+  ['水母', 'jellyfish'],
+  ['烏龜', 'turtle'],
+  ['陸龜', 'tortoise'],
+  ['守宮', 'gecko'],
+  ['變色龍', 'chameleon'],
+  ['鬆獅蜥', 'bearded dragon'],
+  ['綠鬣蜥', 'green iguana'],
+  ['玉米蛇', 'corn snake'],
+  ['球蟒', 'ball python'],
+  ['樹蛙', 'tree frog'],
+  ['蠑螈', 'salamander'],
+  ['寄居蟹', 'hermit crab'],
+  ['蝴蝶', 'butterfly'],
+  ['蜜蜂', 'honeybee'],
+  ['瓢蟲', 'ladybug'],
+  ['狐狸', 'fox'],
+  ['小鹿', 'young deer'],
+  ['羊駝', 'alpaca'],
+  ['小馬', 'pony'],
+  ['松鼠', 'squirrel'],
+  ['水獺', 'otter'],
+  ['浣熊', 'raccoon'],
+  ['狐獴', 'meerkat'],
+  ['小熊貓', 'red panda'],
+  ['企鵝', 'penguin'],
+  ['海豹', 'seal'],
+  ['海豚', 'dolphin'],
+  ['小象', 'young elephant'],
+  ['幼獅', 'lion cub'],
+  ['幼虎', 'tiger cub'],
+  ['黑豹', 'black panther'],
+  ['白狼', 'white wolf'],
+  ['雪狐', 'snow fox'],
+  ['北極兔', 'Arctic hare'],
+  ['獨角獸', 'unicorn'],
+  ['飛馬', 'pegasus'],
+  ['鳳凰', 'phoenix'],
+  ['小龍', 'small dragon'],
+  ['東方龍', 'Eastern dragon'],
+  ['麒麟', 'qilin'],
+  ['九尾狐', 'nine-tailed fox'],
+  ['獅鷲', 'griffin'],
+  ['人魚小伴侶', 'small mermaid companion'],
+  ['精靈鹿', 'fae deer'],
+  ['月兔', 'moon rabbit'],
+  ['雷鳥', 'thunderbird'],
+  ['水晶貓', 'crystal cat'],
+  ['星塵犬', 'stardust dog'],
+  ['雲朵羊', 'cloud sheep'],
+  ['花精靈', 'flower sprite'],
+  ['迷你樹人', 'mini treant'],
+  ['幽靈貓', 'ghost cat'],
+  ['機械寵物', 'mechanical pet'],
+  ['星際小獸', 'small star beast']
+].map(([zh, en]) => option(zh, en));
+
 const CUSTOMIZATION_OPTIONS = {
   genders: GENDER_OPTIONS,
   faces: FACE_OPTIONS,
@@ -935,11 +1055,14 @@ const CUSTOMIZATION_OPTIONS = {
     ...rareOutfitPairs.map(([zh, en]) => option(zh, en, 'rare'))
   ],
   outfitColors,
+  hairFurColors: HAIR_FUR_COLOR_OPTIONS,
+  gazeDirections: GAZE_DIRECTION_OPTIONS,
   outfitMaterials: OUTFIT_MATERIAL_OPTIONS,
   outfitIntegrity: OUTFIT_INTEGRITY_OPTIONS,
   bodyFeatures,
   counts: COUNT_OPTIONS,
   accessories: ACCESSORY_OPTIONS,
+  pets: PET_OPTIONS,
   actionModes: ACTION_MODE_OPTIONS,
   actionDetails: ALL_ACTION_DETAIL_OPTIONS,
   actions: ALL_ACTION_DETAIL_OPTIONS,
@@ -1241,6 +1364,61 @@ function validateCustomDetailInput(input) {
   };
 }
 
+
+function getDialogueEnglishLine(line, fallback) {
+  const cleaned = normalizeInput(line);
+  if (!cleaned) return '';
+  return containsCjk(cleaned) ? translateCjkDirectionToEnglish(cleaned, fallback) : cleaned;
+}
+
+function buildDialoguePlan({ mode = 'none', toCamera = '', betweenCharacters = '', countZh = AI_OPTION.zh } = {}) {
+  const cameraLine = normalizeInput(toCamera);
+  const interactionLine = normalizeInput(betweenCharacters);
+  const multiCharacter = isMultiCharacterCount(countZh);
+  const wantsCamera = ['to-camera', 'both'].includes(mode) || (mode === 'none' && cameraLine);
+  const wantsInteraction = multiCharacter && (['between-characters', 'both'].includes(mode) || (mode === 'none' && interactionLine));
+  const positionZh = multiCharacter
+    ? '角色1在畫面左側或前景，角色2在畫面右側或後景；若有角色3，安排在中後景作為第三互動點'
+    : '單人構圖，不建立角色間對話，也不重複填角色卡資料';
+  const positionEn = multiCharacter
+    ? 'Character 1 is placed on the left side or foreground, Character 2 on the right side or background; if Character 3 exists, place them in the mid-background as the third interaction point'
+    : 'single-character composition, do not create character-to-character dialogue and do not repeat per-character card data';
+  const zhParts = [];
+  const enParts = [];
+
+  if (wantsCamera && cameraLine) {
+    zhParts.push(`對鏡頭說：${cameraLine}`);
+    enParts.push(`dialogue to camera: ${getDialogueEnglishLine(cameraLine, 'natural English camera-facing dialogue from the reviewed Chinese line')}; add subtle lip sync, direct eye contact, and expression timing`);
+  }
+
+  if (wantsInteraction && interactionLine) {
+    zhParts.push(`角色間對話：${interactionLine}`);
+    zhParts.push(`角色位置：${positionZh}`);
+    enParts.push(`character-to-character dialogue: ${getDialogueEnglishLine(interactionLine, 'natural English character-to-character dialogue from the reviewed Chinese line')}; ${positionEn}; label speakers by character number and keep reactions synchronized`);
+  }
+
+  return {
+    hasDialogue: zhParts.length > 0,
+    zh: zhParts.join('；'),
+    en: enParts.join(', ')
+  };
+}
+
+function getDeepFaceInstruction() {
+  return {
+    zh: 'DeepFace：請套用附圖的人物設定，確保五官比例、臉型輪廓、眼睛形狀、眉型、鼻樑與鼻尖、嘴唇厚度、下巴線條、膚色、髮型、表情習慣、身體比例、身上特徵與整體氣質一致；只替換到已設定好的角色、服裝、場景與構圖中，不改變附圖人物辨識特徵',
+    en: 'DeepFace reference application: apply the person settings from the attached reference image; preserve facial proportions, face shape, eye shape, eyebrow structure, nose bridge and tip, lip fullness, jawline, skin tone, hairstyle, habitual expression, body proportions, visible body features, and overall presence; map that person consistently into the configured character, outfit, scene, and composition without changing the recognizable facial and body traits'
+  };
+}
+
+
+function getWithMeInstruction() {
+  return {
+    zh: 'WITH ME：提示詞完成後，使用者可在文轉圖 AI 上傳自己的照片，將本人作為同框對象與設定中的伴侶／朋友／模特合成；請依本提示詞規劃服裝風格、動作搭配、畫風、光線、構圖與整體協調，保留使用者照片的可辨識特徵並讓雙方自然互動',
+    en: 'WITH ME companion-composite plan: after generating this prompt, the user may upload their own photo in a text-to-image AI workflow and composite themselves beside the imagined partner, friend, or model; coordinate the user photo with the configured outfit style, pose pairing, art style, lighting, composition, and overall styling while preserving the user photo identity and creating natural interaction between both people'
+  };
+}
+
 function validateCharacterDetailInput(input) {
   if (typeof input === 'object' && input !== null) {
     const details = normalizeInput(input.zh);
@@ -1433,15 +1611,27 @@ function rewritePrompt(input, options = {}) {
   const face = getCustomizationOption('faces', options.face);
   const outfit = getCustomizationOption('outfits', options.outfit);
   const outfitColor = getCustomizationOption('outfitColors', options.outfitColor);
+  const hairFurColor = getPresetOption(HAIR_FUR_COLOR_OPTIONS, options.hairFurColor);
   const outfitMaterial = getCustomizationOption('outfitMaterials', options.outfitMaterial);
   const bodyFeature = getCustomizationOption('bodyFeatures', options.bodyFeature);
   const outfitIntegrity = getCustomizationOption('outfitIntegrity', options.outfitIntegrity);
   const count = getCustomizationOption('counts', options.count);
   const scene = getCustomizationOption('scenes', options.scene);
   const accessory = getCustomizationOption('accessories', options.accessory);
+  const pet = getPresetOption(PET_OPTIONS, options.pet);
   const actionMode = getPresetOption(ACTION_MODE_OPTIONS, options.actionMode);
   const actionDetail = getPresetOption(getActionDetailsForMode(actionMode.zh), options.actionDetail);
+  const gazeDirection = getPresetOption(GAZE_DIRECTION_OPTIONS, options.gazeDirection);
   const sponsor = normalizeSponsorSettings(options.sponsorSettings);
+  const isSimpleLove = options.inputMode === 'simple';
+  const dialogue = buildDialoguePlan({
+    mode: options.dialogueMode || 'none',
+    toCamera: options.dialogueToCamera || '',
+    betweenCharacters: options.dialogueBetweenCharacters || '',
+    countZh: count.zh
+  });
+  const deepFace = options.deepfaceEnabled ? getDeepFaceInstruction() : null;
+  const withMe = options.withMeEnabled ? getWithMeInstruction() : null;
 
   let rewritten = validation.prompt;
   let chineseRewritten = validation.prompt;
@@ -1471,8 +1661,9 @@ function rewritePrompt(input, options = {}) {
       `職業：${occupation.zh}`,
       `身材比例：${bodyProportion.zh}`,
       `臉蛋：${face.zh}`,
-      `身上特徵：${bodyFeature.zh}`,
-      `服裝：${outfit.zh}`,
+      `特徵：${bodyFeature.zh}`,
+      `毛色／髮色：${hairFurColor.zh}`,
+      `服裝：${outfit.zh}`, 
       `服裝配色：${outfitColor.zh}`,
       `服裝材質：${outfitMaterial.zh}`,
       `服裝完整度：${outfitIntegrity.zh}`
@@ -1487,33 +1678,57 @@ function rewritePrompt(input, options = {}) {
       `occupation: ${occupation.en}`,
       `body proportion: ${bodyProportion.en}`,
       `face: ${face.en}`,
-      `body feature: ${bodyFeature.en}`,
-      `outfit: ${outfit.en}`,
+      `feature: ${bodyFeature.en}`,
+      `hair/fur color: ${hairFurColor.en}`,
+      `outfit: ${outfit.en}`, 
       `outfit color palette: ${outfitColor.en}`,
       `outfit material: ${outfitMaterial.en}`,
       `outfit integrity: ${outfitIntegrity.en}`
     ];
 
   const chinesePrompt = [
+    `輸入模式：${isSimpleLove ? '簡單愛' : '複雜愛'}`,
     `主題／動作：${chineseRewritten}`,
     ...chineseCharacterFields,
     `時間點：${timePoint.zh}`,
     `人數：${count.zh}`,
     `場景：${scene.zh}`,
-    `配件／道具：${accessory.zh}`,
-    `光感：${lighting.zh}`,
-    `鏡位：${camera.zh}`,
-    `構圖結構：${composition.zh}`,
-    `畫風：${artStyle.zh}`,
-    `動作／姿態類型：${actionMode.zh}`,
-    `動作／姿態細項：${actionDetail.zh}`,
-    `氛圍：${INTENSITY_WORDS[intensity]}`,
-    `情慾強度運用：${INTENSITY_PROFILES[intensity].zh}`,
-    '優先規則：最上方 Cosplay 若與下方客製化選項重樣或衝突，以 Cosplay 為主',
-    '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
+    `寵物：${pet.zh}`
   ];
 
-  if (sponsor.hasSponsor) {
+  if (!isSimpleLove) {
+    chinesePrompt.push(
+      `配件／道具：${accessory.zh}`,
+      `光感：${lighting.zh}`,
+      `鏡位：${camera.zh}`,
+      `構圖結構：${composition.zh}`,
+      `畫風：${artStyle.zh}`,
+      `動作／姿態類型：${actionMode.zh}`,
+      `動作／姿態細項：${actionDetail.zh}`,
+      `眼神位置：${gazeDirection.zh}`,
+      `氛圍：${INTENSITY_WORDS[intensity]}`, 
+      `情慾強度運用：${INTENSITY_PROFILES[intensity].zh}`
+    );
+  }
+
+  chinesePrompt.push(
+    '優先規則：最上方 Cosplay 若與下方客製化選項重樣或衝突，以 Cosplay 為主',
+    '安全：所有角色皆為明確 18+ 且合意的成年人，無脅迫、無未成年'
+  );
+
+  if (dialogue.hasDialogue) {
+    chinesePrompt.push(`對話設定：${dialogue.zh}`);
+  }
+
+  if (deepFace) {
+    chinesePrompt.push(deepFace.zh);
+  }
+
+  if (withMe) {
+    chinesePrompt.push(withMe.zh);
+  }
+
+  if (!isSimpleLove && sponsor.hasSponsor) {
     chinesePrompt.push(`業配設定：${sponsor.zh}`);
   }
 
@@ -1528,27 +1743,50 @@ function rewritePrompt(input, options = {}) {
   const englishSubject = toCopySafeEnglishSubject(rewritten);
 
   const englishPrompt = [
+    `input mode: ${isSimpleLove ? 'simple love' : 'complex love'}`,
     `subject/action: ${englishSubject}`,
     ...englishCharacterFields,
     `time point: ${timePoint.en}`,
     `character count: ${count.en}`,
     `scene: ${scene.en}`,
-    `accessory/prop: ${accessory.en}`,
-    `lighting: ${lighting.en}`,
-    `camera angle/viewpoint: ${camera.en}`,
-    `composition structure: ${composition.en}`,
-    `art style: ${artStyle.en}`,
-    `action/posture mode: ${actionMode.en}`,
-    `action/posture detail: ${actionDetail.en}`,
-    `tone: ${DEFAULT_STYLE.tone}`,
-    `intensity: ${INTENSITY_WORDS[intensity]}`,
-    `intensity application: ${INTENSITY_PROFILES[intensity].en}`,
+    `pet/companion: ${pet.en}`
+  ];
+
+  if (!isSimpleLove) {
+    englishPrompt.push(
+      `accessory/prop: ${accessory.en}`,
+      `lighting: ${lighting.en}`,
+      `camera angle/viewpoint: ${camera.en}`,
+      `composition structure: ${composition.en}`,
+      `art style: ${artStyle.en}`,
+      `action/posture mode: ${actionMode.en}`,
+      `action/posture detail: ${actionDetail.en}`,
+      `gaze direction: ${gazeDirection.en}`,
+      `tone: ${DEFAULT_STYLE.tone}`, 
+      `intensity: ${INTENSITY_WORDS[intensity]}`,
+      `intensity application: ${INTENSITY_PROFILES[intensity].en}`
+    );
+  }
+
+  englishPrompt.push(
     `quality: ${DEFAULT_STYLE.quality}`,
     'priority: if the Cosplay input conflicts with or duplicates global preset options, the Cosplay input takes precedence; per-character detail lines override only that specific character and omit AI-decide fields to avoid duplicate settings',
     `safety: ${DEFAULT_STYLE.safety}`
-  ];
+  );
 
-  if (sponsor.hasSponsor) {
+  if (dialogue.hasDialogue) {
+    englishPrompt.push(`dialogue settings: ${dialogue.en}`);
+  }
+
+  if (deepFace) {
+    englishPrompt.push(deepFace.en);
+  }
+
+  if (withMe) {
+    englishPrompt.push(withMe.en);
+  }
+
+  if (!isSimpleLove && sponsor.hasSponsor) {
     englishPrompt.push(`sponsored placement settings: ${sponsor.en}`);
   }
 
@@ -1593,14 +1831,19 @@ const GENERAL_IMAGE_TO_VIDEO_PROMPTS = [
 ];
 
 
-function getGeneralImageToVideoPromptChoices({ fileName = '', imageDescription = '', desiredMotion = '' } = {}) {
-  const source = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion}`);
+function getGeneralImageToVideoPromptChoices({ fileName = '', imageDescription = '', desiredMotion = '', promptThread = '' } = {}) {
+  const source = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${promptThread}`);
   const choices = [];
   const add = (choice) => {
     if (!choices.some((candidate) => candidate.zh === choice.zh)) {
       choices.push({ ...choice, score: choices.length + 1 });
     }
   };
+
+  if (promptThread) {
+    add({ zh: '提示詞串腳本：讀取已生成的主體、角色數、場景、寵物、業配與畫風，安排開場／互動／停格三段式動態', en: 'prompt-thread script: read the generated subject, character count, scene, pet, sponsored content, and art style, then plan opening, interaction, and closing-hold motion beats' });
+    add({ zh: '提示詞串連續性：沿用已生成提示詞的服裝、場景邏輯與構圖，不只做單純拉近', en: 'prompt-thread continuity: preserve outfit, scene logic, and composition from the generated prompt, not just a generic push-in' });
+  }
 
   if (/商品|產品|瓶|包裝|珠寶|飾品|product|package|bottle|jewelry|accessory/i.test(source)) {
     add({ zh: '產品展示：慢速環繞商品，讓邊緣高光順著材質滑過', en: 'product showcase with a slow orbit around the item and highlights gliding along the material edges' });
@@ -1728,10 +1971,11 @@ function createImageToVideoPrompt({
   audienceMode = 'sensual',
   dialogueToCamera = '',
   dialogueBetweenCharacters = '',
+  promptThread = '',
   sponsorSettings = {}
 } = {}) {
   const sponsor = normalizeSponsorSettings(sponsorSettings);
-  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters} ${sponsorSettings.text || ''}`);
+  const combinedForSafety = normalizeInput(`${fileName} ${imageDescription} ${desiredMotion} ${dialogueToCamera} ${dialogueBetweenCharacters} ${promptThread} ${sponsorSettings.text || ''}`);
   const blocked = BLOCKED_PATTERNS.find(({ pattern }) => pattern.test(combinedForSafety));
 
   if (blocked) {
@@ -1750,14 +1994,15 @@ function createImageToVideoPrompt({
 
   const explicitnessScore = estimateExplicitnessScore({ skinToneRatio, fileName, imageDescription, desiredMotion });
   const isDesignerMode = audienceMode === 'designer';
-  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription: `${imageDescription} ${sponsorSettings.text || ''} ${sponsorSettings.itemTypeZh || ''}`, desiredMotion }) : getImageToVideoPromptChoices(explicitnessScore);
+  const promptChoices = isDesignerMode ? getGeneralImageToVideoPromptChoices({ fileName, imageDescription: `${imageDescription} ${sponsorSettings.text || ''} ${sponsorSettings.itemTypeZh || ''}`, desiredMotion, promptThread }) : getImageToVideoPromptChoices(explicitnessScore);
   const tier = isDesignerMode ? promptChoices[0] : getImageToVideoTier(explicitnessScore);
   const requestedMotionEn = rewriteImageMotionToEnglish(desiredMotion);
   const dialogueToCameraEn = rewriteDialogueToEnglish(dialogueToCamera, 'dialogue to camera');
   const dialogueBetweenCharactersEn = rewriteDialogueToEnglish(dialogueBetweenCharacters, 'character-to-character dialogue');
   const safeDuration = Math.min(12, Math.max(3, Number(durationSeconds) || 5));
   const safeMotionStrength = ['subtle', 'medium', 'strong'].includes(motionStrength) ? motionStrength : 'medium';
-  const sourceNoteZh = normalizeInput(imageDescription) || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
+  const promptThreadZh = normalizeInput(promptThread) ? '已讀取目前已生成的提示詞串，作為圖轉影腳本依據' : '';
+  const sourceNoteZh = [normalizeInput(imageDescription), promptThreadZh].filter(Boolean).join('；') || '由上傳圖片作為主體參考，維持角色、服裝、構圖與背景一致';
   const requestedMotionZh = normalizeInput(desiredMotion) || (isDesignerMode ? '未指定額外動態，依圖片內容提供自然圖轉影建議' : '未指定額外動態，依成人向強度自動建議安全圖轉影動作');
   const dialogueZh = [
     normalizeInput(dialogueToCamera) ? `跟鏡頭說：${normalizeInput(dialogueToCamera)}` : '',
@@ -1808,6 +2053,9 @@ function createImageToVideoPrompt({
       DEFAULT_STYLE.safety
     ];
 
+  if (normalizeInput(promptThread)) {
+    englishPrompt.push(`generated prompt thread to read before planning motion: ${normalizeInput(promptThread)}`);
+  }
   if (requestedMotionEn) {
     englishPrompt.push(`user requested safe motion: ${requestedMotionEn}`);
   }
@@ -1861,6 +2109,9 @@ if (typeof module !== 'undefined') {
     ACTION_DETAIL_OPTIONS,
     ALL_ACTION_DETAIL_OPTIONS,
     ACCESSORY_OPTIONS,
+    PET_OPTIONS,
+    HAIR_FUR_COLOR_OPTIONS,
+    GAZE_DIRECTION_OPTIONS,
     OUTFIT_MATERIAL_OPTIONS,
     CUSTOMIZATION_OPTIONS,
     IMAGE_TO_VIDEO_TIER_PROMPTS,
